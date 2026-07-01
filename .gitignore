@@ -1,0 +1,100 @@
+# Node modules
+node_modules/
+
+# Vite build output
+dist/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Dependency directories
+**/node_modules/
+**/dist/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Build output
+**/.rpt2_cache/
+**/.rts2_cache_cjs/
+**/.rts2_cache_es/
+**/.rts2_cache_umd/
+
+# Optional npm cache directory
+.npm
+
+# pnpm store
+.pnpm-store
+
+# Yarn
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/patches
+
+# Environment variables for CI
+.vscode-test/
+
+# Mac files
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Coverage
+coverage/
+**/coverage/
+
+# JetBrains IDE files
+.idea/
+*.iml
+
+# VS Code settings
+.vscode/
+
+# Local environment / machine-specific
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Misc
+.sass-cache
+.cache
+*.cache
+
+# Ignore lockfiles if generated per subproject only
+# Uncomment if you want to track root package manager lockfile in a monorepo
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
