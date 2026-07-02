@@ -1,27 +1,13 @@
+import { useQuery } from '@tanstack/react-query';
 import { SparkIcon } from '../../../../shared/components/ui/Icons';
-
-const travelers = [
-  {
-    name: 'Amani Hudson',
-    relation: 'Family',
-    status: 'Primary',
-    lastTrip: 'Dubai Business Suite',
-  },
-  {
-    name: 'Mia Park',
-    relation: 'Spouse',
-    status: 'Verified',
-    lastTrip: 'Maldives Escape',
-  },
-  {
-    name: 'Noah Reed',
-    relation: 'Guest',
-    status: 'Pending',
-    lastTrip: 'Safari Essentials',
-  },
-];
+import { fetchTravelerProfiles, TravelerProfile } from '../../../../shared/services/customerService';
 
 export default function UserProfilesPage() {
+  const { data: travelers = [], isLoading, error } = useQuery<TravelerProfile[]>({
+    queryKey: ['travelerProfiles'],
+    queryFn: fetchTravelerProfiles,
+  });
+
   return (
     <div className="space-y-8">
       <header className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
@@ -42,21 +28,28 @@ export default function UserProfilesPage() {
         <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-6 flex items-center justify-between gap-3">
             <h3 className="text-xl font-semibold text-slate-900">Active traveler profiles</h3>
-            <span className="rounded-full bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700">3 profiles</span>
+            <span className="rounded-full bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700">{travelers.length} profiles</span>
           </div>
-          <div className="space-y-4">
-            {travelers.map((traveler) => (
-              <div key={traveler.name} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-base font-semibold text-slate-900">{traveler.name}</p>
-                    <p className="mt-1 text-sm text-slate-500">{traveler.relation} • {traveler.lastTrip}</p>
+
+          {isLoading ? (
+            <p className="text-sm text-slate-500">Loading profiles...</p>
+          ) : error ? (
+            <p className="text-sm text-red-500">Unable to load traveler profiles.</p>
+          ) : (
+            <div className="space-y-4">
+              {travelers.map((traveler) => (
+                <div key={traveler.name} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-base font-semibold text-slate-900">{traveler.name}</p>
+                      <p className="mt-1 text-sm text-slate-500">{traveler.relation} • {traveler.lastTrip}</p>
+                    </div>
+                    <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">{traveler.status}</span>
                   </div>
-                  <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">{traveler.status}</span>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">

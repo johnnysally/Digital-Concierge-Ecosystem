@@ -1,24 +1,13 @@
+import { useQuery } from '@tanstack/react-query';
 import { BenefitCard } from '../../../../shared/components/ui/InfoCard';
-
-const promotions = [
-  {
-    title: 'Priority Lounge Access',
-    description: 'Unlock airport lounges worldwide with a single concierge pass and enjoy premium rest zones before departure.',
-    tag: 'Premium',
-  },
-  {
-    title: 'Flexible Journey Credits',
-    description: 'Redeem travel credit for tickets, car transfers, or dining upgrades across our partner network.',
-    tag: 'Flexible',
-  },
-  {
-    title: 'Smart Trip Bundles',
-    description: 'Receive curated travel bundles with hotel, ride, and concierge support tailored to your itinerary.',
-    tag: 'Recommended',
-  },
-];
+import { fetchPromotions, Promotion } from '../../../../shared/services/customerService';
 
 export default function PromotionsPage() {
+  const { data: promotions = [], isLoading, error } = useQuery<Promotion[]>({
+    queryKey: ['promotions'],
+    queryFn: fetchPromotions,
+  });
+
   return (
     <div className="space-y-8">
       <section className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
@@ -33,11 +22,17 @@ export default function PromotionsPage() {
           </button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {promotions.map((promo) => (
-            <BenefitCard key={promo.title} title={promo.title} description={promo.description} badge={promo.tag} />
-          ))}
-        </div>
+        {isLoading ? (
+          <p className="text-sm text-slate-500">Loading promotions...</p>
+        ) : error ? (
+          <p className="text-sm text-red-500">Unable to load promotions.</p>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-3">
+            {promotions.map((promo) => (
+              <BenefitCard key={promo.title} title={promo.title} description={promo.description} badge={promo.tag} />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">

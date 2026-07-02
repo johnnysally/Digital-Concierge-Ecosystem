@@ -8,6 +8,8 @@ const errorHandler = require('./middleware/global/errorHandler');
 const { generalLimiter } = require('./middleware/global/rateLimiter');
 const requestLogger = require('./middleware/global/logger');
 const logger = require('./utils/logger');
+const customerRoutes = require('./routes/customerRoutes');
+const partnerRoutes = require('./routes/partnerRoutes');
 
 const app = express();
 
@@ -34,10 +36,13 @@ app.get('/api', (req, res) => {
         success: true,
         message: 'Digital Concierge API - v1',
         customer: '/api/customer',
-        partner: '/api/partner',
+        partners: '/api/partners',
         health: '/health',
     });
 });
+
+app.use('/api/customer', customerRoutes);
+app.use('/api/partners', partnerRoutes);
 
 app.get('/health', (req, res) => {
     res.json({
