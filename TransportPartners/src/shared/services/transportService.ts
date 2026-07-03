@@ -9,12 +9,24 @@ const apiClient = axios.create({
 
 // Rider APIs
 export async function fetchRiderProfile(riderId: string) {
-  const response = await apiClient.get(`/transport/riders/${riderId}`);
+  const response = await apiClient.get(`/partners/accommodation/profile`);
   return response.data;
 }
 
 export async function updateRiderProfile(riderId: string, data: any) {
-  const response = await apiClient.put(`/transport/riders/${riderId}`, data);
+  const response = await apiClient.put(`/partners/accommodation/profile`, data);
+  return response.data;
+}
+
+export async function fetchDocuments() {
+  const response = await apiClient.get(`/partners/accommodation/documents`);
+  return response.data;
+}
+
+export async function uploadDocument(formData: FormData) {
+  const response = await apiClient.post(`/partners/accommodation/documents`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 }
 

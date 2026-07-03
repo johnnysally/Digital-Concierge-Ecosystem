@@ -6,6 +6,7 @@ import EarningsPage from './features/transport/earnings/pages/EarningsPage';
 import ProfilePage from './features/transport/profile/pages/ProfilePage';
 import RatingsPage from './features/transport/ratings/pages/RatingsPage';
 import AnalyticsPage from './features/transport/analytics/pages/AnalyticsPage';
+import SettingsPage from './features/transport/settings/pages/SettingsPage';
 
 export default function App() {
   return (
@@ -14,9 +15,10 @@ export default function App() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/deliveries" element={<DeliveriesPage />} />
         <Route path="/earnings" element={<EarningsPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/ratings" element={<RatingsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/ratings" element={<RatingsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
     </Routes>
   );

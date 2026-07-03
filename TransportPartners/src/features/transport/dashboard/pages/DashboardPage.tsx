@@ -1,23 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchAnalytics } from '../../analytics/services/analyticsService';
 
+const trendStatuses = [
+  { label: 'Active deliveries', key: 'activeDeliveries', color: 'bg-sky-500' },
+  { label: 'On-time rate', key: 'completionRate', color: 'bg-emerald-500' },
+  { label: 'Average rating', key: 'averageRating', color: 'bg-violet-500' },
+];
+
 export default function DashboardPage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['transport-dashboard-analytics'],
-    queryFn: () => fetchAnalytics('rider-1'), // Replace with actual rider ID from context
+    queryFn: () => fetchAnalytics('rider-1'),
   });
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="text-sm text-slate-500 dark:text-slate-400">Loading dashboard...</div>
-      </div>
-    );
-  }
 
   if (isError) {
     return (
-      <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+      <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
         Unable to load dashboard. Please refresh the page.
       </div>
     );
@@ -25,6 +23,48 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-slate-200/80">
+        <h2 className="text-2xl font-semibold text-slate-900">Dashboard</h2>
+        <p className="mt-2 text-sm text-slate-500">Real-time delivery statistics and performance metrics.</p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-4">
+        {[...Array(4)].map((_, index) => (
+          <div key={index} className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-slate-200/80">
+            {isLoading ? (
+              <div className="space-y-4">
+                <div className="h-5 w-32 rounded-full bg-slate-200 animate-pulse" />
+                <div className="h-10 w-20 rounded-full bg-slate-200 animate-pulse" />
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {[...Array(2)].map((_, index) => (
+          <div key={index} className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-slate-200/80">
+            {isLoading ? (
+              <div className="space-y-4">
+                <div className="h-5 w-48 rounded-full bg-slate-200 animate-pulse" />
+                <div className="h-16 rounded-3xl bg-slate-200 animate-pulse" />
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-slate-200/80">
+        {isLoading ? (
+          <div className="space-y-4">
+            <div className="h-5 w-40 rounded-full bg-slate-200 animate-pulse" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="h-24 rounded-3xl bg-slate-200 animate-pulse" />
+              <div className="h-24 rounded-3xl bg-slate-200 animate-pulse" />
+            </div>
+          </div>
+        ) : null}
+      </div>
       <div className="rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-slate-200/80">
         <h2 className="text-2xl font-semibold text-slate-900">Dashboard</h2>
         <p className="mt-2 text-sm text-slate-500">Real-time delivery statistics and performance metrics.</p>
