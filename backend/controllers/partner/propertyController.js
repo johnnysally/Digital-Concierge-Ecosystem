@@ -1,0 +1,55 @@
+const Property = require('../../models/partner/Property');
+
+const createProperty = async (req, res, next) => {
+    try {
+        const property = await Property.create({ ...req.body, partner: req.user._id });
+        res.status(201).json({ success: true, property });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getMyProperties = async (req, res, next) => {
+    try {
+        const properties = await Property.find({ partner: req.user._id }).sort({ createdAt: -1 });
+        res.json({ success: true, properties });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getProperty = async (req, res, next) => {
+    try {
+        const property = await Property.findOne({ _id: req.params.id, partner: req.user._id });
+        if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+        res.json({ success: true, property });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateProperty = async (req, res, next) => {
+    try {
+        const property = await Property.findOneAndUpdate(
+            { _id: req.params.id, partner: req.user._id },
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+        res.json({ success: true, property });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deleteProperty = async (req, res, next) => {
+    try {
+        const property = await Property.findOneAndDelete({ _id: req.params.id, partner: req.user._id });
+        if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+        res.json({ success: true, message: 'Property deleted' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { createProperty, getMyProperties, getProperty, updateProperty, deleteProperty };
