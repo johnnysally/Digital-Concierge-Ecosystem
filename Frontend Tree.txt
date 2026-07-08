@@ -1,0 +1,341 @@
+frontend/
+├── public/
+│   ├── favicon.ico
+│   └── images/
+│
+├── src/
+│   ├── pages/
+│   │   ├── customer/
+│   │   │   ├── HomePage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── ForgotPasswordPage.tsx
+│   │   │   ├── AccommodationSearchPage.tsx
+│   │   │   ├── BookingOverviewPage.tsx
+│   │   │   ├── FoodDeliveryPage.tsx
+│   │   │   ├── TransportDashboardPage.tsx
+│   │   │   ├── ChatbotPage.tsx
+│   │   │   ├── PaymentsPage.tsx
+│   │   │   ├── WalletPage.tsx
+│   │   │   ├── ProfilePage.tsx
+│   │   │   ├── ReviewsPage.tsx
+│   │   │   ├── PromotionsPage.tsx
+│   │   │   ├── NotificationsPage.tsx
+│   │   │   ├── SettingsPage.tsx
+│   │   │   └── SupportCenterPage.tsx
+│   │   │
+│   │   ├── accommodation/
+│   │   │   ├── DashboardPage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── ForgotPasswordPage.tsx
+│   │   │   ├── PropertyListPage.tsx
+│   │   │   ├── PropertyEditPage.tsx
+│   │   │   ├── RoomsListPage.tsx
+│   │   │   ├── RoomDetailsPage.tsx
+│   │   │   ├── RoomFormPage.tsx
+│   │   │   ├── ReservationsListPage.tsx
+│   │   │   ├── ReservationDetailsPage.tsx
+│   │   │   ├── GuestsListPage.tsx
+│   │   │   ├── GuestDetailsPage.tsx
+│   │   │   ├── StaffListPage.tsx
+│   │   │   ├── StaffFormPage.tsx
+│   │   │   ├── HousekeepingListPage.tsx
+│   │   │   ├── PaymentsPage.tsx
+│   │   │   ├── PromotionsPage.tsx
+│   │   │   ├── PromotionFormPage.tsx
+│   │   │   ├── ReviewsPage.tsx
+│   │   │   ├── DocumentsPage.tsx
+│   │   │   ├── ProfilePage.tsx
+│   │   │   └── SettingsPage.tsx
+│   │   │
+│   │   ├── restaurant/
+│   │   │   ├── DashboardPage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── ForgotPasswordPage.tsx
+│   │   │   ├── MenuListPage.tsx
+│   │   │   ├── MenuItemFormPage.tsx
+│   │   │   ├── OrdersListPage.tsx
+│   │   │   ├── OrderDetailsPage.tsx
+│   │   │   ├── StaffListPage.tsx
+│   │   │   ├── StaffFormPage.tsx
+│   │   │   ├── PaymentsPage.tsx
+│   │   │   ├── PromotionsPage.tsx
+│   │   │   ├── PromotionFormPage.tsx
+│   │   │   ├── ReviewsPage.tsx
+│   │   │   ├── ProfilePage.tsx
+│   │   │   └── SettingsPage.tsx
+│   │   │
+│   │   ├── transport/
+│   │   │   ├── DashboardPage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── ForgotPasswordPage.tsx
+│   │   │   ├── VehiclesListPage.tsx
+│   │   │   ├── VehicleFormPage.tsx
+│   │   │   ├── RidesListPage.tsx
+│   │   │   ├── RideDetailsPage.tsx
+│   │   │   ├── DriversListPage.tsx
+│   │   │   ├── DriverFormPage.tsx
+│   │   │   ├── PaymentsPage.tsx
+│   │   │   ├── PromotionsPage.tsx
+│   │   │   ├── PromotionFormPage.tsx
+│   │   │   ├── ReviewsPage.tsx
+│   │   │   ├── ProfilePage.tsx
+│   │   │   └── SettingsPage.tsx
+│   │   │
+│   │   └── admin/
+│   │       ├── DashboardPage.tsx
+│   │       ├── LoginPage.tsx
+│   │       ├── ForgotPasswordPage.tsx
+│   │       ├── PartnersListPage.tsx
+│   │       ├── PartnerDetailsPage.tsx
+│   │       ├── CustomersListPage.tsx
+│   │       ├── CustomerDetailsPage.tsx
+│   │       ├── TransactionsPage.tsx
+│   │       ├── DisputesPage.tsx
+│   │       ├── ReportsPage.tsx
+│   │       ├── PlatformSettingsPage.tsx
+│   │       ├── ProfilePage.tsx
+│   │       └── SettingsPage.tsx
+│   │
+│   ├── components/
+│   │   ├── customer/
+│   │   │   ├── layout/
+│   │   │   │   ├── CustomerLayout.tsx
+│   │   │   │   ├── CustomerSidebar.tsx
+│   │   │   │   ├── CustomerNavbar.tsx
+│   │   │   │   └── CustomerFooter.tsx
+│   │   │   ├── ui/
+│   │   │   │   ├── MetricCard.tsx
+│   │   │   │   ├── ActionTile.tsx
+│   │   │   │   ├── BookingCard.tsx
+│   │   │   │   ├── SearchFilters.tsx
+│   │   │   │   ├── Badge.tsx
+│   │   │   │   └── SectionHeader.tsx
+│   │   │   └── features/
+│   │   │       ├── RecentActivity.tsx
+│   │   │       ├── RecommendedStays.tsx
+│   │   │       ├── NearbyDining.tsx
+│   │   │       ├── WalletStatus.tsx
+│   │   │       └── TripTimeline.tsx
+│   │   │
+│   │   ├── accommodation/
+│   │   │   ├── layout/
+│   │   │   │   ├── AccommodationLayout.tsx
+│   │   │   │   ├── AccommodationSidebar.tsx
+│   │   │   │   ├── AccommodationNavbar.tsx
+│   │   │   │   └── AccommodationFooter.tsx
+│   │   │   ├── ui/
+│   │   │   │   ├── MetricCard.tsx
+│   │   │   │   ├── InsightCard.tsx
+│   │   │   │   ├── PropertyCard.tsx
+│   │   │   │   ├── RoomCard.tsx
+│   │   │   │   ├── StatusBadge.tsx
+│   │   │   │   └── SectionHeader.tsx
+│   │   │   └── features/
+│   │   │       ├── OccupancyChart.tsx
+│   │   │       ├── RevenueOverview.tsx
+│   │   │       ├── UpcomingCheckins.tsx
+│   │   │       ├── PropertyPerformance.tsx
+│   │   │       └── OperationalAlerts.tsx
+│   │   │
+│   │   ├── restaurant/
+│   │   │   ├── layout/
+│   │   │   │   ├── RestaurantLayout.tsx
+│   │   │   │   ├── RestaurantSidebar.tsx
+│   │   │   │   ├── RestaurantNavbar.tsx
+│   │   │   │   └── RestaurantFooter.tsx
+│   │   │   ├── ui/
+│   │   │   │   ├── OrderCard.tsx
+│   │   │   │   ├── MenuItemCard.tsx
+│   │   │   │   ├── StatusBadge.tsx
+│   │   │   │   ├── MetricCard.tsx
+│   │   │   │   └── SectionHeader.tsx
+│   │   │   └── features/
+│   │   │       ├── OrderTracker.tsx
+│   │   │       ├── MenuGrid.tsx
+│   │   │       ├── RevenueSummary.tsx
+│   │   │       └── PopularItems.tsx
+│   │   │
+│   │   ├── transport/
+│   │   │   ├── layout/
+│   │   │   │   ├── TransportLayout.tsx
+│   │   │   │   ├── TransportSidebar.tsx
+│   │   │   │   ├── TransportNavbar.tsx
+│   │   │   │   └── TransportFooter.tsx
+│   │   │   ├── ui/
+│   │   │   │   ├── RideCard.tsx
+│   │   │   │   ├── VehicleCard.tsx
+│   │   │   │   ├── StatusBadge.tsx
+│   │   │   │   ├── MetricCard.tsx
+│   │   │   │   └── SectionHeader.tsx
+│   │   │   └── features/
+│   │   │       ├── LiveMap.tsx
+│   │   │       ├── RideTracker.tsx
+│   │   │       ├── FleetOverview.tsx
+│   │   │       └── DriverStatus.tsx
+│   │   │
+│   │   └── admin/
+│   │       ├── layout/
+│   │       │   ├── AdminLayout.tsx
+│   │       │   ├── AdminSidebar.tsx
+│   │       │   ├── AdminNavbar.tsx
+│   │       │   └── AdminFooter.tsx
+│   │       ├── ui/
+│   │       │   ├── MetricCard.tsx
+│   │       │   ├── StatsCard.tsx
+│   │       │   ├── DataTable.tsx
+│   │       │   ├── StatusBadge.tsx
+│   │       │   └── SectionHeader.tsx
+│   │       └── features/
+│   │           ├── RevenueChart.tsx
+│   │           ├── PartnerTable.tsx
+│   │           ├── CustomerTable.tsx
+│   │           ├── DisputeList.tsx
+│   │           └── PlatformHealth.tsx
+│   │
+│   ├── apps/
+│   │   ├── CustomerApp.tsx
+│   │   ├── AccommodationApp.tsx
+│   │   ├── RestaurantApp.tsx
+│   │   ├── TransportApp.tsx
+│   │   └── AdminApp.tsx
+│   │
+│   ├── context/
+│   │   ├── customer/
+│   │   │   ├── AuthContext.tsx
+│   │   │   ├── BookingContext.tsx
+│   │   │   ├── ChatContext.tsx
+│   │   │   └── WalletContext.tsx
+│   │   ├── accommodation/
+│   │   │   ├── AuthContext.tsx
+│   │   │   ├── PropertyContext.tsx
+│   │   │   └── ReservationContext.tsx
+│   │   ├── restaurant/
+│   │   │   ├── AuthContext.tsx
+│   │   │   ├── MenuContext.tsx
+│   │   │   └── OrderContext.tsx
+│   │   ├── transport/
+│   │   │   ├── AuthContext.tsx
+│   │   │   ├── VehicleContext.tsx
+│   │   │   └── RideContext.tsx
+│   │   └── admin/
+│   │       ├── AuthContext.tsx
+│   │       └── DashboardContext.tsx
+│   │
+│   ├── api/
+│   │   ├── axios.ts
+│   │   ├── customer/
+│   │   │   ├── authApi.ts
+│   │   │   ├── bookingApi.ts
+│   │   │   ├── paymentApi.ts
+│   │   │   ├── chatApi.ts
+│   │   │   ├── walletApi.ts
+│   │   │   └── reviewApi.ts
+│   │   ├── accommodation/
+│   │   │   ├── authApi.ts
+│   │   │   ├── propertyApi.ts
+│   │   │   ├── roomApi.ts
+│   │   │   ├── reservationApi.ts
+│   │   │   ├── guestApi.ts
+│   │   │   ├── staffApi.ts
+│   │   │   ├── housekeepingApi.ts
+│   │   │   ├── paymentApi.ts
+│   │   │   ├── promotionApi.ts
+│   │   │   ├── reviewApi.ts
+│   │   │   └── documentApi.ts
+│   │   ├── restaurant/
+│   │   │   ├── authApi.ts
+│   │   │   ├── menuApi.ts
+│   │   │   ├── orderApi.ts
+│   │   │   ├── staffApi.ts
+│   │   │   ├── paymentApi.ts
+│   │   │   ├── promotionApi.ts
+│   │   │   └── reviewApi.ts
+│   │   ├── transport/
+│   │   │   ├── authApi.ts
+│   │   │   ├── vehicleApi.ts
+│   │   │   ├── rideApi.ts
+│   │   │   ├── driverApi.ts
+│   │   │   ├── paymentApi.ts
+│   │   │   ├── promotionApi.ts
+│   │   │   └── reviewApi.ts
+│   │   └── admin/
+│   │       ├── authApi.ts
+│   │       ├── partnerApi.ts
+│   │       ├── customerApi.ts
+│   │       ├── transactionApi.ts
+│   │       ├── disputeApi.ts
+│   │       └── reportApi.ts
+│   │
+│   ├── hooks/
+│   │   ├── customer/
+│   │   │   ├── useAuth.ts
+│   │   │   ├── useBookings.ts
+│   │   │   ├── useChat.ts
+│   │   │   ├── usePayments.ts
+│   │   │   ├── useWallet.ts
+│   │   │   ├── useReviews.ts
+│   │   │   └── useProfile.ts
+│   │   ├── accommodation/
+│   │   │   ├── useAuth.ts
+│   │   │   ├── useProperties.ts
+│   │   │   ├── useRooms.ts
+│   │   │   ├── useReservations.ts
+│   │   │   ├── useGuests.ts
+│   │   │   ├── useStaff.ts
+│   │   │   ├── useHousekeeping.ts
+│   │   │   ├── usePayments.ts
+│   │   │   ├── usePromotions.ts
+│   │   │   ├── useReviews.ts
+│   │   │   └── useDocuments.ts
+│   │   ├── restaurant/
+│   │   │   ├── useAuth.ts
+│   │   │   ├── useMenu.ts
+│   │   │   ├── useOrders.ts
+│   │   │   ├── useStaff.ts
+│   │   │   ├── usePayments.ts
+│   │   │   ├── usePromotions.ts
+│   │   │   └── useReviews.ts
+│   │   ├── transport/
+│   │   │   ├── useAuth.ts
+│   │   │   ├── useVehicles.ts
+│   │   │   ├── useRides.ts
+│   │   │   ├── useDrivers.ts
+│   │   │   ├── usePayments.ts
+│   │   │   ├── usePromotions.ts
+│   │   │   └── useReviews.ts
+│   │   └── admin/
+│   │       ├── useAuth.ts
+│   │       ├── usePartners.ts
+│   │       ├── useCustomers.ts
+│   │       ├── useTransactions.ts
+│   │       ├── useDisputes.ts
+│   │       └── useReports.ts
+│   │
+│   ├── utils/
+│   │   ├── formatCurrency.ts
+│   │   ├── formatDate.ts
+│   │   ├── validators.ts
+│   │   └── helpers.ts
+│   │
+│   ├── types/
+│   │   ├── customer.ts
+│   │   ├── accommodation.ts
+│   │   ├── restaurant.ts
+│   │   ├── transport.ts
+│   │   └── admin.ts
+│   │
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+│
+├── index.html
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+├── tailwind.config.js
+├── postcss.config.js
+└── .gitignore
