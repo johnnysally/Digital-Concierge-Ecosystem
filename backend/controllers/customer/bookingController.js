@@ -1,6 +1,6 @@
 const Booking = require('../../models/customer/Booking');
-const Room = require('../../models/partner/Room');
-const Property = require('../../models/partner/Property');
+const Room = require('../../models/accommodation/Room');
+const Property = require('../../models/accommodation/Property');
 
 const createBooking = async (req, res, next) => {
     try {
