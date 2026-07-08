@@ -1,13 +1,14 @@
-import { apiClient } from "../axiosClient";
-import { Booking } from "../../types/customer";
+import axiosClient from "../axios";
 
-export async function getBookings(): Promise<Booking[]> {
-	const response = await apiClient.get<{ bookings: Booking[] }>("/customer/bookings");
-	return response.data.bookings;
-}
+export const getMyBookings = (params?: any) =>
+	axiosClient.get("/customer/bookings", { params });
 
-export async function createBooking(booking: Booking): Promise<Booking> {
-	const response = await apiClient.post<{ booking: Booking }>("/customer/bookings", booking);
-	return response.data.booking;
-}
+export const getBooking = (id: string) =>
+	axiosClient.get(`/customer/bookings/${id}`);
+
+export const createBooking = (booking: any) =>
+	axiosClient.post("/customer/bookings", booking);
+
+export const cancelBooking = (id: string) =>
+	axiosClient.post(`/customer/bookings/${id}/cancel`);
 

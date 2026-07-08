@@ -1,23 +1,16 @@
-import { apiClient } from "../axiosClient";
-import { User } from "../../types/customer";
+import axiosClient from "../axios";
 
 export interface LoginPayload {
 	email: string;
 	password: string;
 }
 
-export async function login(payload: LoginPayload): Promise<User> {
-	const response = await apiClient.post<{ user: User }>("/auth/login", payload);
-	return response.data.user;
-}
+export const login = (payload: LoginPayload) =>
+	axiosClient.post("/customer/auth/login", payload);
 
-export async function register(payload: LoginPayload): Promise<User> {
-	const response = await apiClient.post<{ user: User }>("/auth/register", payload);
-	return response.data.user;
-}
+export const register = (payload: LoginPayload) =>
+	axiosClient.post("/customer/auth/register", payload);
 
-export async function refreshUser(): Promise<User> {
-	const response = await apiClient.get<{ user: User }>("/auth/me");
-	return response.data.user;
-}
+export const refreshUser = () =>
+	axiosClient.get("/customer/auth/me");
 
