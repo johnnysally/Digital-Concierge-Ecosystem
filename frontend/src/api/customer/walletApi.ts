@@ -1,14 +1,27 @@
-﻿import { apiClient } from "../axiosClient";
-import { WalletTransaction } from "../../types/customer";
+import axiosClient from '../axios';
 
-export async function getWallet(): Promise<{ balance: number; currency: string }> {
-  const response = await apiClient.get<{ balance: number; currency: string }>("/customer/wallet");
-  return response.data;
-}
+export const getWallet = async (): Promise<{ balance: number; currency: string }> => {
+	const res = await axiosClient.get('/customer/wallet');
+	return res.data;
+};
 
-export async function getWalletTransactions(): Promise<WalletTransaction[]> {
-  const response = await apiClient.get<{ transactions: WalletTransaction[] }>(
-    "/customer/wallet/transactions"
-  );
-  return response.data.transactions;
-}
+export const topUp = async (data: { amount: number; method: string }) => {
+	const res = await axiosClient.post('/customer/wallet/topup', data);
+	return res.data;
+};
+
+export const addPaymentMethod = async (data: any) => {
+	const res = await axiosClient.post('/customer/wallet/methods', data);
+	return res.data;
+};
+
+export const removePaymentMethod = async (id: string) => {
+	const res = await axiosClient.delete(`/customer/wallet/methods/${id}`);
+	return res.data;
+};
+
+export const getWalletTransactions = async (): Promise<any[]> => {
+	const res = await axiosClient.get('/customer/wallet/transactions');
+	return res.data.transactions ?? res.data;
+};
+

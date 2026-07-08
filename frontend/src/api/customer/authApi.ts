@@ -5,12 +5,18 @@ export interface LoginPayload {
 	password: string;
 }
 
-export const login = (payload: LoginPayload) =>
-	axiosClient.post("/customer/auth/login", payload);
+export const login = async (payload: LoginPayload) => {
+	const res = await axiosClient.post("/customer/auth/login", payload);
+	return res.data;
+};
 
-export const register = (payload: LoginPayload) =>
-	axiosClient.post("/customer/auth/register", payload);
+export const register = async (payload: LoginPayload) => {
+	const res = await axiosClient.post("/customer/auth/register", payload);
+	return res.data;
+};
 
-export const refreshUser = () =>
-	axiosClient.get("/customer/auth/me");
+export const refreshUser = async () => {
+	const res = await axiosClient.get("/customer/auth/me");
+	return res.data;
+};
 
