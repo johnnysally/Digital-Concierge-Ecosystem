@@ -57,7 +57,9 @@ const CustomerApp = () => {
                                     <Route path="/customer/register" element={<RegisterPage />} />
                                     <Route path="/customer" element={<CustomerLayout />}>
                                         <Route index element={<HomePage />} />
-                                        <Route path="search" element={<AccommodationSearchPage />} />
+                                        <Route path="search" element={<AccommodationSearchPage variant="all" />} />
+                                    <Route path="search/hotels" element={<AccommodationSearchPage variant="hotels" />} />
+                                    <Route path="search/bnbs" element={<AccommodationSearchPage variant="bnbs" />} />
                                         <Route path="food" element={<FoodDeliveryPage />} />
                                         <Route path="transport" element={<TransportDashboardPage />} />
                                         <Route path="promotions" element={<PromotionsPage />} />
