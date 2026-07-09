@@ -33,19 +33,56 @@ const CustomerLayout = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Link
-                    to="/customer"
-                    className={`rounded-full px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-sm ${isDark ? "text-slate-300 hover:bg-slate-800 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"}`}
-                  >
-                    Home
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={toggleTheme}
-                    className={`rounded-full border px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? "border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700" : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"}`}
-                  >
-                    {isDark ? "☀️" : "🌙"}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/customer"
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-sm ${isDark ? "text-slate-300 hover:bg-slate-800 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"}`}
+                    >
+                      Home
+                    </Link>
+                    <Link
+                      to="/customer/profile"
+                      className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? "border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700" : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"}`}
+                      aria-label="Go to profile"
+                    >
+                      <span className="text-base">👤</span>
+                    </Link>
+                  </div>
+
+                  <div className="hidden items-center gap-2 sm:flex">
+                    <Link
+                      to="/customer/search"
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-sm ${isDark ? "text-slate-300 hover:bg-slate-800 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"}`}
+                    >
+                      Search
+                    </Link>
+                    <Link
+                      to="/customer/bookings"
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-sm ${isDark ? "text-slate-300 hover:bg-slate-800 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"}`}
+                    >
+                      Book
+                    </Link>
+                    <Link
+                      to="/customer/support"
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-sm ${isDark ? "text-slate-300 hover:bg-slate-800 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"}`}
+                    >
+                      Support
+                    </Link>
+                    <Link
+                      to="/customer/notifications"
+                      className={`relative rounded-full border px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? "border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700" : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"}`}
+                    >
+                      🔔
+                      <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-rose-500" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={toggleTheme}
+                      className={`rounded-full border px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? "border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700" : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"}`}
+                    >
+                      {isDark ? "☀️" : "🌙"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </header>
