@@ -73,7 +73,7 @@ const CustomerSidebar = ({ onNavigate, className = "" }: CustomerSidebarProps) =
 
   return (
     <aside className={`w-full lg:w-72 lg:shrink-0 ${className}`}>
-      <div className={`flex h-full flex-col overflow-hidden rounded-[24px] border shadow-sm ${isDark ? "border-slate-800 bg-slate-900/95" : "border-gray-200 bg-white"}`}>
+      <div className={`flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[24px] border shadow-sm lg:h-[calc(100vh-2rem)] ${isDark ? "border-slate-800 bg-slate-900/95" : "border-gray-200 bg-white"}`}>
         <div className={`border-b p-6 ${isDark ? "border-slate-800" : "border-gray-100"}`}>
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 via-orange-400 to-amber-300 text-sm font-semibold text-white shadow-sm">
