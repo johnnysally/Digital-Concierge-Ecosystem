@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { Review } from "../../types/customer";
-import { getReviews } from "../../api/customer/reviewApi";
+import { useEffect, useState } from 'react';
+import { Review } from '../../types/customer';
+import { getMyReviews } from '../../api/customer/reviewApi';
 
 const useReviews = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviews, setReviews] = useState<Review[]>([]);
 
-  useEffect(() => {
-    getReviews()
-      .then(setReviews)
-      .catch(() => setReviews([]));
-  }, []);
+    useEffect(() => {
+        getMyReviews()
+            .then((res) => setReviews(res.reviews || []))
+            .catch(() => setReviews([]));
+    }, []);
 
-  return reviews;
+    return reviews;
 };
 
 export default useReviews;

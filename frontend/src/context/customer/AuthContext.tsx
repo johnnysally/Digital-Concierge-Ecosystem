@@ -1,69 +1,63 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { User } from "../../types/customer";
-import { login as loginApi, refreshUser } from "../../api/customer/authApi";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { User } from '../../types/customer';
+import { login as loginApi, getProfile } from '../../api/customer/authApi';
 
 interface AuthContextState {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (payload: { email: string; password: string }) => Promise<void>;
-  logout: () => void;
-  refreshSession: () => Promise<void>;
+    user: User | null;
+    token: string | null;
+    isAuthenticated: boolean;
+    login: (payload: { email: string; password: string }) => Promise<void>;
+    logout: () => void;
+    refreshSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextState | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("digitalsafaris_customer");
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
-  }, []);
+    useEffect(() => {
+        const stored = localStorage.getItem('digitalsafaris_customer');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            setUser(parsed.user);
+            setToken(parsed.token);
+        }
+    }, []);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("digitalsafaris_customer", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("digitalsafaris_customer");
-    }
-  }, [user]);
+    const login = async (payload: { email: string; password: string }) => {
+        const response = await loginApi(payload);
+        localStorage.setItem('digitalsafaris_customer', JSON.stringify({ user: response.user, token: response.token }));
+        setUser(response.user);
+        setToken(response.token);
+    };
 
-  const login = async (payload: { email: string; password: string }) => {
-    const response = await loginApi(payload);
-    setUser(response);
-  };
+    const logout = () => {
+        localStorage.removeItem('digitalsafaris_customer');
+        setUser(null);
+        setToken(null);
+    };
 
-  const logout = () => {
-    setUser(null);
-  };
+    const refreshSession = async () => {
+        const refreshedUser = await getProfile();
+        const stored = localStorage.getItem('digitalsafaris_customer');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            localStorage.setItem('digitalsafaris_customer', JSON.stringify({ user: refreshedUser, token: parsed.token }));
+        }
+        setUser(refreshedUser);
+    };
 
-  const refreshSession = async () => {
-    if (!user) return;
-    const refreshedUser = await refreshUser();
-    setUser(refreshedUser);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: Boolean(user),
-        login,
-        logout,
-        refreshSession,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={{ user, token, isAuthenticated: Boolean(user && token), login, logout, refreshSession }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
+    const context = useContext(AuthContext);
+    if (!context) throw new Error('useAuth must be used within AuthProvider');
+    return context;
 };

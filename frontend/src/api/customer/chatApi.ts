@@ -1,12 +1,11 @@
-﻿import { apiClient } from "../axiosClient";
-import { Message } from "../../types/customer";
+import { api } from '../axios';
 
-export async function getMessages(): Promise<Message[]> {
-  const response = await apiClient.get<{ messages: Message[] }>("/customer/chat");
-  return response.data.messages;
-}
+export const sendMessage = async (data: { message: string }) => {
+    const res = await api.post('/customer/chat', data);
+    return res.data;
+};
 
-export async function sendMessage(body: string): Promise<Message> {
-  const response = await apiClient.post<{ message: Message }>("/customer/chat", { body });
-  return response.data.message;
-}
+export const getChatHistory = async (params?: any) => {
+    const res = await api.get('/customer/chat', { params });
+    return res.data;
+};

@@ -10,9 +10,12 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem('customerToken') || localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    const stored = localStorage.getItem('digitalsafaris_customer');
+    if (stored) {
+        const { token } = JSON.parse(stored);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     }
     return config;
 });
@@ -21,12 +24,12 @@ axiosClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            localStorage.removeItem('customerToken');
-            localStorage.removeItem('token');
-            window.location.href = '/login';
+            localStorage.removeItem('digitalsafaris_customer');
+            window.location.href = '/customer/login';
         }
         return Promise.reject(error);
     }
 );
 
+export const api = axiosClient;
 export default axiosClient;

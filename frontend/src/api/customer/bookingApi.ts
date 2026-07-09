@@ -1,25 +1,21 @@
-import axiosClient from "../axios";
+import { api } from '../axios';
+
+export const createBooking = async (data: any) => {
+    const res = await api.post('/customer/bookings', data);
+    return res.data;
+};
 
 export const getMyBookings = async (params?: any) => {
-	const res = await axiosClient.get("/customer/bookings", { params });
-	return res.data;
+    const res = await api.get('/customer/bookings', { params });
+    return res.data;
 };
 
 export const getBooking = async (id: string) => {
-	const res = await axiosClient.get(`/customer/bookings/${id}`);
-	return res.data;
+    const res = await api.get(`/customer/bookings/${id}`);
+    return res.data;
 };
 
-export const createBooking = async (booking: any) => {
-	const res = await axiosClient.post("/customer/bookings", booking);
-	return res.data;
+export const cancelBooking = async (id: string, reason?: string) => {
+    const res = await api.put(`/customer/bookings/${id}/cancel`, { reason });
+    return res.data;
 };
-
-export const cancelBooking = async (id: string) => {
-	const res = await axiosClient.post(`/customer/bookings/${id}/cancel`);
-	return res.data;
-};
-
-// Backwards-compat: alias getBookings for existing imports
-export const getBookings = getMyBookings;
-

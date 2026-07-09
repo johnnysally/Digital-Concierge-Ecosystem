@@ -1,15 +1,21 @@
-﻿import { apiClient } from "../axiosClient";
+import { api } from '../axios';
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const createStripePayment = async (data: any) => {
+    const res = await api.post('/customer/payments/stripe', data);
+    return res.data;
+};
 
-export async function getPaymentHistory() {
-  await delay(450);
-  const response = await apiClient.get("/customer/payments");
-  return response.data.payments;
-}
+export const confirmStripePayment = async (data: any) => {
+    const res = await api.post('/customer/payments/stripe/confirm', data);
+    return res.data;
+};
 
-export async function processPayment(payload: { amount: number; method: string }) {
-  await delay(500);
-  const response = await apiClient.post("/customer/payments", payload);
-  return response.data;
-}
+export const initiateMpesaPayment = async (data: any) => {
+    const res = await api.post('/customer/payments/mpesa', data);
+    return res.data;
+};
+
+export const getPaymentHistory = async (params?: any) => {
+    const res = await api.get('/customer/payments', { params });
+    return res.data;
+};
