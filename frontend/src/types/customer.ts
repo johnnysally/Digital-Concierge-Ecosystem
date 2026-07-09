@@ -26,9 +26,18 @@ export interface Booking {
 
 export interface Message {
   id: string;
-  sender: "customer" | "concierge" | "provider";
+  sender: "customer" | "concierge" | "provider" | "ai";
   body: string;
   timestamp: string;
+}
+
+export interface Payment {
+  id: string;
+  amount: number;
+  currency: string;
+  status: "completed" | "pending" | "failed" | "refunded";
+  description: string;
+  createdAt: string;
 }
 
 export interface WalletTransaction {

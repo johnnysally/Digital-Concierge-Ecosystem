@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from '../context/customer/AuthContext';
 import { BookingProvider } from '../context/customer/BookingContext';
 import { ChatProvider } from '../context/customer/ChatContext';
 import { WalletProvider } from '../context/customer/WalletContext';
+import { ThemeProvider } from '../context/customer/ThemeContext';
 import CustomerLayout from '../components/customer/layout/CustomerLayout';
 import HomePage from '../pages/customer/HomePage';
 import LoginPage from '../pages/customer/LoginPage';
@@ -49,6 +50,7 @@ const CustomerApp = () => {
                 <BookingProvider>
                     <ChatProvider>
                         <WalletProvider>
+                            <ThemeProvider>
                             <BrowserRouter>
                                 <Routes>
                                     <Route path="/customer/login" element={<LoginPage />} />
@@ -72,6 +74,7 @@ const CustomerApp = () => {
                                     <Route path="*" element={<Navigate to="/customer" replace />} />
                                 </Routes>
                             </BrowserRouter>
+                            </ThemeProvider>
                         </WalletProvider>
                     </ChatProvider>
                 </BookingProvider>
