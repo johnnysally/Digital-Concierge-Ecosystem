@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { register, login, getProfile, updateProfile, changePassword, forgotPassword, resetPassword, addAddress, deleteAddress } = require('../../controllers/customer/customerController');
+const { register, login, getProfile, updateProfile, changePassword, forgotPassword, resetPassword, addAddress, deleteAddress, deleteAccount } = require('../../controllers/customer/customerController');
 const customerAuth = require('../../middleware/customer/customerAuth');
 const { registerRules, loginRules } = require('../../middleware/customer/customerValidate');
 const { authLimiter } = require('../../middleware/global/rateLimiter');
@@ -15,5 +15,6 @@ router.put('/profile', updateProfile);
 router.put('/change-password', changePassword);
 router.post('/addresses', addAddress);
 router.delete('/addresses/:id', deleteAddress);
+router.delete('/account', deleteAccount);
 
 module.exports = router;

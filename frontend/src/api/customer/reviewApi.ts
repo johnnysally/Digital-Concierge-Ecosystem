@@ -14,3 +14,13 @@ export const getMyReviews = async () => {
     const res = await api.get('/customer/reviews');
     return res.data;
 };
+
+export const updateReview = async (id: string, data: any) => {
+    const res = await api.put(`/customer/reviews/${id}`, data);
+    return res.data;
+};
+
+export const deleteReview = async (id: string) => {
+    const res = await api.delete(`/customer/reviews/${id}`);
+    return res.data;
+};

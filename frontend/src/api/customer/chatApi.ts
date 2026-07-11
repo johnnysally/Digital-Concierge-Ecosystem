@@ -9,3 +9,8 @@ export const getChatHistory = async (params?: any) => {
     const res = await api.get('/customer/chat', { params });
     return res.data;
 };
+
+export const deleteMessage = async (id: string) => {
+    const res = await api.delete(`/customer/chat/${id}`);
+    return res.data;
+};

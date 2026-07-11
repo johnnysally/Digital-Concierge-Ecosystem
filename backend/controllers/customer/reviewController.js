@@ -50,4 +50,23 @@ const getMyReviews = async (req, res, next) => {
     }
 };
 
-module.exports = { createReview, getPropertyReviews, getMyReviews };
+const updateReview = async (req, res, next) => {
+    try {
+        const review = await Review.findOneAndUpdate(
+            { _id: req.params.id, customer: req.user._id },
+            { rating: req.body.rating, comment: req.body.comment },
+            { new: true, runValidators: true }
+        );
+        if (!review) return res.status(404).json({ success: false, message: 'Review not found' });
+        res.json({ success: true, review });
+    } catch (error) { next(error); }
+};
+
+const deleteReview = async (req, res, next) => {
+    try {
+        const review = await Review.findOneAndDelete({ _id: req.params.id, customer: req.user._id });
+        if (!review) return res.status(404).json({ success: false, message: 'Review not found' });
+        res.json({ success: true, message: 'Review deleted' });
+    } catch (error) { next(error); }
+};
+module.exports = { createReview, getPropertyReviews, getMyReviews, updateReview, deleteReview };

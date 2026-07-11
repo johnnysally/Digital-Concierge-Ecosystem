@@ -1,236 +1,153 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import MetricCard from "../../components/customer/ui/MetricCard";
-import SectionHeader from "../../components/customer/ui/SectionHeader";
-import CalendarPlanner from "../../components/customer/ui/CalendarPlanner";
-import ChartCard from "../../components/customer/ui/ChartCard";
-import Pie3DCard from "../../components/customer/ui/Pie3DCard";
-import { useAuth } from "../../context/customer/AuthContext";
-import { useBookingContext } from "../../context/customer/BookingContext";
-import { useWalletContext } from "../../context/customer/WalletContext";
-import { useTheme } from "../../context/customer/ThemeContext";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import MetricCard from '../../components/customer/ui/MetricCard';
+import SectionHeader from '../../components/customer/ui/SectionHeader';
+import { useAuth } from '../../context/customer/AuthContext';
+import { useBookingContext } from '../../context/customer/BookingContext';
+import { useWalletContext } from '../../context/customer/WalletContext';
+import { formatCurrency } from '../../utils/formatCurrency';
+import { api } from '../../api/axios';
 
 const HomePage = () => {
-  const { user } = useAuth();
-  const { bookings } = useBookingContext();
-  const { balance, currency } = useWalletContext();
-  const { theme, isDark, toggleTheme } = useTheme();
-  const pageShellClass = isDark
-    ? "h-full bg-slate-950 p-4 text-slate-100"
-    : "h-full bg-gradient-to-b from-white to-slate-50 p-4 text-slate-900";
-  const surfaceClass = isDark
-    ? "rounded-[24px] border border-slate-800 bg-slate-900/95 p-4 shadow-[0_20px_70px_-25px_rgba(2,6,23,0.85)] backdrop-blur-xl"
-    : "rounded-[24px] border border-white/60 bg-white/70 p-4 shadow-[0_12px_45px_-20px_rgba(15,23,42,0.28)] backdrop-blur-xl";
-  const softSurfaceClass = isDark
-    ? "rounded-[20px] border border-slate-800 bg-slate-950/90 p-3 shadow-[0_12px_35px_-18px_rgba(2,6,23,0.8)] backdrop-blur-sm"
-    : "rounded-[20px] border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-sm";
-  const heroClass = isDark
-    ? "overflow-hidden rounded-[30px] border border-slate-800 bg-slate-900/95 p-5 text-white shadow-[0_20px_70px_-25px_rgba(2,6,23,0.85)] backdrop-blur-xl sm:p-6"
-    : "overflow-hidden rounded-[30px] border border-slate-200/80 bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-800/90 p-5 text-white shadow-[0_20px_70px_-25px_rgba(15,23,42,0.65)] backdrop-blur-xl sm:p-6";
-  const panelClass = isDark
-    ? "rounded-[24px] border border-slate-800 bg-slate-900/95 p-4 shadow-[0_12px_45px_-20px_rgba(2,6,23,0.85)] backdrop-blur-xl sm:p-5"
-    : "rounded-[24px] border border-white/60 bg-white/70 p-4 shadow-[0_12px_45px_-20px_rgba(15,23,42,0.28)] backdrop-blur-xl sm:p-5";
-  const mutedTextClass = isDark ? "text-slate-400" : "text-slate-600";
-  const headingTextClass = isDark ? "text-slate-100" : "text-slate-900";
-  const bodyTextClass = isDark ? "text-slate-300" : "text-slate-600";
-  const pillClass = isDark
-    ? "rounded-full border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-sm font-medium text-slate-200"
-    : "rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-sm font-medium text-slate-700";
+    const { user } = useAuth();
+    const { bookings } = useBookingContext();
+    const { balance, currency } = useWalletContext();
+    const [recommendations, setRecommendations] = useState<any[]>([]);
+    const [stats, setStats] = useState({ trips: 0, points: 0, recommendations: 0 });
+    const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
-  const activityData = React.useMemo(() => {
-    const base = bookings.length > 0 ? [44, 58, 68, 74, 81, 76, 86, 92, 88, 91, 95, 98] : [24, 36, 42, 48, 54, 60, 66, 72, 74, 78, 82, 88];
-    return base;
-  }, [bookings.length]);
+    useEffect(() => {
+        const stored = localStorage.getItem('digitalsafaris_customer');
+        if (!stored) return;
 
-  const activityBreakdown = React.useMemo(() => {
-    const confirmedStays = Math.max(4, bookings.length * 2 + 1);
-    const diningOrders = Math.max(3, Math.min(16, bookings.length + 4));
-    const transportRides = Math.max(2, Math.min(14, Math.floor(bookings.length / 2) + 3));
-    const supportChats = Math.max(2, Math.min(10, bookings.length + 1));
+        api.get('/customer/dashboard')
+            .then((res) => {
+                setStats(res.data.stats || stats);
+                setRecommendations(res.data.recommendations || []);
+                setRecentActivity(res.data.recentActivity || []);
+            })
+            .catch(() => {});
+    }, []);
 
-    return [
-      { label: "Confirmed stays", value: confirmedStays, color: "#f97316" },
-      { label: "Dining orders", value: diningOrders, color: "#f43f5e" },
-      { label: "Transport rides", value: transportRides, color: "#34d399" },
-      { label: "Support chats", value: supportChats, color: "#60a5fa" },
-    ];
-  }, [bookings.length]);
+    const nextBooking = bookings?.[0] || null;
 
-  const nextBooking = React.useMemo(() => {
-    return bookings?.[0] ?? null;
-  }, [bookings]);
+    return (
+        <div className="space-y-8">
+            <SectionHeader
+                title={`Welcome back, ${user?.firstName ?? 'traveler'}`}
+                subtitle="Your DigitalSafaris travel hub is ready for your next journey."
+            />
 
-  return (
-    <div className={`${pageShellClass} space-y-3 sm:space-y-4`}>
-      <SectionHeader title={`Welcome back, ${user?.firstName ?? "traveler"}`} subtitle="Your DigitalSafaris travel hub is ready for your next journey." />
-
-      <div className={heroClass}>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Customer dashboard</p>
-            <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">Your travel world, beautifully organized</h2>
-            <p className="mt-2 text-sm text-slate-300 sm:text-base">Stay updates, intelligent suggestions, and your next plans in one calm, elegant workspace.</p>
-          </div>
-
-          <div className="flex flex-col items-start gap-2 sm:items-end">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="rounded-full border border-white/20 bg-white/10 px-3 py-2 text-sm font-semibold text-white backdrop-blur-lg transition hover:bg-white/20"
-            >
-              {isDark ? "☀️ Light mode" : "🌙 Dark mode"}
-            </button>
-            <div className="rounded-2xl border border-white/20 bg-white/10 p-3 backdrop-blur-lg">
-            <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-slate-300">Wallet</p>
-                  <p className="mt-1 text-xl font-semibold">{currency} {balance.toLocaleString()}</p>
-                </div>
-                <Link to="/customer/wallet" className="rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(16,185,129,0.7)]">Top up</Link>
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <MetricCard label="Active Trips" value={bookings.length || stats.trips} icon="🧳" />
+                <MetricCard label="Loyalty Points" value={user?.loyaltyPoints || stats.points || 0} icon="🏅" />
+                <MetricCard label="Wallet" value={formatCurrency(balance, currency)} icon="💰" />
+                <MetricCard label="Recommendations" value={recommendations.length || 'New'} icon="💡" />
             </div>
-          </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+                <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-6">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <span>🤖</span> AI Concierge
+                    </h3>
+                    <p className="mt-3 text-sm text-slate-400">
+                        Plan your next adventure, get personalized accommodations, dining and transport recommendations.
+                    </p>
+                    <Link to="/customer/chat"
+                        className="mt-6 inline-flex rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500">
+                        Start chat
+                    </Link>
+                </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-6">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <span>👤</span> Your Profile
+                    </h3>
+                    <p className="mt-3 text-sm text-slate-400">
+                        Manage your bookings, wallet, payment methods, and travel preferences in one place.
+                    </p>
+                    <Link to="/customer/profile"
+                        className="mt-6 inline-flex rounded-2xl bg-slate-700 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-600">
+                        View profile
+                    </Link>
+                </div>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-3">
+                <Link to="/customer/search"
+                    className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-6 hover:border-emerald-700 transition-colors group">
+                    <h3 className="text-lg font-semibold text-white">🏨 Discover Stays</h3>
+                    <p className="mt-3 text-sm text-slate-400">Explore hotels, BnBs, and apartments across the DigitalSafaris network.</p>
+                    <span className="mt-4 inline-flex items-center text-sm font-semibold text-emerald-400 group-hover:text-emerald-300">
+                        Search now →
+                    </span>
+                </Link>
+
+                <Link to="/customer/food"
+                    className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-6 hover:border-orange-700 transition-colors group">
+                    <h3 className="text-lg font-semibold text-white">🍽️ Food Delivery</h3>
+                    <p className="mt-3 text-sm text-slate-400">Browse restaurant menus and order from partner kitchens in real time.</p>
+                    <span className="mt-4 inline-flex items-center text-sm font-semibold text-orange-400 group-hover:text-orange-300">
+                        Order food →
+                    </span>
+                </Link>
+
+                <Link to="/customer/transport"
+                    className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-6 hover:border-sky-700 transition-colors group">
+                    <h3 className="text-lg font-semibold text-white">🚗 Transport</h3>
+                    <p className="mt-3 text-sm text-slate-400">Request a ride, manage transfers and track drivers on DigitalSafaris.</p>
+                    <span className="mt-4 inline-flex items-center text-sm font-semibold text-sky-400 group-hover:text-sky-300">
+                        Book transport →
+                    </span>
+                </Link>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
+                        <Link to="/customer/notifications" className="text-xs text-sky-400 hover:text-sky-300">View all</Link>
+                    </div>
+                    <div className="mt-4 space-y-3">
+                        {recentActivity.length > 0 ? recentActivity.slice(0, 3).map((activity: any, i: number) => (
+                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-950 text-sm">
+                                <span className="text-lg">{activity.icon || '📌'}</span>
+                                <div className="flex-1">
+                                    <p className="text-slate-300">{activity.title}</p>
+                                    <p className="text-xs text-slate-500">{activity.time}</p>
+                                </div>
+                            </div>
+                        )) : (
+                            <p className="text-sm text-slate-500">No recent activity.</p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-white">Upcoming Stays</h3>
+                        <Link to="/customer/bookings" className="text-xs text-sky-400 hover:text-sky-300">View all</Link>
+                    </div>
+                    <div className="mt-4 space-y-3">
+                        {bookings.length > 0 ? bookings.slice(0, 3).map((b: any) => (
+                            <div key={b.id || b._id} className="p-3 rounded-xl bg-slate-950 text-sm">
+                                <p className="text-slate-300 font-medium">{b.propertyName || 'Upcoming stay'}</p>
+                                <p className="text-xs text-slate-500 mt-1">{b.checkIn} - {b.checkOut}</p>
+                                <span className={`text-xs mt-1 inline-block px-2 py-0.5 rounded-full ${b.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                                    {b.status}
+                                </span>
+                            </div>
+                        )) : (
+                            <div className="p-4 rounded-xl bg-slate-950 text-center">
+                                <p className="text-sm text-slate-500">No upcoming stays</p>
+                                <Link to="/customer/search" className="mt-2 inline-block text-xs text-sky-400 hover:text-sky-300">Book your first trip</Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div className={surfaceClass}>
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h3 className={`text-base font-semibold ${headingTextClass}`}>Today at a glance</h3>
-            <p className={`text-sm ${bodyTextClass}`}>A quick view of your most important travel signals.</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <div className={pillClass}>{bookings.length} active trips</div>
-            <div className={pillClass}>{currency} {balance.toLocaleString()} wallet</div>
-            <div className={pillClass}>{user?.loyaltyPoints ?? 0} rewards</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-[1.3fr_0.7fr]">
-        <div className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            <MetricCard label="Current trips" value={String(bookings.length)} icon={<span>🧳</span>} className={isDark ? "border-slate-800 bg-slate-900/80" : "border-slate-200/70 bg-white/90"} />
-            <MetricCard label="Loyalty points" value={String(user?.loyaltyPoints ?? 0)} icon={<span>🏅</span>} className={isDark ? "border-slate-800 bg-slate-900/80" : "border-slate-200/70 bg-white/90"} />
-            <MetricCard label="Recommendations" value="Personalized" icon={<span>💡</span>} className={isDark ? "border-slate-800 bg-slate-900/80" : "border-slate-200/70 bg-white/90"} />
-          </div>
-
-          <div className={panelClass}>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h3 className={`text-base font-semibold ${headingTextClass}`}>Trip intelligence</h3>
-                <p className={`text-sm ${bodyTextClass}`}>A compact view of your activity and travel mix.</p>
-              </div>
-              <div className={isDark ? "inline-flex items-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-900/70 px-2.5 py-1.5 text-sm font-semibold text-emerald-200" : "inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1.5 text-sm font-medium text-emerald-700"}>
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Live activity
-              </div>
-            </div>
-
-            <div className="mt-4 grid gap-3 xl:grid-cols-[1.05fr_0.95fr]">
-              <div className={isDark ? "rounded-[20px] border border-slate-800 bg-slate-950/80 p-2 backdrop-blur-sm" : "rounded-[20px] border border-white/60 bg-slate-50/70 p-2 backdrop-blur-sm"}>
-                <ChartCard title="Activity" data={activityData} theme={theme} />
-              </div>
-
-              <div className="space-y-3">
-                <div className={softSurfaceClass}>
-                  <Pie3DCard title="Service Mix" slices={activityBreakdown} theme={theme} />
-                </div>
-
-                <div className={isDark ? "rounded-[20px] border border-slate-800 bg-gradient-to-br from-cyan-600/20 to-violet-600/20 p-3 text-white shadow-[0_10px_25px_-12px_rgba(2,6,23,0.8)]" : "rounded-[20px] border border-gray-100 bg-gradient-to-br from-cyan-500 to-violet-600 p-3 text-white shadow-[0_10px_25px_-12px_rgba(99,102,241,0.7)]"}>
-                  <p className="text-sm font-medium opacity-90">Next stay</p>
-                  <p className="mt-2 text-base font-semibold">{nextBooking?.propertyName ?? "No upcoming stay"}</p>
-                  <p className="mt-1 text-sm opacity-80">{nextBooking?.checkIn ?? "Book your next adventure"}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={panelClass}>
-            <div className="flex items-center justify-between">
-              <h3 className={`text-base font-semibold ${headingTextClass}`}>Recent activity</h3>
-              <Link to="/customer/chat" className={`text-sm font-semibold ${isDark ? "text-cyan-300" : "text-cyan-600"}`}>Ask AI</Link>
-            </div>
-            <ul className="mt-3 space-y-2">
-              <li className={isDark ? "flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 p-2.5" : "flex items-center gap-3 rounded-xl border border-gray-100 bg-white/80 p-2.5"}>
-                <div className={isDark ? "flex h-8 w-8 items-center justify-center rounded-full bg-slate-800" : "flex h-8 w-8 items-center justify-center rounded-full bg-gray-50"}>📩</div>
-                <div className="flex-1">
-                  <p className={`text-sm font-semibold ${headingTextClass}`}>Payment received</p>
-                  <p className={`text-xs ${bodyTextClass}`}>Your wallet was credited with USD 120</p>
-                </div>
-                <div className={isDark ? "text-xs text-slate-500" : "text-xs text-slate-500"}>2h ago</div>
-              </li>
-              <li className={isDark ? "flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 p-2.5" : "flex items-center gap-3 rounded-xl border border-gray-100 bg-white/80 p-2.5"}>
-                <div className={isDark ? "flex h-8 w-8 items-center justify-center rounded-full bg-slate-800" : "flex h-8 w-8 items-center justify-center rounded-full bg-gray-50"}>🛎️</div>
-                <div className="flex-1">
-                  <p className={`text-sm font-semibold ${headingTextClass}`}>Booking confirmed</p>
-                  <p className={`text-xs ${bodyTextClass}`}>3-night stay confirmed at Safari Inn</p>
-                </div>
-                <div className={isDark ? "text-xs text-slate-500" : "text-xs text-slate-500"}>1d ago</div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className={surfaceClass}>
-            <h4 className={`text-sm font-semibold ${headingTextClass}`}>Plan your next trip</h4>
-            <div className="mt-3 flex flex-col gap-2">
-              <Link to="/customer/search" className="rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 px-3 py-2 text-center text-sm font-semibold text-white">Find stays</Link>
-              <Link to="/customer/food" className={isDark ? "rounded-xl bg-slate-800 px-3 py-2 text-center text-sm font-semibold text-slate-100" : "rounded-xl bg-gray-100 px-3 py-2 text-center text-sm font-semibold text-slate-900"}>Order food</Link>
-              <Link to="/customer/transport" className={isDark ? "rounded-xl bg-slate-800 px-3 py-2 text-center text-sm font-semibold text-slate-100" : "rounded-xl bg-gray-100 px-3 py-2 text-center text-sm font-semibold text-slate-900"}>Request ride</Link>
-            </div>
-          </div>
-
-          <div className={surfaceClass}>
-            <h4 className={`text-sm font-semibold ${headingTextClass}`}>Upcoming stays</h4>
-            <div className="mt-3 space-y-2">
-              {bookings.length > 0 ? (
-                bookings.slice(0, 3).map((b: any, i: number) => (
-                  <div key={i} className={isDark ? "rounded-xl border border-slate-800 bg-slate-950/60 p-2.5" : "rounded-xl border border-gray-100 bg-white/80 p-2.5"}>
-                    <p className={`font-semibold ${headingTextClass}`}>{b.propertyName ?? "Upcoming stay"}</p>
-                    <p className={`text-xs ${bodyTextClass}`}>{b.checkIn ?? "Date unknown"}</p>
-                  </div>
-                ))
-              ) : (
-                <div className={isDark ? "rounded-xl bg-slate-800/70 p-2.5 text-sm text-slate-300" : "rounded-xl bg-gray-50 p-2.5 text-sm text-slate-600"}>No upcoming trips</div>
-              )}
-            </div>
-          </div>
-
-          <div className={isDark ? "rounded-[24px] border border-emerald-900/40 bg-gradient-to-br from-emerald-950/80 via-cyan-950/70 to-slate-900/80 p-4 shadow-[0_12px_45px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl" : "rounded-[24px] border border-emerald-100/80 bg-gradient-to-br from-emerald-50/80 via-cyan-50/80 to-white/80 p-4 shadow-[0_12px_45px_-20px_rgba(16,185,129,0.3)] backdrop-blur-xl"}>
-            <h4 className={`text-sm font-semibold ${headingTextClass}`}>Rewards insight</h4>
-            <p className={`mt-2 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>You are {user?.loyaltyPoints ?? 0} points away from premium offers and better perks.</p>
-            <div className={`mt-3 h-2 rounded-full ${isDark ? "bg-slate-800" : "bg-white"}`}>
-              <div className="h-2 w-3/4 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500" />
-            </div>
-          </div>
-
-          <div className={surfaceClass}>
-            <div className="flex items-center justify-between">
-              <h4 className={`text-sm font-semibold ${headingTextClass}`}>Smart assistant</h4>
-              <span className={`rounded-full px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${isDark ? "bg-cyan-500/20 text-cyan-200" : "bg-cyan-100 text-cyan-700"}`}>New</span>
-            </div>
-            <p className={`mt-2 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>Get instant suggestions for dining, transport, and stay upgrades based on your plans.</p>
-            <Link to="/customer/chat" className="mt-3 inline-flex items-center rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white">Open assistant</Link>
-          </div>
-
-          <div className={surfaceClass}>
-            <div className="flex items-center justify-between">
-              <h4 className={`text-sm font-semibold ${headingTextClass}`}>Priority support</h4>
-              <span className={`rounded-full px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${isDark ? "bg-emerald-500/20 text-emerald-200" : "bg-emerald-100 text-emerald-700"}`}>24/7</span>
-            </div>
-            <p className={`mt-2 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>Escalate issues fast and get concierge help for bookings, delays, or special requests.</p>
-            <Link to="/customer/chat" className="mt-3 inline-flex items-center rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-3 py-2 text-sm font-semibold text-white">Contact support</Link>
-          </div>
-        </div>
-      </div>
-
-      <div className={`${surfaceClass} sm:p-6`}>
-        <CalendarPlanner />
-      </div>
-    </div>
-  );
+    );
 };
 
 export default HomePage;

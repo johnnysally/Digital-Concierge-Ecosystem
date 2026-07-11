@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { User } from '../../types/customer';
 import { login as loginApi, getProfile } from '../../api/customer/authApi';
 
@@ -6,6 +6,7 @@ interface AuthContextState {
     user: User | null;
     token: string | null;
     isAuthenticated: boolean;
+    loading: boolean;
     login: (payload: { email: string; password: string }) => Promise<void>;
     logout: () => void;
     refreshSession: () => Promise<void>;
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextState | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const stored = localStorage.getItem('digitalsafaris_customer');
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(parsed.user);
             setToken(parsed.token);
         }
+        setLoading(false);
     }, []);
 
     const login = async (payload: { email: string; password: string }) => {
@@ -50,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, isAuthenticated: Boolean(user && token), login, logout, refreshSession }}>
+        <AuthContext.Provider value={{ user, token, isAuthenticated: Boolean(user && token), loading, login, logout, refreshSession }}>
             {children}
         </AuthContext.Provider>
     );

@@ -39,4 +39,12 @@ const getChatHistory = async (req, res, next) => {
     }
 };
 
-module.exports = { sendMessage, getChatHistory };
+const deleteMessage = async (req, res, next) => {
+    try {
+        const message = await ChatMessage.findOneAndDelete({ _id: req.params.id, customer: req.user._id });
+        if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
+        res.json({ success: true, message: 'Message deleted' });
+    } catch (error) { next(error); }
+};
+
+module.exports = { sendMessage, getChatHistory, deleteMessage };

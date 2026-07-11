@@ -19,3 +19,8 @@ export const getPaymentHistory = async (params?: any) => {
     const res = await api.get('/customer/payments', { params });
     return res.data;
 };
+
+export const getPayment = async (id: string) => {
+    const res = await api.get(`/customer/payments/${id}`);
+    return res.data;
+};

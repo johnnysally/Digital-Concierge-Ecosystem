@@ -1,5 +1,3 @@
-// services/emailTemplates.js
-
 const { CUSTOMER_URL, PARTNER_URL } = require('../config/env');
 
 const styles = {
@@ -48,57 +46,53 @@ const wrap = (content, title) => `
 </body>
 </html>`;
 
-// ═══════════════════════════════════════
-// CUSTOMER EMAILS
-// ═══════════════════════════════════════
-
-const customerWelcome = (name, verificationLink) => ({
+const customerWelcome = (user, verificationLink) => ({
     subject: 'Welcome to Digital Concierge',
     htmlBody: wrap(`
         <div style="${styles.body}">
-            <h1 style="${styles.title}">Welcome, ${name}! 🎉</h1>
+            <h1 style="${styles.title}">Welcome, ${user.firstName}! 🎉</h1>
             <p style="${styles.text}">Your travel command center is ready. Book stays, order food, arrange transport, and chat with your AI concierge — all from one dashboard.</p>
             <a href="${verificationLink}" style="${styles.button}">Verify Your Email</a>
             <p style="${styles.text};margin-top:24px">Or copy this link:<br><span style="color:#0f172a;font-size:13px">${verificationLink}</span></p>
         </div>
     `, 'Welcome'),
-    textBody: `Welcome to Digital Concierge, ${name}! Verify your email: ${verificationLink}`,
+    textBody: `Welcome to Digital Concierge, ${user.firstName}! Verify your email: ${verificationLink}`,
 });
 
-const customerPasswordReset = (name, resetLink) => ({
+const customerPasswordReset = (user, resetLink) => ({
     subject: 'Reset Your Password',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Password Reset</h1>
-            <p style="${styles.text}">Hi ${name}, you requested a password reset. Click below to create a new password. This link expires in 10 minutes.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, you requested a password reset. Click below to create a new password. This link expires in 10 minutes.</p>
             <a href="${resetLink}" style="${styles.button}">Reset Password</a>
             <p style="${styles.text};margin-top:24px;color:#ef4444;font-size:13px">If you didn't request this, ignore this email.</p>
         </div>
     `, 'Password Reset'),
-    textBody: `Hi ${name}, reset your password: ${resetLink}`,
+    textBody: `Hi ${user.firstName}, reset your password: ${resetLink}`,
 });
 
-const customerOTP = (name, otp) => ({
+const customerOTP = (user, otp) => ({
     subject: 'Your Verification Code',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Verification Code</h1>
-            <p style="${styles.text}">Hi ${name}, use the code below to complete verification. It expires in 5 minutes.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, use the code below to complete verification. It expires in 5 minutes.</p>
             <div style="text-align:center;margin:32px 0">
                 <span style="font-size:36px;font-weight:700;letter-spacing:8px;color:#0f172a;background:#f8fafc;padding:16px 32px;border-radius:12px">${otp}</span>
             </div>
         </div>
     `, 'Verification'),
-    textBody: `Hi ${name}, your verification code is: ${otp}`,
+    textBody: `Hi ${user.firstName}, your verification code is: ${otp}`,
 });
 
-const customerBookingConfirmed = (name, booking) => ({
+const customerBookingConfirmed = (user, booking) => ({
     subject: `Booking Confirmed — ${booking.propertyName}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeSuccess}">Confirmed</span>
             <h1 style="${styles.title};margin-top:16px">Booking Confirmed</h1>
-            <p style="${styles.text}">Great news, ${name}! Your stay at <strong>${booking.propertyName}</strong> is confirmed.</p>
+            <p style="${styles.text}">Great news, ${user.firstName}! Your stay at <strong>${booking.propertyName}</strong> is confirmed.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Property</span><span style="${styles.detailValue}">${booking.propertyName}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Check-in</span><span style="${styles.detailValue}">${booking.checkIn}</span></div>
@@ -112,13 +106,13 @@ const customerBookingConfirmed = (name, booking) => ({
     textBody: `Booking Confirmed! ${booking.propertyName} — ${booking.checkIn} to ${booking.checkOut}. Total: $${booking.totalAmount}`,
 });
 
-const customerBookingCancelled = (name, booking) => ({
+const customerBookingCancelled = (user, booking) => ({
     subject: `Booking Cancelled — ${booking.propertyName}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeDanger}">Cancelled</span>
             <h1 style="${styles.title};margin-top:16px">Booking Cancelled</h1>
-            <p style="${styles.text}">Hi ${name}, your booking at <strong>${booking.propertyName}</strong> has been cancelled.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, your booking at <strong>${booking.propertyName}</strong> has been cancelled.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Refund Amount</span><span style="${styles.detailValue}">$${booking.refundAmount || booking.totalAmount}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Refund Status</span><span style="${styles.detailValue}">${booking.refundStatus || 'Processing'}</span></div>
@@ -128,13 +122,13 @@ const customerBookingCancelled = (name, booking) => ({
     textBody: `Booking at ${booking.propertyName} cancelled. Refund: $${booking.refundAmount || booking.totalAmount}`,
 });
 
-const customerBookingReminder = (name, booking) => ({
+const customerBookingReminder = (user, booking) => ({
     subject: `Reminder: Check-in Tomorrow — ${booking.propertyName}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeInfo}">Reminder</span>
             <h1 style="${styles.title};margin-top:16px">Check-in Tomorrow!</h1>
-            <p style="${styles.text}">Hi ${name}, your stay at <strong>${booking.propertyName}</strong> starts tomorrow.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, your stay at <strong>${booking.propertyName}</strong> starts tomorrow.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Date</span><span style="${styles.detailValue}">${booking.checkIn}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Address</span><span style="${styles.detailValue}">${booking.propertyAddress}</span></div>
@@ -145,13 +139,13 @@ const customerBookingReminder = (name, booking) => ({
     textBody: `Reminder: Check-in tomorrow at ${booking.propertyName}, ${booking.propertyAddress}`,
 });
 
-const customerPaymentReceived = (name, payment) => ({
+const customerPaymentReceived = (user, payment) => ({
     subject: `Payment Received — $${payment.amount}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeSuccess}">Paid</span>
             <h1 style="${styles.title};margin-top:16px">Payment Received</h1>
-            <p style="${styles.text}">Thanks, ${name}! Your payment has been processed.</p>
+            <p style="${styles.text}">Thanks, ${user.firstName}! Your payment has been processed.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Amount</span><span style="${styles.detailValue}">$${payment.amount}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Method</span><span style="${styles.detailValue}">${payment.method}</span></div>
@@ -162,26 +156,26 @@ const customerPaymentReceived = (name, payment) => ({
     textBody: `Payment of $${payment.amount} received via ${payment.method}. Reference: ${payment.reference}`,
 });
 
-const customerPaymentFailed = (name, payment) => ({
+const customerPaymentFailed = (user, payment) => ({
     subject: 'Payment Failed — Action Required',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeDanger}">Failed</span>
             <h1 style="${styles.title};margin-top:16px">Payment Failed</h1>
-            <p style="${styles.text}">Hi ${name}, your payment of <strong>$${payment.amount}</strong> via ${payment.method} didn't go through. Please update your payment method and try again.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, your payment of <strong>$${payment.amount}</strong> via ${payment.method} didn't go through. Please update your payment method and try again.</p>
             <a href="${CUSTOMER_URL}/wallet" style="${styles.button}">Update Payment Method</a>
         </div>
     `, 'Payment Failed'),
     textBody: `Payment of $${payment.amount} failed. Update your payment method: ${CUSTOMER_URL}/wallet`,
 });
 
-const customerRefund = (name, refund) => ({
+const customerRefund = (user, refund) => ({
     subject: `Refund Processed — $${refund.amount}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeInfo}">Refund</span>
             <h1 style="${styles.title};margin-top:16px">Refund Processed</h1>
-            <p style="${styles.text}">Hi ${name}, a refund of <strong>$${refund.amount}</strong> has been initiated.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, a refund of <strong>$${refund.amount}</strong> has been initiated.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Amount</span><span style="${styles.detailValue}">$${refund.amount}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Method</span><span style="${styles.detailValue}">${refund.method}</span></div>
@@ -192,13 +186,13 @@ const customerRefund = (name, refund) => ({
     textBody: `Refund of $${refund.amount} processed via ${refund.method}. ETA: ${refund.eta || '5-7 business days'}`,
 });
 
-const customerPromotionApplied = (name, promo) => ({
+const customerPromotionApplied = (user, promo) => ({
     subject: `Promo Applied — ${promo.code}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeSuccess}">Savings</span>
             <h1 style="${styles.title};margin-top:16px">Promotion Applied!</h1>
-            <p style="${styles.text}">Hi ${name}, promo code <strong>${promo.code}</strong> has been applied to your booking.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, promo code <strong>${promo.code}</strong> has been applied to your booking.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Discount</span><span style="${styles.detailValue}">${promo.discount}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">You Saved</span><span style="${styles.detailValue}">$${promo.saved}</span></div>
@@ -208,25 +202,25 @@ const customerPromotionApplied = (name, promo) => ({
     textBody: `Promo ${promo.code} applied! Discount: ${promo.discount}, Saved: $${promo.saved}`,
 });
 
-const customerReviewRequest = (name, booking) => ({
+const customerReviewRequest = (user, booking) => ({
     subject: `How was your stay at ${booking.propertyName}?`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">How was your stay?</h1>
-            <p style="${styles.text}">Hi ${name}, we hope you enjoyed your stay at <strong>${booking.propertyName}</strong>. Share your experience to help other travelers.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, we hope you enjoyed your stay at <strong>${booking.propertyName}</strong>. Share your experience to help other travelers.</p>
             <a href="${CUSTOMER_URL}/reviews/new?booking=${booking.id}" style="${styles.button}">Write a Review</a>
         </div>
     `, 'Review Request'),
     textBody: `How was your stay at ${booking.propertyName}? Leave a review: ${CUSTOMER_URL}/reviews/new?booking=${booking.id}`,
 });
 
-const customerWalletTopup = (name, amount, balance) => ({
+const customerWalletTopup = (user, amount, balance) => ({
     subject: `Wallet Topped Up — $${amount}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeSuccess}">Top-up</span>
             <h1 style="${styles.title};margin-top:16px">Wallet Topped Up</h1>
-            <p style="${styles.text}">Hi ${name}, <strong>$${amount}</strong> has been added to your wallet.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, <strong>$${amount}</strong> has been added to your wallet.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Amount Added</span><span style="${styles.detailValue}">$${amount}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">New Balance</span><span style="${styles.detailValue}">$${balance}</span></div>
@@ -236,61 +230,88 @@ const customerWalletTopup = (name, amount, balance) => ({
     textBody: `$${amount} added to your wallet. New balance: $${balance}`,
 });
 
-const customerAccountChanged = (name, changes) => ({
+const customerAccountChanged = (user, changes) => ({
     subject: 'Account Updated',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeInfo}">Security</span>
             <h1 style="${styles.title};margin-top:16px">Account Updated</h1>
-            <p style="${styles.text}">Hi ${name}, your account <strong>${changes}</strong> was changed. If this wasn't you, contact support immediately.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, your account <strong>${changes}</strong> was changed. If this wasn't you, contact support immediately.</p>
         </div>
     `, 'Account Updated'),
-    textBody: `Hi ${name}, your ${changes} was updated. If this wasn't you, contact support.`,
+    textBody: `Hi ${user.firstName}, your ${changes} was updated. If this wasn't you, contact support.`,
 });
 
-// ═══════════════════════════════════════
-// PARTNER EMAILS
-// ═══════════════════════════════════════
-
-const partnerWelcome = (name, verificationLink) => ({
+const partnerWelcome = (user, verificationLink) => ({
     subject: 'Welcome to Digital Concierge Partner Portal',
     htmlBody: wrap(`
         <div style="${styles.body}">
-            <h1 style="${styles.title}">Welcome, ${name}! 🏨</h1>
+            <h1 style="${styles.title}">Welcome, ${user.firstName}! 🏨</h1>
             <p style="${styles.text}">Your partner dashboard is ready. Manage properties, rooms, reservations, staff, and track revenue — all in one place.</p>
             <a href="${verificationLink}" style="${styles.button}">Verify Your Email</a>
         </div>
     `, 'Partner Welcome'),
-    textBody: `Welcome to Digital Concierge Partner Portal, ${name}! Verify: ${verificationLink}`,
+    textBody: `Welcome to Digital Concierge Partner Portal, ${user.firstName}! Verify: ${verificationLink}`,
 });
 
-const partnerPasswordReset = (name, resetLink) => ({
+const partnerRegistrationReceived = (user) => ({
+    subject: 'Registration Received - Pending Approval',
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeWarning}">Pending</span>
+            <h1 style="${styles.title};margin-top:16px">Registration Received</h1>
+            <p style="${styles.text}">Hi ${user.firstName}, your registration for <strong>${user.businessName}</strong> has been received and is pending admin approval.</p>
+            <p style="${styles.text}">Our team will review your application within 24-48 hours. You'll receive another email once your account is approved.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Business</span><span style="${styles.detailValue}">${user.businessName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Status</span><span style="${styles.detailValue}">Pending Approval</span></div>
+            </div>
+        </div>
+    `, 'Registration Received'),
+    textBody: `Hi ${user.firstName}, your registration for ${user.businessName} is pending admin approval. We'll notify you once approved.`,
+});
+
+const partnerApproved = (user) => ({
+    subject: 'Account Approved - Start Operating! 🎉',
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeSuccess}">Approved</span>
+            <h1 style="${styles.title};margin-top:16px">Account Approved!</h1>
+            <p style="${styles.text}">Congratulations ${user.firstName}! Your business <strong>${user.businessName}</strong> has been approved and is now active.</p>
+            <p style="${styles.text}">You can now login to your partner dashboard and start managing your operations.</p>
+            <a href="${PARTNER_URL || process.env.PARTNER_URL || 'http://localhost:3000'}/login" style="${styles.button}">Go to Dashboard</a>
+        </div>
+    `, 'Account Approved'),
+    textBody: `Congratulations ${user.firstName}! Your business ${user.businessName} has been approved. Login to start operating.`,
+});
+
+const partnerPasswordReset = (user, resetLink) => ({
     subject: 'Reset Your Partner Password',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Password Reset</h1>
-            <p style="${styles.text}">Hi ${name}, click below to reset your partner account password.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, click below to reset your partner account password.</p>
             <a href="${resetLink}" style="${styles.button}">Reset Password</a>
         </div>
     `, 'Password Reset'),
-    textBody: `Hi ${name}, reset your password: ${resetLink}`,
+    textBody: `Hi ${user.firstName}, reset your password: ${resetLink}`,
 });
 
-const partnerOTP = (name, otp) => ({
+const partnerOTP = (user, otp) => ({
     subject: 'Your Verification Code',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Verification Code</h1>
-            <p style="${styles.text}">Hi ${name}, use this code to continue:</p>
+            <p style="${styles.text}">Hi ${user.firstName}, use this code to continue:</p>
             <div style="text-align:center;margin:32px 0">
                 <span style="font-size:36px;font-weight:700;letter-spacing:8px;color:#0f172a;background:#f8fafc;padding:16px 32px;border-radius:12px">${otp}</span>
             </div>
         </div>
     `, 'Verification'),
-    textBody: `Hi ${name}, your code: ${otp}`,
+    textBody: `Hi ${user.firstName}, your code: ${otp}`,
 });
 
-const partnerNewReservation = (name, reservation) => ({
+const partnerNewReservation = (user, reservation) => ({
     subject: `New Reservation — ${reservation.propertyName}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
@@ -310,7 +331,7 @@ const partnerNewReservation = (name, reservation) => ({
     textBody: `New reservation: ${reservation.guestName} — ${reservation.propertyName}, ${reservation.checkIn} to ${reservation.checkOut}. $${reservation.totalAmount}`,
 });
 
-const partnerReservationCancelled = (name, reservation) => ({
+const partnerReservationCancelled = (user, reservation) => ({
     subject: `Reservation Cancelled — ${reservation.propertyName}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
@@ -326,7 +347,7 @@ const partnerReservationCancelled = (name, reservation) => ({
     textBody: `Reservation cancelled: ${reservation.guestName} — ${reservation.propertyName}`,
 });
 
-const partnerNewReview = (name, review) => ({
+const partnerNewReview = (user, review) => ({
     subject: `New Review — ${review.propertyName} — ${review.rating}/5`,
     htmlBody: wrap(`
         <div style="${styles.body}">
@@ -343,13 +364,13 @@ const partnerNewReview = (name, review) => ({
     textBody: `New ${review.rating}-star review from ${review.guestName} for ${review.propertyName}: "${review.comment}"`,
 });
 
-const partnerPayout = (name, payout) => ({
+const partnerPayout = (user, payout) => ({
     subject: `Payout Processed — $${payout.amount}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeSuccess}">Payout</span>
             <h1 style="${styles.title};margin-top:16px">Payout Processed</h1>
-            <p style="${styles.text}">Hi ${name}, a payout of <strong>$${payout.amount}</strong> has been sent.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, a payout of <strong>$${payout.amount}</strong> has been sent.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Amount</span><span style="${styles.detailValue}">$${payout.amount}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Method</span><span style="${styles.detailValue}">${payout.method}</span></div>
@@ -360,7 +381,7 @@ const partnerPayout = (name, payout) => ({
     textBody: `Payout of $${payout.amount} processed via ${payout.method}. Reference: ${payout.reference}`,
 });
 
-const partnerPropertyPublished = (name, property) => ({
+const partnerPropertyPublished = (user, property) => ({
     subject: `Property Published — ${property.name}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
@@ -373,25 +394,25 @@ const partnerPropertyPublished = (name, property) => ({
     textBody: `Your property "${property.name}" is now live!`,
 });
 
-const partnerStaffInvite = (name, inviteLink, role) => ({
+const partnerStaffInvite = (user, inviteLink, role) => ({
     subject: `You've been invited as ${role}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Team Invitation</h1>
-            <p style="${styles.text}">Hi ${name}, you've been invited to join as <strong>${role}</strong>. Click below to set up your account.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, you've been invited to join as <strong>${role}</strong>. Click below to set up your account.</p>
             <a href="${inviteLink}" style="${styles.button}">Accept Invitation</a>
         </div>
     `, 'Team Invitation'),
     textBody: `You've been invited as ${role}. Accept: ${inviteLink}`,
 });
 
-const partnerHousekeepingAssigned = (name, task) => ({
+const partnerHousekeepingAssigned = (user, task) => ({
     subject: `Task Assigned — Room ${task.roomNumber}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeWarning}">New Task</span>
             <h1 style="${styles.title};margin-top:16px">Housekeeping Task Assigned</h1>
-            <p style="${styles.text}">Hi ${name}, a new task has been assigned to you.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, a new task has been assigned to you.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Room</span><span style="${styles.detailValue}">${task.roomNumber}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Task</span><span style="${styles.detailValue}">${task.type}</span></div>
@@ -402,7 +423,7 @@ const partnerHousekeepingAssigned = (name, task) => ({
     textBody: `New task: Room ${task.roomNumber} — ${task.type} (${task.priority})`,
 });
 
-const partnerPromotionCreated = (name, promo) => ({
+const partnerPromotionCreated = (user, promo) => ({
     subject: `Promotion Live — ${promo.code}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
@@ -419,28 +440,24 @@ const partnerPromotionCreated = (name, promo) => ({
     textBody: `Promo ${promo.code} is live! Discount: ${promo.discount}, Expires: ${promo.expiry}`,
 });
 
-const partnerAccountChanged = (name, changes) => ({
+const partnerAccountChanged = (user, changes) => ({
     subject: 'Partner Account Updated',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeInfo}">Security</span>
             <h1 style="${styles.title};margin-top:16px">Account Updated</h1>
-            <p style="${styles.text}">Hi ${name}, your account <strong>${changes}</strong> was changed. If this wasn't you, contact support immediately.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, your account <strong>${changes}</strong> was changed. If this wasn't you, contact support immediately.</p>
         </div>
     `, 'Account Updated'),
-    textBody: `Hi ${name}, your ${changes} was updated. If this wasn't you, contact support.`,
+    textBody: `Hi ${user.firstName}, your ${changes} was updated. If this wasn't you, contact support.`,
 });
 
-// ═══════════════════════════════════════
-// NOTIFICATION DIGEST
-// ═══════════════════════════════════════
-
-const dailyDigest = (name, summary) => ({
+const dailyDigest = (user, summary) => ({
     subject: `Your Daily Digest — ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Daily Digest</h1>
-            <p style="${styles.text}">Hi ${name}, here's your summary for today.</p>
+            <p style="${styles.text}">Hi ${user.firstName}, here's your summary for today.</p>
             ${summary.map(item => `
                 <div style="${styles.card}">
                     <span style="${styles.badge};${item.badgeStyle || styles.badgeInfo}">${item.badge}</span>
@@ -450,7 +467,7 @@ const dailyDigest = (name, summary) => ({
             `).join('')}
         </div>
     `, 'Daily Digest'),
-    textBody: `Hi ${name}, here's your daily summary.`,
+    textBody: `Hi ${user.firstName}, here's your daily summary.`,
 });
 
 module.exports = {
@@ -471,6 +488,8 @@ module.exports = {
     },
     partner: {
         welcome: partnerWelcome,
+        registrationReceived: partnerRegistrationReceived,
+        approved: partnerApproved,
         passwordReset: partnerPasswordReset,
         otp: partnerOTP,
         newReservation: partnerNewReservation,

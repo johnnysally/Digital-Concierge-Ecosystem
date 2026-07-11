@@ -4,18 +4,14 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const axiosClient = axios.create({
     baseURL: API_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
 });
 
 axiosClient.interceptors.request.use((config) => {
     const stored = localStorage.getItem('digitalsafaris_customer');
     if (stored) {
         const { token } = JSON.parse(stored);
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        if (token) config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });

@@ -37,3 +37,18 @@ export const changePassword = async (data: { currentPassword: string; newPasswor
     const res = await api.put('/customer/auth/change-password', data);
     return res.data;
 };
+
+export const forgotPassword = async (data: { email: string }) => {
+    const res = await api.post('/customer/auth/forgot-password', data);
+    return res.data;
+};
+
+export const resetPassword = async (data: { token: string; newPassword: string }) => {
+    const res = await api.post('/customer/auth/reset-password', data);
+    return res.data;
+};
+
+export const deleteAccount = async () => {
+    const res = await api.delete('/customer/auth/account');
+    return res.data;
+};

@@ -5,13 +5,23 @@ export const getWallet = async () => {
     return res.data;
 };
 
-export const topUp = async (data: { amount: number; method: string }) => {
+export const topUp = async (data: { amount: number; method: string; phone?: string }) => {
     const res = await api.post('/customer/wallet/topup', data);
+    return res.data;
+};
+
+export const confirmTopUp = async (data: { paymentIntentId?: string; checkoutRequestId?: string }) => {
+    const res = await api.post('/customer/wallet/topup/confirm', data);
     return res.data;
 };
 
 export const addPaymentMethod = async (data: any) => {
     const res = await api.post('/customer/wallet/methods', data);
+    return res.data;
+};
+
+export const updatePaymentMethod = async (id: string, data: any) => {
+    const res = await api.put(`/customer/wallet/methods/${id}`, data);
     return res.data;
 };
 
