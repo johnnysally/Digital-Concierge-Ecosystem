@@ -82,7 +82,7 @@ const LoginPage = () => {
             </form>
 
             <div className="mt-6 text-center text-sm text-slate-500">
-              New here? <Link to="/customer/register" className="font-semibold text-cyan-300 hover:text-cyan-200">Create your account</Link>
+              New here? <Link to="/register" className="font-semibold text-cyan-300 hover:text-cyan-200">Create your account</Link>
             </div>
           </div>
         </div>

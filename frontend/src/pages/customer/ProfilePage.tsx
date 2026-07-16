@@ -60,7 +60,7 @@ const ProfilePage = () => {
         try {
             await api.delete('/customer/auth/account');
             logout();
-            navigate('/customer/login');
+            navigate('/login');
         } catch {
             setMessage('Failed to delete account.');
             setShowDeleteConfirm(false);
@@ -197,11 +197,11 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            {user?.savedAddresses?.length > 0 && (
+            {user?.savedAddresses?.length ? (
                 <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
                     <h3 className="text-lg font-semibold text-white mb-4">Saved Addresses</h3>
                     <div className="grid gap-3 sm:grid-cols-2">
-                        {user.savedAddresses.map((addr: any, i: number) => (
+                        {user.savedAddresses?.map((addr: any, i: number) => (
                             <div key={i} className="rounded-xl border border-slate-800 bg-slate-950 p-4 text-sm text-slate-300">
                                 <p className="font-medium">{addr.label}</p>
                                 <p className="text-slate-500 mt-1">{addr.street}, {addr.city}</p>
@@ -209,7 +209,7 @@ const ProfilePage = () => {
                         ))}
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
     );
 };

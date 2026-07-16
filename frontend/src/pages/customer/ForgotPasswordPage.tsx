@@ -38,7 +38,7 @@ const ForgotPasswordPage = () => {
                 {submitted ? (
                     <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-6 text-center">
                         <p className="text-emerald-400 text-sm">Instructions have been sent to <strong>{email}</strong> if an account exists.</p>
-                        <Link to="/customer/login" className="mt-4 inline-block text-sm text-sky-400 hover:text-sky-300">← Back to Login</Link>
+                        <Link to="/login" className="mt-4 inline-block text-sm text-sky-400 hover:text-sky-300">← Back to Login</Link>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -64,7 +64,7 @@ const ForgotPasswordPage = () => {
                 )}
 
                 <div className="mt-6 text-center text-sm text-slate-500">
-                    Remember your password? <Link to="/customer/login" className="font-semibold text-white hover:text-sky-300">Sign in</Link>
+                    Remember your password? <Link to="/login" className="font-semibold text-white hover:text-sky-300">Sign in</Link>
                 </div>
             </div>
         </div>

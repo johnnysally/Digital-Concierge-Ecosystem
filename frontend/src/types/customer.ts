@@ -1,15 +1,25 @@
 export type CustomerRole = "customer" | "guest";
 
 export interface User {
-  id: string;
+  id?: string;
+  _id?: string;
   firstName: string;
   lastName: string;
   email: string;
   phone?: string;
   avatarUrl?: string;
   role: CustomerRole;
-  loyaltyPoints: number;
-  currency: string;
+  loyaltyPoints?: number;
+  currency?: string;
+  language?: string;
+  savedAddresses?: Array<{ label?: string; street?: string; city?: string }>;
+  preferences?: {
+    notifications?: {
+      email?: boolean;
+      sms?: boolean;
+      push?: boolean;
+    };
+  };
 }
 
 export interface Booking {

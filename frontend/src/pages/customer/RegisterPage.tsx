@@ -108,7 +108,7 @@ const RegisterPage = () => {
                         </form>
 
                         <div className="mt-6 text-center text-sm text-slate-500">
-                            Already have an account? <Link to="/customer/login" className="font-semibold text-emerald-300 hover:text-emerald-200">Sign in</Link>
+                            Already have an account? <Link to="/login" className="font-semibold text-emerald-300 hover:text-emerald-200">Sign in</Link>
                         </div>
                     </div>
                 </div>

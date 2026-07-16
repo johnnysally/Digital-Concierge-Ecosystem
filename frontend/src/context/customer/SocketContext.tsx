@@ -25,7 +25,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
         s.on('connect', () => {
             setConnected(true);
-            s.emit('join', user._id);
+            const userId = user.id ?? (user as { _id?: string })._id;
+            if (userId) {
+                s.emit('join', userId);
+            }
         });
 
         s.on('disconnect', () => setConnected(false));
