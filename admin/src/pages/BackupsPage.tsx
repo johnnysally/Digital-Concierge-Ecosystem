@@ -100,8 +100,8 @@ const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                 </div>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <p className="text-xs text-slate-500 uppercase tracking-wider">Auto Backup</p>
                     <select value={settings.backup_auto_enabled ? 'true' : 'false'}
                         onChange={(e) => handleSettingsUpdate('backup_auto_enabled', e.target.value === 'true')}
@@ -110,7 +110,7 @@ const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                         <option value="false">Disabled</option>
                     </select>
                 </div>
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <p className="text-xs text-slate-500 uppercase tracking-wider">Frequency</p>
                     <select value={settings.backup_frequency || 'daily'}
                         onChange={(e) => handleSettingsUpdate('backup_frequency', e.target.value)}
@@ -120,7 +120,7 @@ const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                         <option value="monthly">Monthly</option>
                     </select>
                 </div>
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <p className="text-xs text-slate-500 uppercase tracking-wider">Email Backup</p>
                     <select value={settings.backup_email_enabled ? 'true' : 'false'}
                         onChange={(e) => handleSettingsUpdate('backup_email_enabled', e.target.value === 'true')}
@@ -129,7 +129,7 @@ const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                         <option value="false">Disabled</option>
                     </select>
                 </div>
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <p className="text-xs text-slate-500 uppercase tracking-wider">Retention</p>
                     <input type="number" value={settings.backup_retention_days || 30}
                         onChange={(e) => handleSettingsUpdate('backup_retention_days', +e.target.value)}
@@ -138,7 +138,7 @@ const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                 </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
                 <button onClick={handleCreate} disabled={creating}
                     className="rounded-xl bg-primary-600 px-5 py-3 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-50">
                     {creating ? 'Creating...' : '🔄 Create Backup Now'}
@@ -150,19 +150,19 @@ const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                 <input ref={fileInputRef} type="file" accept=".json" onChange={handleUpload} className="hidden" />
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <h2 className="text-lg font-semibold mb-4">Backup History ({backups.length})</h2>
                 {backups.length === 0 ? (
                     <p className="text-slate-400 text-sm py-8 text-center">No backups yet. Create your first backup.</p>
                 ) : (
                     <div className="space-y-2">
                         {backups.map((b) => (
-                            <div key={b.filename} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 group">
+                            <div key={b.filename} className="flex flex-col gap-3 rounded-3xl bg-slate-50 p-4 dark:bg-slate-800/50 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <p className="font-medium text-sm font-mono">{b.filename}</p>
                                     <p className="text-xs text-slate-500 mt-1">{b.size} &middot; {new Date(b.createdAt).toLocaleString()}</p>
                                 </div>
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex flex-wrap items-center gap-1">
                                     <button onClick={() => handleDownload(b.filename)}
                                         className="rounded-lg px-3 py-2 text-xs font-medium text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20">Download</button>
                                     <button onClick={() => { setShowEmailInput(b.filename); setEmailTo(settings.backup_email_address || ''); }}

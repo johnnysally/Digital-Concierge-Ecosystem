@@ -7,18 +7,32 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = React.createContext<ThemeContextValue | undefined>(undefined);
+const STORAGE_KEY = "customer-dashboard-theme";
+
+const resolveTheme = (): "light" | "dark" => {
+  if (typeof window === "undefined") return "light";
+
+  const savedTheme = window.localStorage.getItem(STORAGE_KEY);
+  if (savedTheme === "dark" || savedTheme === "light") {
+    return savedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = React.useState<"light" | "dark">(() => {
-    if (typeof window !== "undefined") {
-      const savedTheme = window.localStorage.getItem("customer-dashboard-theme");
-      if (savedTheme === "dark" || savedTheme === "light") return savedTheme;
-    }
-    return "light";
-  });
+  const [theme, setTheme] = React.useState<"light" | "dark">(resolveTheme);
 
   React.useEffect(() => {
-    window.localStorage.setItem("customer-dashboard-theme", theme);
+    if (typeof window === "undefined") return;
+
+    window.localStorage.setItem(STORAGE_KEY, theme);
+
+    const root = document.documentElement;
+    root.classList.toggle("customer-theme-dark", theme === "dark");
+    root.classList.toggle("customer-theme-light", theme === "light");
+    root.setAttribute("data-customer-theme", theme);
+    root.style.colorScheme = theme;
   }, [theme]);
 
   const value = React.useMemo(

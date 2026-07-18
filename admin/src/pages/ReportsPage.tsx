@@ -27,7 +27,7 @@ const ReportsPage = () => {
         <div className="space-y-8">
             <SectionHeader title="Reports" subtitle="Platform analytics, revenue trends, and performance insights" />
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <MetricCard label="Total Partners" value={stats?.totalPartners || 0} icon="🏨" />
                 <MetricCard label="Total Customers" value={stats?.totalCustomers || 0} icon="👥" />
                 <MetricCard label="Properties" value={stats?.totalProperties || 0} icon="🏘️" />
@@ -35,22 +35,36 @@ const ReportsPage = () => {
                 <MetricCard label="Revenue" value={formatCurrency(stats?.totalRevenue || 0)} icon="💰" />
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-1">Revenue Trend</h2>
-                    <p className="text-sm text-slate-500 mb-6">Daily revenue over the last 7 days</p>
-                    <RevenueChart />
+            <div className="grid gap-6 xl:grid-cols-2">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Revenue Trend</h2>
+                            <p className="text-sm text-slate-500">Daily revenue over the last 7 days</p>
+                        </div>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-800 dark:text-slate-300">Trend</span>
+                    </div>
+                    <div className="mt-6">
+                        <RevenueChart />
+                    </div>
                 </div>
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-1">Platform Overview</h2>
-                    <p className="text-sm text-slate-500 mb-6">System-wide metrics</p>
-                    <PlatformHealth />
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Platform Overview</h2>
+                            <p className="text-sm text-slate-500">System-wide metrics</p>
+                        </div>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-800 dark:text-slate-300">Overview</span>
+                    </div>
+                    <div className="mt-6">
+                        <PlatformHealth />
+                    </div>
                 </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-4">📊 Quick Stats</h2>
+            <div className="grid gap-6 xl:grid-cols-3">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">📊 Quick Stats</h2>
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                             <span className="text-slate-500">Total Revenue</span>
@@ -71,8 +85,8 @@ const ReportsPage = () => {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-4">👥 User Growth</h2>
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">👥 User Growth</h2>
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                             <span className="text-slate-500">Total Customers</span>
@@ -89,8 +103,8 @@ const ReportsPage = () => {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-4">📈 Export Reports</h2>
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">📈 Export Reports</h2>
                     <p className="text-sm text-slate-500 mb-4">Download detailed reports for your records.</p>
                     <div className="space-y-2">
                         <button className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-3 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">

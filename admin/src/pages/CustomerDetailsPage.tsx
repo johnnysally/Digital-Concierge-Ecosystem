@@ -82,7 +82,7 @@ const CustomerDetailsPage = () => {
                 <StatsCard title="Joined" value={formatDate(customer.createdAt)} />
                 <StatsCard title="Status" value={customer.isActive ? 'Active' : 'Suspended'} />
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
                 {customer.isActive ? (
                     <button onClick={handleSuspend} disabled={actionLoading}
                         className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">Suspend</button>
@@ -94,12 +94,12 @@ const CustomerDetailsPage = () => {
                     className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600">Delete</button>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Bookings ({bookings.length})</h2>
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                    <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Bookings ({bookings.length})</h2>
                     <DataTable columns={bookingColumns} data={bookings} loading={false} />
                 </div>
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Payments ({payments.length})</h2>
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                    <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Payments ({payments.length})</h2>
                     <DataTable columns={paymentColumns} data={payments} loading={false} />
                 </div>
             </div>

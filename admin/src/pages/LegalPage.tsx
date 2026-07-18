@@ -48,22 +48,22 @@ const LegalPage = () => {
                     {message}
                 </div>
             )}
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap overflow-x-auto pb-2">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
-                        className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${activeTab === tab.key ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+                        className={`min-w-[10rem] whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${activeTab === tab.key ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
                     >
                         <span className="mr-2">{tab.icon}</span>
                         {tab.label}
                     </button>
                 ))}
             </div>
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                <div className="flex items-center justify-between mb-4">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
                     <div>
-                        <h2 className="text-lg font-semibold">{tabs.find(t => t.key === activeTab)?.label}</h2>
+                        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{tabs.find(t => t.key === activeTab)?.label}</h2>
                         {lastUpdated && <p className="text-xs text-slate-500 mt-1">Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>}
                     </div>
                     <button onClick={handleSave} disabled={saving}
@@ -72,12 +72,12 @@ const LegalPage = () => {
                     </button>
                 </div>
                 {loading ? (
-                    <div className="h-64 bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse" />
+                    <div className="h-72 bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse" />
                 ) : (
                     <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        className="w-full h-[500px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-sm font-mono text-slate-900 dark:text-white outline-none focus:border-primary-500 resize-y"
+                        className="w-full min-h-[320px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-sm font-mono text-slate-900 dark:text-white outline-none focus:border-primary-500 resize-y sm:min-h-[520px]"
                         placeholder="Enter HTML content..."
                     />
                 )}

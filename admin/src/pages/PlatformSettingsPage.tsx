@@ -95,7 +95,7 @@ const PlatformSettingsPage = () => {
                     <button
                         key={cat.key}
                         onClick={() => setActiveCategory(cat.key)}
-                        className={`rounded-xl px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                        className={`min-w-[10rem] whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                             activeCategory === cat.key
                                 ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -107,8 +107,8 @@ const PlatformSettingsPage = () => {
                 ))}
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                <h2 className="text-lg font-semibold capitalize mb-1">{activeCategory} Settings</h2>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                <h2 className="text-lg font-semibold capitalize mb-1 text-slate-900 dark:text-white">{activeCategory} Settings</h2>
                 <p className="text-sm text-slate-500 mb-6">Manage all {activeCategory} related configurations</p>
 
                 <div className="space-y-2">
@@ -118,22 +118,22 @@ const PlatformSettingsPage = () => {
                         currentSettings.map((setting: any) => (
                             <div
                                 key={setting.key}
-                                className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+                                className="group flex flex-col gap-3 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/50 dark:hover:bg-slate-800 hover:bg-slate-100 transition-colors sm:flex-row sm:items-center sm:justify-between"
                             >
-                                <div className="flex-1 min-w-0 mr-4">
+                                <div className="flex-1 min-w-0">
                                     <p className="font-medium text-sm capitalize text-slate-900 dark:text-white">
                                         {setting.key.replace(/_/g, ' ')}
                                     </p>
                                     <p className="text-xs text-slate-500 mt-0.5 truncate">{setting.description}</p>
                                 </div>
-                                <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="flex flex-wrap items-center justify-end gap-2 pt-2 sm:pt-0">
                                     {editing === setting.key ? (
                                         <>
                                             {typeof setting.value === 'boolean' ? (
                                                 <select
                                                     value={String(editValue)}
                                                     onChange={(e) => setEditValue(e.target.value === 'true')}
-                                                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary-500/20 outline-none"
+                                                    className="w-full min-w-[10rem] rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary-500/20 outline-none sm:w-auto"
                                                 >
                                                     <option value="true">Enabled</option>
                                                     <option value="false">Disabled</option>
@@ -142,25 +142,25 @@ const PlatformSettingsPage = () => {
                                                 <input
                                                     value={editValue.join(', ')}
                                                     onChange={(e) => setEditValue(e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean))}
-                                                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-56 focus:ring-2 focus:ring-primary-500/20 outline-none"
+                                                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs focus:ring-2 focus:ring-primary-500/20 outline-none sm:w-56"
                                                 />
                                             ) : (
                                                 <input
                                                     type={typeof setting.value === 'number' ? 'number' : 'text'}
                                                     value={editValue}
                                                     onChange={(e) => setEditValue(typeof setting.value === 'number' ? +e.target.value : e.target.value)}
-                                                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-48 focus:ring-2 focus:ring-primary-500/20 outline-none"
+                                                    className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs focus:ring-2 focus:ring-primary-500/20 outline-none sm:w-48"
                                                 />
                                             )}
                                             <button
                                                 onClick={() => handleSave(setting.key)}
-                                                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
+                                                className="min-w-[5rem] rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
                                             >
                                                 Save
                                             </button>
                                             <button
                                                 onClick={() => setEditing(null)}
-                                                className="rounded-lg bg-slate-200 dark:bg-slate-700 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                                                className="min-w-[5rem] rounded-lg bg-slate-200 dark:bg-slate-700 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
                                             >
                                                 Cancel
                                             </button>
@@ -189,10 +189,10 @@ const PlatformSettingsPage = () => {
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                <h2 className="text-lg font-semibold mb-1">Commission Rates</h2>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                <h2 className="text-lg font-semibold mb-1 text-slate-900 dark:text-white">Commission Rates</h2>
                 <p className="text-sm text-slate-500 mb-6">Revenue share per partner type</p>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {commissions.map((c: any) => (
                         <div key={c.partnerType} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                             <p className="font-semibold capitalize text-slate-900 dark:text-white">{c.partnerType}</p>

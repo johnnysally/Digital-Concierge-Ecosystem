@@ -8,10 +8,10 @@ const CustomerLayout = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
-        <div className={`min-h-screen overflow-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
-            <div className="h-screen w-full px-3 sm:px-4 lg:px-6">
+        <div className={`h-screen min-h-screen overflow-hidden overflow-x-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
+            <div className="h-full w-full px-2 sm:px-4 lg:px-6">
                 <div className="relative flex h-full flex-col lg:flex-row lg:gap-4">
-                    <div className="hidden lg:sticky lg:top-0 lg:block lg:h-screen lg:self-start">
+                    <div className="hidden lg:sticky lg:top-0 lg:block lg:h-full lg:self-start">
                         <CustomerSidebar />
                     </div>
 
@@ -87,10 +87,10 @@ const CustomerLayout = () => {
                             </div>
                         </header>
 
-                        <div className="flex-1 pb-3 sm:pb-4 lg:pb-6">
-                            <main className="h-full min-w-0">
-                                <div className={`group h-[calc(100vh-6rem)] overflow-y-auto rounded-[24px] border p-3 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_70px_-22px_rgba(15,23,42,0.55)] sm:p-4 lg:p-8 ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
-                                    <div className="min-h-full">
+                        <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-3 sm:pb-4 lg:pb-6">
+                            <main className="min-h-0 flex-1 overflow-y-auto min-w-0">
+                                <div className={`group min-h-0 rounded-[24px] border p-3 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_70px_-22px_rgba(15,23,42,0.55)] sm:p-4 lg:p-8 ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
+                                    <div className="min-h-0">
                                         <Outlet />
                                     </div>
                                 </div>
@@ -102,7 +102,7 @@ const CustomerLayout = () => {
 
             <div className={`fixed inset-0 z-50 lg:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
                 <div
-                    className={`absolute inset-0 bg-slate-950/70 transition-opacity ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute inset-0 transition-opacity ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'} ${isDark ? 'bg-slate-950/70' : 'bg-slate-900/20'}`}
                     onClick={() => setMobileMenuOpen(false)}
                 />
                 <div className={`absolute left-0 top-0 h-full w-[85vw] max-w-80 transform transition-transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>

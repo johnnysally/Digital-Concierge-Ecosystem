@@ -39,17 +39,17 @@ const ChatbotPage = () => {
     ];
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
-            <SectionHeader title="AI Concierge" subtitle="Your intelligent travel assistant — powered by AI" />
+        <div className="space-y-6 flex h-full min-h-0 flex-col">
+            <SectionHeader title="AI Assistant" subtitle="Your intelligent travel assistant — powered by AI" />
 
-            <div className={`flex-1 flex flex-col rounded-3xl border overflow-hidden min-h-[600px] max-h-[calc(100vh-220px)] shadow-sm ${isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white shadow-slate-200/70'}`}>
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className={`flex h-full min-h-0 flex-col rounded-3xl border overflow-hidden shadow-sm ${isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white shadow-slate-200/70'}`}>
+                <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
                     {messages.length === 0 && (
                         <div className="text-center py-12">
                             <div className="mb-4 text-6xl">🤖</div>
                             <h3 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Hello{user?.firstName ? `, ${user.firstName}` : ''}!</h3>
                             <p className={`mx-auto mt-2 max-w-md text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                I'm your Digital Concierge. Ask me about hotels, restaurants, transport, bookings, or anything travel-related.
+                                I'm your Digital Assistant. Ask me about hotels, restaurants, transport, bookings, or anything travel-related.
                             </p>
                             <div className="mt-6 flex flex-wrap justify-center gap-2">
                                 {quickPrompts.map((prompt) => (

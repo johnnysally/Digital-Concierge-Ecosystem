@@ -47,7 +47,7 @@ const PartnerDetailsPage = () => {
                     subtitle={partner.isVerified ? 'Verified' : 'Unverified'}
                 />
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
                 {!partner.isVerified && (
                     <button onClick={() => approvePartner(id!).then(() => setPartner({ ...partner, isVerified: true }))}
                         className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Approve</button>
@@ -63,11 +63,11 @@ const PartnerDetailsPage = () => {
                     className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600">Delete</button>
             </div>
             {properties.length > 0 && (
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Properties ({properties.length})</h2>
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                    <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Properties ({properties.length})</h2>
                     <div className="space-y-3">
                         {properties.map((p: any) => (
-                            <div key={p._id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+                            <div key={p._id} className="flex flex-col gap-3 rounded-3xl bg-slate-50 p-4 dark:bg-slate-800 sm:flex-row sm:items-center sm:justify-between">
                                 <span className="font-medium">{p.name}</span>
                                 <StatusBadge status={p.published ? 'Published' : 'Draft'} type={p.published ? 'success' : 'neutral'} />
                             </div>

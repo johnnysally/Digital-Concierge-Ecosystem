@@ -9,13 +9,15 @@ interface MetricCardProps {
 }
 
 const MetricCard = ({ label, value, trend, icon, color }: MetricCardProps) => (
-    <div className={cn('rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900', color)}>
-        <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-            {icon && <span className="text-xl">{icon}</span>}
+    <div className={cn('flex min-h-[150px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-slate-900', color)}>
+        <div className="flex items-start justify-between gap-4">
+            <div>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
+                <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-white">{value}</p>
+            </div>
+            {icon && <span className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-xl dark:bg-slate-800">{icon}</span>}
         </div>
-        <p className="mt-3 text-3xl font-bold text-slate-900 dark:text-white">{value}</p>
-        {trend && <p className="mt-1 text-xs text-slate-500">{trend}</p>}
+        {trend && <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{trend}</p>}
     </div>
 );
 

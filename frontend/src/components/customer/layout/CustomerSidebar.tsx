@@ -1,6 +1,7 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../../context/customer/ThemeContext';
+import { useAuth } from '../../../context/customer/AuthContext';
 
 const groups = [
     {
@@ -8,7 +9,7 @@ const groups = [
         items: [
             { label: 'Dashboard', path: '/', icon: '🏠' },
             { label: 'Notifications', path: '/notifications', icon: '🔔' },
-            { label: 'AI Concierge', path: '/chat', icon: '🤖' },
+            { label: 'AI Assistant', path: '/chat', icon: '🤖' },
         ],
     },
     {
@@ -56,6 +57,13 @@ type CustomerSidebarProps = {
 
 const CustomerSidebar = ({ onNavigate, className = '' }: CustomerSidebarProps) => {
     const { isDark, toggleTheme } = useTheme();
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login', { replace: true });
+    };
 
     return (
         <aside className={`w-full lg:w-72 lg:shrink-0 ${className}`}>
@@ -116,10 +124,19 @@ const CustomerSidebar = ({ onNavigate, className = '' }: CustomerSidebarProps) =
                             </div>
                         </div>
                     ))}
+                    <div className="mt-4 border-t border-slate-200 pt-4 dark:border-slate-700">
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className={`flex w-full items-center justify-center rounded-2xl border px-3 py-3 text-sm font-semibold transition duration-200 ${isDark ? 'border-slate-700 bg-slate-800 text-slate-100 hover:bg-slate-700' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </nav>
             </div>
         </aside>
     );
-};
+}
 
 export default CustomerSidebar;
