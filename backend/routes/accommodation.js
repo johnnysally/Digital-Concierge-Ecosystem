@@ -11,5 +11,6 @@ router.use('/housekeeping', require('./accommodation/housekeepingRoutes'));
 router.use('/documents', require('./accommodation/documentRoutes'));
 router.use('/notifications', require('./accommodation/notificationRoutes'));
 router.use('/analytics', require('./accommodation/analyticsRoutes'));
+router.use('/settings', require('./accommodation/settingsRoutes'));
 
 module.exports = router;

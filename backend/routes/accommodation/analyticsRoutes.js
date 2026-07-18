@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { getAccommodationAnalytics } = require('../../controllers/accommodation/analyticsController');
-const auth = require('../../middleware/accommodation/authMiddleware');
+const accommodationAuth = require('../../middleware/accommodation/accommodationAuth');
 
-router.get('/', auth, getAccommodationAnalytics);
+router.get('/', accommodationAuth, getAccommodationAnalytics);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 const Room = require('../../models/accommodation/Room');
 const Property = require('../../models/accommodation/Property');
+const path = require('path');
+const fs = require('fs');
 
 const createRoom = async (req, res, next) => {
     try {
@@ -47,4 +49,17 @@ const deleteRoom = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-module.exports = { createRoom, getRooms, getRoom, updateRoom, deleteRoom };
+const uploadRoomImages = async (req, res, next) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ success: false, message: 'No images uploaded' });
+        }
+
+        const urls = req.files.map((file) => `/uploads/${file.filename}`);
+        res.json({ success: true, images: urls });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { createRoom, getRooms, getRoom, updateRoom, deleteRoom, uploadRoomImages };

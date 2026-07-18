@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createProperty, getProperty, updateProperty } from '../../api/accommodation/propertyApi';
+import { createProperty, getProperty, updateProperty, uploadPropertyImages } from '../../api/accommodation/propertyApi';
 
 const PropertyEditPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -13,13 +13,31 @@ const PropertyEditPage = () => {
         state: '',
         pincode: '',
         street: '',
+        summary: '',
         description: '',
+        photos: '',
+        amenities: '',
+        checkInTime: '14:00',
+        checkOutTime: '11:00',
         published: false,
     });
     const [loading, setLoading] = useState(Boolean(id));
     const [saving, setSaving] = useState(false);
+    const [uploadingImages, setUploadingImages] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+
+    const parseList = (value: string) => value.split(/\n|,/).map((item) => item.trim()).filter(Boolean);
+
+    const splitDescription = (value: string) => {
+        const parts = value.split(/\n\s*\n/).filter(Boolean);
+        return {
+            summary: parts[0] || '',
+            description: parts.slice(1).join('\n\n'),
+        };
+    };
+
+    const buildDescription = (summary: string, details: string) => [summary, details].filter(Boolean).join('\n\n');
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -31,6 +49,7 @@ const PropertyEditPage = () => {
             try {
                 const response = await getProperty(id);
                 const property = response.property;
+                const { summary, description } = splitDescription(property.description || '');
                 setForm({
                     name: property.name || '',
                     type: property.type || 'hotel',
@@ -39,7 +58,12 @@ const PropertyEditPage = () => {
                     state: property.address?.state || '',
                     pincode: property.address?.pincode || '',
                     street: property.address?.street || '',
-                    description: property.description || '',
+                    summary,
+                    description,
+                    photos: (property.photos || []).join('\n'),
+                    amenities: (property.amenities || []).join(', '),
+                    checkInTime: property.checkInTime || '14:00',
+                    checkOutTime: property.checkOutTime || '11:00',
                     published: property.published || false,
                 });
             } catch (err: any) {
@@ -52,6 +76,23 @@ const PropertyEditPage = () => {
         fetchProperty();
     }, [id]);
 
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        try {
+            setUploadingImages(true);
+            const res = await uploadPropertyImages(files);
+            const urls = res.images || [];
+            setForm((current) => ({ ...current, photos: [...(current.photos ? current.photos.split('\n') : []), ...urls].filter(Boolean).join('\n') }));
+            setMessage('Images uploaded successfully.');
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Unable to upload images');
+        } finally {
+            setUploadingImages(false);
+        }
+    };
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         setSaving(true);
@@ -62,7 +103,11 @@ const PropertyEditPage = () => {
             const payload = {
                 name: form.name,
                 type: form.type,
-                description: form.description,
+                description: buildDescription(form.summary, form.description),
+                photos: parseList(form.photos),
+                amenities: parseList(form.amenities),
+                checkInTime: form.checkInTime,
+                checkOutTime: form.checkOutTime,
                 published: form.published,
                 address: {
                     street: form.street,
@@ -178,14 +223,76 @@ const PropertyEditPage = () => {
                             </div>
                         </div>
 
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Short description</label>
+                                <input
+                                    value={form.summary}
+                                    onChange={(e) => setForm({ ...form, summary: e.target.value })}
+                                    placeholder="A quick pitch for the apartment"
+                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Check-in / Check-out</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        value={form.checkInTime}
+                                        onChange={(e) => setForm({ ...form, checkInTime: e.target.value })}
+                                        placeholder="14:00"
+                                        className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                    />
+                                    <input
+                                        value={form.checkOutTime}
+                                        onChange={(e) => setForm({ ...form, checkOutTime: e.target.value })}
+                                        placeholder="11:00"
+                                        className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         <div>
-                            <label className="mb-2 block text-sm text-slate-300">Description</label>
+                            <label className="mb-2 block text-sm text-slate-300">Full description</label>
                             <textarea
                                 value={form.description}
                                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                                 rows={4}
+                                placeholder="Add the key highlights and details guests need to know"
                                 className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none"
                             />
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Images</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageUpload}
+                                    className="w-full rounded-2xl border border-dashed border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300"
+                                />
+                                <p className="mt-2 text-xs text-slate-400">Upload images directly. They will be saved and shown in the customer portal.</p>
+                                <textarea
+                                    value={form.photos}
+                                    onChange={(e) => setForm({ ...form, photos: e.target.value })}
+                                    rows={3}
+                                    placeholder="Stored image paths will appear here"
+                                    className="mt-3 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none"
+                                />
+                                {uploadingImages ? <p className="mt-2 text-sm text-emerald-400">Uploading images...</p> : null}
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Amenities</label>
+                                <textarea
+                                    value={form.amenities}
+                                    onChange={(e) => setForm({ ...form, amenities: e.target.value })}
+                                    rows={3}
+                                    placeholder="Wi-Fi, Pool, Parking, Breakfast"
+                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none"
+                                />
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-3">

@@ -5,6 +5,17 @@ export const createProperty = async (data: any) => {
     return res.data;
 };
 
+export const uploadPropertyImages = async (files: FileList | File[]) => {
+    const formData = new FormData();
+    const fileList = Array.isArray(files) ? files : Array.from(files);
+    fileList.forEach((file) => formData.append('images', file));
+
+    const res = await api.post('/accommodation/properties/upload-images', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+};
+
 export const getMyProperties = async () => {
     const res = await api.get('/accommodation/properties');
     return res.data;

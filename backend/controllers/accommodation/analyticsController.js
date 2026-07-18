@@ -19,19 +19,40 @@ const getAccommodationAnalytics = async (req, res, next) => {
             return acc;
         }, {});
 
-        const monthlyRevenue = Array.from({ length: 6 }, (_, index) => {
+        const monthlyMetrics = Array.from({ length: 6 }, (_, index) => {
             const date = new Date(now.getFullYear(), now.getMonth() - (5 - index), 1);
             const key = `${date.getFullYear()}-${date.getMonth()}`;
-            return { key, month: date.toLocaleString('en', { month: 'short' }), revenue: 0 };
+            return {
+                key,
+                month: date.toLocaleString('en', { month: 'short' }),
+                revenue: 0,
+                reservations: 0,
+                properties: 0,
+                occupancy: 0,
+            };
         });
 
         reservations.forEach((reservation) => {
             const createdAt = reservation.createdAt ? new Date(reservation.createdAt) : null;
             if (!createdAt || createdAt < sixMonthsAgo) return;
             const key = `${createdAt.getFullYear()}-${createdAt.getMonth()}`;
-            const existing = monthlyRevenue.find((item) => item.key === key);
+            const existing = monthlyMetrics.find((item) => item.key === key);
             if (existing) {
                 existing.revenue += Number(reservation.totalAmount || 0);
+                existing.reservations += 1;
+                if (['confirmed', 'checked_in'].includes(reservation.status)) {
+                    existing.occupancy += 1;
+                }
+            }
+        });
+
+        properties.forEach((property) => {
+            const createdAt = property.createdAt ? new Date(property.createdAt) : null;
+            if (!createdAt || createdAt < sixMonthsAgo) return;
+            const key = `${createdAt.getFullYear()}-${createdAt.getMonth()}`;
+            const existing = monthlyMetrics.find((item) => item.key === key);
+            if (existing) {
+                existing.properties += 1;
             }
         });
 
@@ -43,7 +64,8 @@ const getAccommodationAnalytics = async (req, res, next) => {
             success: true,
             analytics: {
                 statusCounts,
-                monthlyRevenue,
+                monthlyRevenue: monthlyMetrics.map(({ key, month, revenue }) => ({ key, month, revenue })),
+                monthlyMetrics,
                 occupancy,
                 totalReservations: reservations.length,
                 totalProperties: properties.length,

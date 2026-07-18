@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createRoom, getRoom, updateRoom } from '../../api/accommodation/roomApi';
+import { createRoom, getRoom, updateRoom, uploadRoomImages } from '../../api/accommodation/roomApi';
 import { getMyProperties } from '../../api/accommodation/propertyApi';
 
 const RoomFormPage = () => {
@@ -15,12 +15,29 @@ const RoomFormPage = () => {
         currency: 'KES',
         capacity: 1,
         status: 'available',
+        summary: '',
         description: '',
+        photos: '',
+        amenities: '',
+        floor: '',
     });
     const [loading, setLoading] = useState(Boolean(id));
     const [saving, setSaving] = useState(false);
+    const [uploadingImages, setUploadingImages] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+
+    const parseList = (value: string) => value.split(/\n|,/).map((item) => item.trim()).filter(Boolean);
+
+    const splitDescription = (value: string) => {
+        const parts = value.split(/\n\s*\n/).filter(Boolean);
+        return {
+            summary: parts[0] || '',
+            description: parts.slice(1).join('\n\n'),
+        };
+    };
+
+    const buildDescription = (summary: string, details: string) => [summary, details].filter(Boolean).join('\n\n');
 
     useEffect(() => {
         const fetchResources = async () => {
@@ -45,6 +62,7 @@ const RoomFormPage = () => {
             try {
                 const response = await getRoom(id);
                 const room = response.room;
+                const { summary, description } = splitDescription(room.description || '');
                 setForm({
                     property: room.property?._id || '',
                     roomNumber: room.roomNumber || '',
@@ -53,7 +71,11 @@ const RoomFormPage = () => {
                     currency: room.currency || 'KES',
                     capacity: room.capacity || 1,
                     status: room.status || 'available',
-                    description: room.description || '',
+                    summary,
+                    description,
+                    photos: (room.photos || []).join('\n'),
+                    amenities: (room.amenities || []).join(', '),
+                    floor: room.floor?.toString() || '',
                 });
             } catch (err: any) {
                 setError(err?.response?.data?.message || 'Unable to load room');
@@ -64,6 +86,23 @@ const RoomFormPage = () => {
 
         fetchRoom();
     }, [id]);
+
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        try {
+            setUploadingImages(true);
+            const res = await uploadRoomImages(files);
+            const urls = res.images || [];
+            setForm((current) => ({ ...current, photos: [...(current.photos ? current.photos.split('\n') : []), ...urls].filter(Boolean).join('\n') }));
+            setMessage('Images uploaded successfully.');
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Unable to upload images');
+        } finally {
+            setUploadingImages(false);
+        }
+    };
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -80,7 +119,10 @@ const RoomFormPage = () => {
                 currency: form.currency,
                 capacity: Number(form.capacity),
                 status: form.status,
-                description: form.description,
+                description: buildDescription(form.summary, form.description),
+                photos: parseList(form.photos),
+                amenities: parseList(form.amenities),
+                floor: form.floor ? Number(form.floor) : undefined,
             };
 
             if (id) {
@@ -190,28 +232,84 @@ const RoomFormPage = () => {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="mb-2 block text-sm text-slate-300">Status</label>
-                            <select
-                                value={form.status}
-                                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
-                            >
-                                <option value="available">Available</option>
-                                <option value="occupied">Occupied</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="cleaning">Cleaning</option>
-                            </select>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Status</label>
+                                <select
+                                    value={form.status}
+                                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                >
+                                    <option value="available">Available</option>
+                                    <option value="occupied">Occupied</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="cleaning">Cleaning</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Floor</label>
+                                <input
+                                    value={form.floor}
+                                    onChange={(e) => setForm({ ...form, floor: e.target.value })}
+                                    type="number"
+                                    min={0}
+                                    placeholder="e.g. 3"
+                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                />
+                            </div>
                         </div>
 
                         <div>
-                            <label className="mb-2 block text-sm text-slate-300">Description</label>
+                            <label className="mb-2 block text-sm text-slate-300">Short description</label>
+                            <input
+                                value={form.summary}
+                                onChange={(e) => setForm({ ...form, summary: e.target.value })}
+                                placeholder="A quick summary for the room"
+                                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm text-slate-300">Full description</label>
                             <textarea
                                 value={form.description}
                                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                                 rows={4}
+                                placeholder="Add the room highlights, views, and extra details"
                                 className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none"
                             />
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Images</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageUpload}
+                                    className="w-full rounded-2xl border border-dashed border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300"
+                                />
+                                <p className="mt-2 text-xs text-slate-400">Upload images directly. They will be saved and shown in the customer portal.</p>
+                                <textarea
+                                    value={form.photos}
+                                    onChange={(e) => setForm({ ...form, photos: e.target.value })}
+                                    rows={3}
+                                    placeholder="Stored image paths will appear here"
+                                    className="mt-3 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none"
+                                />
+                                {uploadingImages ? <p className="mt-2 text-sm text-emerald-400">Uploading images...</p> : null}
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm text-slate-300">Amenities</label>
+                                <textarea
+                                    value={form.amenities}
+                                    onChange={(e) => setForm({ ...form, amenities: e.target.value })}
+                                    rows={3}
+                                    placeholder="Air conditioning, TV, Coffee maker"
+                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none"
+                                />
+                            </div>
                         </div>
 
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

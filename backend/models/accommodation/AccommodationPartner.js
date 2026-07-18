@@ -15,6 +15,7 @@ const accommodationPartnerSchema = new mongoose.Schema({
     lastLogin: { type: Date },
     preferences: {
         notifications: { email: { type: Boolean, default: true }, sms: { type: Boolean, default: true }, push: { type: Boolean, default: true } },
+        portalSettings: { type: mongoose.Schema.Types.Mixed, default: {} },
     },
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },

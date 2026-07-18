@@ -1,6 +1,8 @@
 const Property = require('../../models/accommodation/Property');
 const { partner: partnerEmails } = require('../../services/emailService');
 const logger = require('../../utils/logger');
+const path = require('path');
+const fs = require('fs');
 
 const createProperty = async (req, res, next) => {
     try { const property = await Property.create({ ...req.body, partner: req.user._id }); res.status(201).json({ success: true, property }); }
@@ -39,4 +41,17 @@ const deleteProperty = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-module.exports = { createProperty, getMyProperties, getProperty, updateProperty, deleteProperty };
+const uploadPropertyImages = async (req, res, next) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ success: false, message: 'No images uploaded' });
+        }
+
+        const urls = req.files.map((file) => `/uploads/${file.filename}`);
+        res.json({ success: true, images: urls });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { createProperty, getMyProperties, getProperty, updateProperty, deleteProperty, uploadPropertyImages };

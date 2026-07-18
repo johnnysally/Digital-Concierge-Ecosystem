@@ -5,6 +5,17 @@ export const createRoom = async (data: any) => {
     return res.data;
 };
 
+export const uploadRoomImages = async (files: FileList | File[]) => {
+    const formData = new FormData();
+    const fileList = Array.isArray(files) ? files : Array.from(files);
+    fileList.forEach((file) => formData.append('images', file));
+
+    const res = await api.post('/accommodation/rooms/upload-images', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+};
+
 export const getRooms = async (params?: any) => {
     const res = await api.get('/accommodation/rooms', { params });
     return res.data;

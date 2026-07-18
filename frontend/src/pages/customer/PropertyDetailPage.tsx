@@ -85,6 +85,21 @@ const PropertyDetailPage = () => {
 
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2 space-y-6">
+                    {property.photos?.length ? (
+                        <div className={cardClass}>
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                {property.photos.slice(0, 4).map((photo: string, index: number) => (
+                                    <img
+                                        key={`${photo}-${index}`}
+                                        src={photo.startsWith('http') ? photo : `http://localhost:5000${photo}`}
+                                        alt={`${property.name} ${index + 1}`}
+                                        className="h-48 w-full rounded-2xl object-cover"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
+
                     <div className={cardClass}>
                         <h3 className="text-lg font-semibold text-white">About</h3>
                         <p className="mt-3 text-sm text-slate-400">{property.description || 'A wonderful place to stay.'}</p>
