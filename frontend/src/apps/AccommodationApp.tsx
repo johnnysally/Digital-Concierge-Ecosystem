@@ -26,13 +26,22 @@ import SettingsPage from '../pages/accommodation/SettingsPage';
 import AnalyticsPage from '../pages/accommodation/AnalyticsPage';
 import { AccommodationThemeProvider } from '../context/accommodation/ThemeContext';
 
+const getStoredAccommodationSession = () => {
+    try {
+        const stored = localStorage.getItem('digitalsafaris_accommodation');
+        return stored ? JSON.parse(stored) : null;
+    } catch {
+        return null;
+    }
+};
+
 const isAuthenticated = () => {
-    const stored = localStorage.getItem('digitalsafaris_accommodation');
-    return Boolean(stored);
+    const session = getStoredAccommodationSession();
+    return Boolean(session?.token);
 };
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-    return isAuthenticated() ? children : <Navigate to="login" replace />;
+    return isAuthenticated() ? children : <Navigate to="/accommodation/login" replace />;
 };
 
 const AccommodationApp = () => {
@@ -42,7 +51,14 @@ const AccommodationApp = () => {
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="dashboard" element={<AccommodationLayout />}>
+                <Route
+                    path="dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <AccommodationLayout />
+                        </ProtectedRoute>
+                    }
+                >
                     <Route index element={<DashboardPage />} />
                 </Route>
                 <Route

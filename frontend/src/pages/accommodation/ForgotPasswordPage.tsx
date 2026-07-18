@@ -28,7 +28,7 @@ const ForgotPasswordPage = () => {
         <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.2),_transparent_55%),linear-gradient(135deg,_#020617,_#0f172a)] px-4 py-10 text-slate-100">
             <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/90 p-8 shadow-2xl shadow-black/40">
                 <div className="mb-6">
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Accommodation portal</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Digital Safaris</p>
                     <h1 className="mt-2 text-3xl font-semibold text-white">Reset your password</h1>
                     <p className="mt-2 text-sm text-slate-400">Enter the email address associated with your account and we'll send reset instructions.</p>
                 </div>
