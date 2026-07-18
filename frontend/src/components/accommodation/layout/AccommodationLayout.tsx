@@ -31,6 +31,7 @@ import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsA
             items: [
                 { to: '/accommodation/reservations', label: 'Reservations', description: 'Bookings & arrivals', icon: '🗓️' },
                 { to: '/accommodation/guests', label: 'Guests', description: 'Guest records', icon: '🧳' },
+                { to: '/accommodation/reviews', label: 'Reviews', description: 'Guest feedback', icon: '⭐' },
                 { to: '/accommodation/housekeeping', label: 'Housekeeping', description: 'Room readiness', icon: '🧹' },
             ],
         },
