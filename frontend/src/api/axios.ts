@@ -8,10 +8,28 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
-    const stored = localStorage.getItem('digitalsafaris_customer');
-    if (stored) {
-        const { token } = JSON.parse(stored);
-        if (token) config.headers.Authorization = `Bearer ${token}`;
+    const getAuthToken = () => {
+        const accommodationStored = localStorage.getItem('digitalsafaris_accommodation');
+        const customerStored = localStorage.getItem('digitalsafaris_customer');
+        if (config.url?.includes('/accommodation') && accommodationStored) {
+            return JSON.parse(accommodationStored).token;
+        }
+        if (config.url?.includes('/customer') && customerStored) {
+            return JSON.parse(customerStored).token;
+        }
+        if (accommodationStored) {
+            return JSON.parse(accommodationStored).token;
+        }
+        if (customerStored) {
+            return JSON.parse(customerStored).token;
+        }
+        return null;
+    };
+
+    const token = getAuthToken();
+    if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });

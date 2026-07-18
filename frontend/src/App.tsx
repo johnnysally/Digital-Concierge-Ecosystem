@@ -1,9 +1,13 @@
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AccommodationApp from './apps/AccommodationApp';
 import CustomerApp from './apps/CustomerApp';
 
 const App = () => (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <CustomerApp />
+        <Routes>
+            <Route path="/accommodation/*" element={<AccommodationApp />} />
+            <Route path="*" element={<CustomerApp />} />
+        </Routes>
     </BrowserRouter>
 );
 

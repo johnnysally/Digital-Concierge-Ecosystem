@@ -1,9 +1,31 @@
 # Digital Concierge Ecosystem
 
-This repository contains the main Digital Concierge Ecosystem workspace, with two independent frontend applications:
+This repository contains the main Digital Concierge Ecosystem workspace, with a customer-facing experience and an accommodation partner operations portal built on the same backend services.
 
-- `Customer/` - Customer-facing portal built with Vite, React, TypeScript, and Tailwind CSS.
-- `Partners/` - Partner accommodation portal built with Vite, React, TypeScript, and Tailwind CSS.
+## How the Accommodation Portal Works
+
+The accommodation portal is the operations workspace for hotel and property partners. It allows a partner to:
+
+- manage properties, rooms, staff, and promotions
+- view and update reservations and guest records
+- monitor occupancy, analytics, and guest care follow-ups
+- manage housekeeping readiness and operational alerts
+- receive notifications and review performance from a central dashboard
+
+The portal is powered by a React + TypeScript frontend and connects to the shared Node.js/Express backend through accommodation-specific APIs for properties, reservations, guests, rooms, staff, analytics, notifications, and housekeeping.
+
+## How It Connects to the Customer Portal
+
+The customer portal and the accommodation portal are linked through the same backend and shared reservation workflow:
+
+1. A customer browses properties and books a stay through the customer portal.
+2. The booking request is sent to the shared backend reservation service.
+3. The backend creates or updates a reservation tied to a property, room, and partner account.
+4. The accommodation portal receives that reservation through its accommodation APIs and displays it in the reservations, guests, and analytics views.
+5. Partner-side updates such as confirmation, check-in, check-out, cancellation, or guest notes are reflected back through the same shared data flow.
+6. Notifications and status updates help keep both portals aligned for the customer and the accommodation team.
+
+In short, the customer portal handles the guest experience, while the accommodation portal handles property operations. Both are connected through the same core booking and notification system.
 
 ## Repository Structure
 
