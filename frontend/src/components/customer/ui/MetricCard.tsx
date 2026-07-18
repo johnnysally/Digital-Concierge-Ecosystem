@@ -6,11 +6,10 @@ interface MetricCardProps {
   detail?: string;
   icon?: React.ReactNode;
   className?: string;
+  isDark?: boolean;
 }
 
-const MetricCard = ({ label, value, detail, icon, className }: MetricCardProps) => {
-  const isDark = className?.includes("bg") ?? false;
-
+const MetricCard = ({ label, value, detail, icon, className, isDark = false }: MetricCardProps) => {
   return (
     <div className={`rounded-2xl border p-5 shadow-sm transition-transform transform hover:-translate-y-1 hover:shadow-md ${className ?? ""}`}>
       <div className="flex items-start justify-between gap-3">

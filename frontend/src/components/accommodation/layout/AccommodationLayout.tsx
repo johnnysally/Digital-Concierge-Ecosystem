@@ -15,6 +15,7 @@ import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsA
             items: [
                 { to: '/accommodation/dashboard', label: 'Dashboard', description: 'Command center', icon: '🏠' },
                 { to: '/accommodation/analytics', label: 'Analytics', description: 'Performance insights', icon: '📈' },
+                { to: '/accommodation/notifications', label: 'Notifications', description: 'Alerts & updates', icon: '🔔' },
             ],
         },
         {
@@ -75,7 +76,6 @@ const AccommodationLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { isDark, toggleTheme, accentColor, secondaryColor, themePreset } = useAccommodationTheme();
-    const [showNotifications, setShowNotifications] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(false);
@@ -208,12 +208,8 @@ const AccommodationLayout = () => {
         loadSummaryStats();
     }, []);
 
-    const handleToggleNotifications = () => {
-        const next = !showNotifications;
-        setShowNotifications(next);
-        if (next) {
-            fetchNotifications(true);
-        }
+    const handleOpenNotifications = () => {
+        navigate('/accommodation/notifications');
     };
 
     const handleMarkNotificationRead = async (id: string) => {
@@ -355,7 +351,7 @@ const AccommodationLayout = () => {
                                     <div className="hidden items-center gap-2 sm:flex">
                                         <button
                                             type="button"
-                                            onClick={handleToggleNotifications}
+                                            onClick={handleOpenNotifications}
                                             className={`relative rounded-full border px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? 'border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
                                         >
                                             🔔
@@ -401,7 +397,7 @@ const AccommodationLayout = () => {
                                                         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                                             <button
                                                                 type="button"
-                                                                onClick={handleToggleNotifications}
+                                                                onClick={handleOpenNotifications}
                                                                 className={`flex items-center gap-2 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition sm:gap-3 sm:px-4 sm:py-3 ${
                                                                     isDark ? 'border-slate-700 bg-slate-900 text-slate-100 shadow-slate-900/10 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-900 shadow-slate-900/5 hover:bg-slate-100'
                                                                 }`}
@@ -573,46 +569,34 @@ const AccommodationLayout = () => {
 
                                                     <aside className="space-y-6">
                                                         <div className={`rounded-[28px] border p-5 transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/20' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
-                                                                                <div className="mb-4 flex items-center justify-between gap-3">
+                                                            <div className="mb-4 flex items-center justify-between gap-3">
                                                                 <div>
                                                                     <p className={`text-xs font-semibold uppercase tracking-[0.35em] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Notifications</p>
                                                                     <p className={`mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Live alerts from your accommodation workspace.</p>
                                                                 </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <button type="button" onClick={handleMarkAllRead} className={`rounded-2xl border px-3 py-2 text-sm transition ${isDark ? 'border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-900 hover:bg-slate-100'}`}>
-                                                                        Mark all read
-                                                                    </button>
-                                                                    <button type="button" onClick={handleToggleNotifications} className={`rounded-2xl border px-3 py-2 text-sm transition ${isDark ? 'border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-900 hover:bg-slate-100'}`}>{showNotifications ? 'Hide' : 'Show'}</button>
-                                                                </div>
+                                                                <button type="button" onClick={handleOpenNotifications} className={`rounded-2xl border px-3 py-2 text-sm transition ${isDark ? 'border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-900 hover:bg-slate-100'}`}>
+                                                                    Open page
+                                                                </button>
                                                             </div>
-                                                            {showNotifications ? (
-                                                                <div className="space-y-3">
-                                                                    {loadingNotifications ? (
-                                                                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Refreshing notifications…</p>
-                                                                    ) : notificationError ? (
-                                                                        <p className="text-sm text-rose-400">{notificationError}</p>
-                                                                    ) : notifications.length === 0 ? (
-                                                                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No recent notifications.</p>
-                                                                    ) : (
-                                                                        notifications.map((notification) => (
-                                                                            <div key={notification.id} className={`rounded-3xl border px-4 py-3 ${notification.unread ? 'border-emerald-500/20 bg-emerald-500/5' : isDark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'}`}>
-                                                                                <div className="flex items-center justify-between gap-3">
-                                                                                    <p className={`font-medium ${notification.unread ? 'text-emerald-300' : isDark ? 'text-slate-100' : 'text-slate-900'}`}>{notification.title}</p>
-                                                                                    <span className="text-xs text-slate-400">{notification.time}</span>
-                                                                                </div>
-                                                                                <p className={`mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{notification.message}</p>
-                                                                                {notification.unread ? (
-                                                                                    <button type="button" onClick={() => handleMarkNotificationRead(notification.id)} className="mt-3 text-sm font-medium text-emerald-500 hover:text-emerald-400">
-                                                                                        Mark as read
-                                                                                    </button>
-                                                                                ) : null}
+                                                            <div className="space-y-3">
+                                                                {loadingNotifications ? (
+                                                                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Refreshing notifications…</p>
+                                                                ) : notificationError ? (
+                                                                    <p className="text-sm text-rose-400">{notificationError}</p>
+                                                                ) : notifications.length === 0 ? (
+                                                                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No recent notifications.</p>
+                                                                ) : (
+                                                                    notifications.map((notification) => (
+                                                                        <div key={notification.id} className={`rounded-3xl border px-4 py-3 ${notification.unread ? 'border-emerald-500/20 bg-emerald-500/5' : isDark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'}`}>
+                                                                            <div className="flex items-center justify-between gap-3">
+                                                                                <p className={`font-medium ${notification.unread ? 'text-emerald-300' : isDark ? 'text-slate-100' : 'text-slate-900'}`}>{notification.title}</p>
+                                                                                <span className="text-xs text-slate-400">{notification.time}</span>
                                                                             </div>
-                                                                        ))
-                                                                    )}
-                                                                </div>
-                                                            ) : (
-                                                                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Notifications are hidden. Toggle to see your latest alerts.</p>
-                                                            )}
+                                                                            <p className={`mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{notification.message}</p>
+                                                                        </div>
+                                                                    ))
+                                                                )}
+                                                            </div>
                                                         </div>
 
                                                         <div className={`rounded-[32px] border p-6 transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/20' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>

@@ -24,6 +24,7 @@ import PaymentsPage from '../pages/accommodation/PaymentsPage';
 import ReviewsPage from '../pages/accommodation/ReviewsPage';
 import SettingsPage from '../pages/accommodation/SettingsPage';
 import AnalyticsPage from '../pages/accommodation/AnalyticsPage';
+import NotificationsPage from '../pages/accommodation/NotificationsPage';
 import { AccommodationThemeProvider } from '../context/accommodation/ThemeContext';
 
 const getStoredAccommodationSession = () => {
@@ -71,6 +72,7 @@ const AccommodationApp = () => {
                 >
                     <Route index element={<Navigate to="dashboard" replace />} />
                     <Route path="analytics" element={<AnalyticsPage />} />
+                    <Route path="notifications" element={<NotificationsPage />} />
                     <Route path="properties" element={<PropertyListPage />} />
                     <Route path="properties/new" element={<PropertyEditPage />} />
                     <Route path="properties/:id" element={<PropertyEditPage />} />
