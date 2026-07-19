@@ -1,9 +1,9 @@
-const { body, param, query } = require('express-validator');
+const { body } = require('express-validator');
 const { handleValidation } = require('../../utils/validators');
 
 const registerRules = [
     body('firstName').trim().notEmpty().withMessage('First name is required'),
-    body('lastName').trim().notEmpty().withMessage('Last name is required'),
+    body('lastName').optional().trim(),
     body('email').isEmail().withMessage('Valid email is required'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
     body('phone').optional().trim(),
