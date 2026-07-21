@@ -2,7 +2,8 @@ import { api } from '../axios';
 
 export const getVehicles = async (params?: any) => {
     const res = await api.get('/transport/vehicles', { params });
-    return res.data;
+    const data = res.data;
+    return data.vehicles ?? data.items ?? data;
 };
 
 export const getVehicle = async (id: string) => {

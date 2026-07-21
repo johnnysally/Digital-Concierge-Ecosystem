@@ -23,7 +23,6 @@ import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsA
             items: [
                 { to: '/accommodation/properties', label: 'Properties', description: 'Manage sites', icon: '🏘️' },
                 { to: '/accommodation/rooms', label: 'Rooms', description: 'Availability & setup', icon: '🛏️' },
-                { to: '/accommodation/staff', label: 'Staff', description: 'Team roster', icon: '👥' },
             ],
         },
         {
@@ -32,7 +31,6 @@ import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsA
                 { to: '/accommodation/reservations', label: 'Reservations', description: 'Bookings & arrivals', icon: '🗓️' },
                 { to: '/accommodation/guests', label: 'Guests', description: 'Guest records', icon: '🧳' },
                 { to: '/accommodation/reviews', label: 'Reviews', description: 'Guest feedback', icon: '⭐' },
-                { to: '/accommodation/housekeeping', label: 'Housekeeping', description: 'Room readiness', icon: '🧹' },
             ],
         },
         {
@@ -40,6 +38,7 @@ import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsA
             items: [
                 { to: '/accommodation/promotions', label: 'Promotions', description: 'Offers & campaigns', icon: '🎁' },
                 { to: '/accommodation/documents', label: 'Documents', description: 'Files & policies', icon: '📄' },
+                { to: '/accommodation/wallet', label: 'Wallet', description: 'Revenue & transactions', icon: '👛' },
                 { to: '/accommodation/profile', label: 'Profile', description: 'Account details', icon: '👤' },
                 { to: '/accommodation/settings', label: 'Settings', description: 'Portal preferences', icon: '⚙️' },
             ],

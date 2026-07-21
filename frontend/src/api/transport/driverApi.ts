@@ -2,7 +2,8 @@ import { api } from '../axios';
 
 export const getDrivers = async (params?: any) => {
     const res = await api.get('/transport/drivers', { params });
-    return res.data;
+    const data = res.data;
+    return data.drivers ?? data.items ?? data;
 };
 
 export const getDriver = async (id: string) => {

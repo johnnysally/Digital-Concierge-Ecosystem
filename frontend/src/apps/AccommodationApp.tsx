@@ -21,10 +21,12 @@ import PromotionFormPage from '../pages/accommodation/PromotionFormPage';
 import DocumentsPage from '../pages/accommodation/DocumentsPage';
 import HousekeepingListPage from '../pages/accommodation/HousekeepingListPage';
 import PaymentsPage from '../pages/accommodation/PaymentsPage';
+import WalletPage from '../pages/accommodation/WalletPage';
 import ReviewsPage from '../pages/accommodation/ReviewsPage';
 import SettingsPage from '../pages/accommodation/SettingsPage';
 import AnalyticsPage from '../pages/accommodation/AnalyticsPage';
 import NotificationsPage from '../pages/accommodation/NotificationsPage';
+import Error304Page from '../pages/Error304Page';
 import { AccommodationThemeProvider } from '../context/accommodation/ThemeContext';
 
 const getStoredAccommodationSession = () => {
@@ -93,7 +95,9 @@ const AccommodationApp = () => {
                     <Route path="documents" element={<DocumentsPage />} />
                     <Route path="housekeeping" element={<HousekeepingListPage />} />
                     <Route path="payments" element={<PaymentsPage />} />
+                    <Route path="wallet" element={<WalletPage />} />
                     <Route path="reviews" element={<ReviewsPage />} />
+                    <Route path="error-304" element={<Error304Page />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<SettingsPage />} />
                 </Route>

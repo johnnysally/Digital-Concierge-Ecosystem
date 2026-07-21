@@ -2,7 +2,8 @@ import { api } from '../axios';
 
 export const getPromotions = async (params?: any) => {
     const res = await api.get('/transport/promotions', { params });
-    return res.data;
+    const data = res.data;
+    return data.promotions ?? data.items ?? data;
 };
 
 export const getPromotion = async (id: string) => {

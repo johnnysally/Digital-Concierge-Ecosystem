@@ -8,9 +8,9 @@ const CustomerLayout = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
-        <div className={`h-screen min-h-screen overflow-hidden overflow-x-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
-            <div className="h-full w-full px-2 sm:px-4 lg:px-6">
-                <div className="relative flex h-full flex-col lg:flex-row lg:gap-4">
+        <div className={`min-h-screen overflow-x-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
+            <div className="min-h-screen w-full px-2 sm:px-4 lg:px-6">
+                <div className="relative flex min-h-screen flex-col lg:flex-row lg:gap-4">
                     <div className="hidden lg:sticky lg:top-0 lg:block lg:h-full lg:self-start">
                         <CustomerSidebar />
                     </div>
