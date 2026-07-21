@@ -83,12 +83,16 @@ const SettingsPage = () => {
     const [success, setSuccess] = useState('');
 
     useEffect(() => {
+        let isMounted = true;
+
         const loadSettings = async () => {
             try {
                 const [profileResponse, remoteSettings] = await Promise.all([
                     getProfile(),
                     getAccommodationSettings(),
                 ]);
+
+                if (!isMounted) return;
 
                 setProfile(profileResponse);
                 setSettings((current) => ({
@@ -99,13 +103,20 @@ const SettingsPage = () => {
                     supportEmail: profileResponse?.email || remoteSettings?.supportEmail || current.supportEmail,
                 }));
             } catch (err: any) {
+                if (!isMounted) return;
                 setError(err?.response?.data?.message || 'Unable to load account settings');
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
         loadSettings();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const handleChange = (field: keyof SettingsState, value: string | boolean) => {

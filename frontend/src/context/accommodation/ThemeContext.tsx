@@ -1,6 +1,8 @@
 import React from 'react';
 import { getAccommodationSettings } from '../../api/accommodation/settingsApi';
 
+let themeSettingsRequestInFlight: Promise<any> | null = null;
+
 type ThemeMode = 'light' | 'dark' | 'system';
 type ThemePreset = 'professional' | 'emerald' | 'ocean' | 'midnight';
 
@@ -139,9 +141,28 @@ export const AccommodationThemeProvider = ({ children }: { children: React.React
 
     React.useEffect(() => {
         const loadRemoteSettings = async () => {
+            if (themeSettingsRequestInFlight) {
+                try {
+                    const settings = await themeSettingsRequestInFlight;
+                    applyThemeSettings(settings);
+                } catch {
+                    // ignore missing settings or auth errors until the user saves a preference
+                }
+                return;
+            }
+
+            themeSettingsRequestInFlight = getAccommodationSettings()
+                .then((settings) => {
+                    applyThemeSettings(settings);
+                    return settings;
+                })
+                .catch(() => undefined)
+                .finally(() => {
+                    themeSettingsRequestInFlight = null;
+                });
+
             try {
-                const settings = await getAccommodationSettings();
-                applyThemeSettings(settings);
+                await themeSettingsRequestInFlight;
             } catch {
                 // ignore missing settings or auth errors until the user saves a preference
             }

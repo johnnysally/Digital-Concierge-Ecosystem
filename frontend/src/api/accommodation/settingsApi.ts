@@ -1,5 +1,19 @@
 import { api } from '../axios';
 
+let accommodationSettingsRequest: Promise<AccommodationSettings | null> | null = null;
+
+const hasAccommodationSession = () => {
+    if (typeof window === 'undefined') return false;
+    try {
+        const storedValue = window.localStorage.getItem('digitalsafaris_accommodation');
+        if (!storedValue) return false;
+        const parsedValue = JSON.parse(storedValue);
+        return Boolean(parsedValue?.token);
+    } catch {
+        return false;
+    }
+};
+
 export interface AccommodationSettings {
     businessName: string;
     contactEmail: string;
@@ -36,8 +50,19 @@ export interface AccommodationSettings {
 }
 
 export const getAccommodationSettings = async () => {
-    const res = await api.get('/accommodation/settings');
-    return res.data.settings as AccommodationSettings;
+    if (!hasAccommodationSession()) {
+        return {} as AccommodationSettings;
+    }
+
+    if (!accommodationSettingsRequest) {
+        accommodationSettingsRequest = api.get('/accommodation/settings')
+            .then((res) => res.data.settings as AccommodationSettings)
+            .finally(() => {
+                accommodationSettingsRequest = null;
+            });
+    }
+
+    return accommodationSettingsRequest;
 };
 
 export const updateAccommodationSettings = async (payload: Partial<AccommodationSettings>) => {
