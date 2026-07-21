@@ -34,12 +34,12 @@ const wrap = (content, title) => `
   <div style="${styles.wrapper}">
     <div style="${styles.container}">
       <div style="${styles.header}">
-        <div style="${styles.logo}">Digital Concierge</div>
+        <div style="${styles.logo}">Digital Safaris</div>
         <div style="${styles.headerSubtitle}">${title}</div>
       </div>
       ${content}
       <div style="${styles.footer}">
-        <div style="${styles.footerText}">Digital Concierge Ecosystem<br>This is an automated message, please do not reply directly.</div>
+        <div style="${styles.footerText}">Digital Safaris Ecosystem<br>This is an automated message, please do not reply directly.</div>
       </div>
     </div>
   </div>
@@ -47,7 +47,7 @@ const wrap = (content, title) => `
 </html>`;
 
 const customerWelcome = (user, verificationLink) => ({
-    subject: 'Welcome to Digital Concierge',
+    subject: 'Welcome to Digital Safaris',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Welcome, ${user.firstName}! 🎉</h1>
@@ -56,7 +56,7 @@ const customerWelcome = (user, verificationLink) => ({
             <p style="${styles.text};margin-top:24px">Or copy this link:<br><span style="color:#0f172a;font-size:13px">${verificationLink}</span></p>
         </div>
     `, 'Welcome'),
-    textBody: `Welcome to Digital Concierge, ${user.firstName}! Verify your email: ${verificationLink}`,
+    textBody: `Welcome to Digital Safaris, ${user.firstName}! Verify your email: ${verificationLink}`,
 });
 
 const customerPasswordReset = (user, resetLink) => ({
@@ -242,8 +242,21 @@ const customerAccountChanged = (user, changes) => ({
     textBody: `Hi ${user.firstName}, your ${changes} was updated. If this wasn't you, contact support.`,
 });
 
+const customerAccountDeleted = (customer) => ({
+    subject: 'Your Digital Safaris Account Has Been Removed',
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeDanger}">Account Removed</span>
+            <h1 style="${styles.title};margin-top:16px">Account Removed</h1>
+            <p style="${styles.text}">Hi ${customer.firstName}, your Digital Safaris account has been permanently removed from the platform.</p>
+            <p style="${styles.text}">If you believe this was a mistake, please contact our support team.</p>
+        </div>
+    `, 'Account Removed'),
+    textBody: `Hi ${customer.firstName}, your Digital Safaris account has been removed. Contact support if this was a mistake.`,
+});
+
 const partnerWelcome = (user, verificationLink) => ({
-    subject: 'Welcome to Digital Concierge Partner Portal',
+    subject: 'Welcome to Digital Safaris Partner Portal',
     htmlBody: wrap(`
         <div style="${styles.body}">
             <h1 style="${styles.title}">Welcome, ${user.firstName}! 🏨</h1>
@@ -251,7 +264,7 @@ const partnerWelcome = (user, verificationLink) => ({
             <a href="${verificationLink}" style="${styles.button}">Verify Your Email</a>
         </div>
     `, 'Partner Welcome'),
-    textBody: `Welcome to Digital Concierge Partner Portal, ${user.firstName}! Verify: ${verificationLink}`,
+    textBody: `Welcome to Digital Safaris Partner Portal, ${user.firstName}! Verify: ${verificationLink}`,
 });
 
 const partnerRegistrationReceived = (user) => ({
@@ -452,31 +465,13 @@ const partnerAccountChanged = (user, changes) => ({
     textBody: `Hi ${user.firstName}, your ${changes} was updated. If this wasn't you, contact support.`,
 });
 
-const dailyDigest = (user, summary) => ({
-    subject: `Your Daily Digest — ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
-    htmlBody: wrap(`
-        <div style="${styles.body}">
-            <h1 style="${styles.title}">Daily Digest</h1>
-            <p style="${styles.text}">Hi ${user.firstName}, here's your summary for today.</p>
-            ${summary.map(item => `
-                <div style="${styles.card}">
-                    <span style="${styles.badge};${item.badgeStyle || styles.badgeInfo}">${item.badge}</span>
-                    <p style="margin-top:12px;color:#0f172a;font-weight:600">${item.title}</p>
-                    <p style="color:#64748b;font-size:13px">${item.description}</p>
-                </div>
-            `).join('')}
-        </div>
-    `, 'Daily Digest'),
-    textBody: `Hi ${user.firstName}, here's your daily summary.`,
-});
-
 const partnerNewRegistration = (admin, partner) => ({
-    subject: `New Partner Registration - ${partner.businessName}`,
+    subject: `New Partner Registration — ${partner.businessName}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeInfo}">New Registration</span>
             <h1 style="${styles.title};margin-top:16px">New Partner Registration</h1>
-            <p style="${styles.text}">Hi ${admin.firstName}, a new partner has registered on the platform and requires your review.</p>
+            <p style="${styles.text}">Hi ${admin.firstName}, a new partner has registered on Digital Safaris and requires your review.</p>
             <div style="${styles.card}">
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Business</span><span style="${styles.detailValue}">${partner.businessName}</span></div>
                 <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Contact</span><span style="${styles.detailValue}">${partner.firstName} ${partner.lastName}</span></div>
@@ -495,24 +490,29 @@ const partnerAccountDeleted = (partner) => ({
         <div style="${styles.body}">
             <span style="${styles.badge};${styles.badgeDanger}">Account Removed</span>
             <h1 style="${styles.title};margin-top:16px">Account Removed</h1>
-            <p style="${styles.text}">Hi ${partner.firstName}, your partner account for <strong>${partner.businessName}</strong> has been permanently removed from the Digital Concierge platform.</p>
-            <p style="${styles.text}">If you believe this was a mistake, please contact our support team at ${process.env.SUPPORT_EMAIL || 'support@digitalconcierge.com'}.</p>
+            <p style="${styles.text}">Hi ${partner.firstName}, your partner account for <strong>${partner.businessName}</strong> has been permanently removed from Digital Safaris.</p>
+            <p style="${styles.text}">If you believe this was a mistake, please contact our support team.</p>
         </div>
     `, 'Account Removed'),
     textBody: `Hi ${partner.firstName}, your partner account for ${partner.businessName} has been removed. Contact support if this was a mistake.`,
 });
 
-const customerAccountDeleted = (customer) => ({
-    subject: 'Your Account Has Been Removed',
+const dailyDigest = (user, summary) => ({
+    subject: `Your Daily Digest — ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
     htmlBody: wrap(`
         <div style="${styles.body}">
-            <span style="${styles.badge};${styles.badgeDanger}">Account Removed</span>
-            <h1 style="${styles.title};margin-top:16px">Account Removed</h1>
-            <p style="${styles.text}">Hi ${customer.firstName}, your Digital Concierge account has been permanently removed from the platform.</p>
-            <p style="${styles.text}">If you believe this was a mistake, please contact our support team at ${process.env.SUPPORT_EMAIL || 'support@digitalconcierge.com'}.</p>
+            <h1 style="${styles.title}">Daily Digest</h1>
+            <p style="${styles.text}">Hi ${user.firstName}, here's your summary for today.</p>
+            ${summary.map(item => `
+                <div style="${styles.card}">
+                    <span style="${styles.badge};${item.badgeStyle || styles.badgeInfo}">${item.badge}</span>
+                    <p style="margin-top:12px;color:#0f172a;font-weight:600">${item.title}</p>
+                    <p style="color:#64748b;font-size:13px">${item.description}</p>
+                </div>
+            `).join('')}
         </div>
-    `, 'Account Removed'),
-    textBody: `Hi ${customer.firstName}, your Digital Concierge account has been removed. Contact support if this was a mistake.`,
+    `, 'Daily Digest'),
+    textBody: `Hi ${user.firstName}, here's your daily summary.`,
 });
 
 module.exports = {

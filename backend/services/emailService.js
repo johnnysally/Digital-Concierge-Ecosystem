@@ -84,8 +84,23 @@ const sendCustomerAccountChanged = async (user, changes) => {
     await send({ to: user.email, subject, htmlBody, textBody });
 };
 
+const sendCustomerAccountDeleted = async (customer) => {
+    const { subject, htmlBody, textBody } = templates.customer.accountDeleted(customer);
+    await send({ to: customer.email, subject, htmlBody, textBody });
+};
+
 const sendPartnerWelcome = async (partner, verificationLink) => {
     const { subject, htmlBody, textBody } = templates.partner.welcome(partner, verificationLink);
+    await send({ to: partner.email, subject, htmlBody, textBody });
+};
+
+const sendPartnerRegistrationReceived = async (partner) => {
+    const { subject, htmlBody, textBody } = templates.partner.registrationReceived(partner);
+    await send({ to: partner.email, subject, htmlBody, textBody });
+};
+
+const sendPartnerApproved = async (partner) => {
+    const { subject, htmlBody, textBody } = templates.partner.approved(partner);
     await send({ to: partner.email, subject, htmlBody, textBody });
 };
 
@@ -144,21 +159,6 @@ const sendPartnerAccountChanged = async (partner, changes) => {
     await send({ to: partner.email, subject, htmlBody, textBody });
 };
 
-const sendDailyDigest = async (user, summary) => {
-    const { subject, htmlBody, textBody } = templates.dailyDigest(user, summary);
-    await send({ to: user.email, subject, htmlBody, textBody });
-};
-
-const sendPartnerRegistrationReceived = async (partner) => {
-    const { subject, htmlBody, textBody } = templates.partner.registrationReceived(partner);
-    await send({ to: partner.email, subject, htmlBody, textBody });
-};
-
-const sendPartnerApproved = async (partner) => {
-    const { subject, htmlBody, textBody } = templates.partner.approved(partner);
-    await send({ to: partner.email, subject, htmlBody, textBody });
-};
-
 const sendPartnerNewRegistration = async (admin, partner) => {
     const { subject, htmlBody, textBody } = templates.partner.newPartnerRegistration(admin, partner);
     await send({ to: admin.email, subject, htmlBody, textBody });
@@ -169,9 +169,9 @@ const sendPartnerAccountDeleted = async (partner) => {
     await send({ to: partner.email, subject, htmlBody, textBody });
 };
 
-const sendCustomerAccountDeleted = async (customer) => {
-    const { subject, htmlBody, textBody } = templates.customer.accountDeleted(customer);
-    await send({ to: customer.email, subject, htmlBody, textBody });
+const sendDailyDigest = async (user, summary) => {
+    const { subject, htmlBody, textBody } = templates.dailyDigest(user, summary);
+    await send({ to: user.email, subject, htmlBody, textBody });
 };
 
 module.exports = {
