@@ -159,6 +159,21 @@ const sendPartnerApproved = async (partner) => {
     await send({ to: partner.email, subject, htmlBody, textBody });
 };
 
+const sendPartnerNewRegistration = async (admin, partner) => {
+    const { subject, htmlBody, textBody } = templates.partner.newPartnerRegistration(admin, partner);
+    await send({ to: admin.email, subject, htmlBody, textBody });
+};
+
+const sendPartnerAccountDeleted = async (partner) => {
+    const { subject, htmlBody, textBody } = templates.partner.accountDeleted(partner);
+    await send({ to: partner.email, subject, htmlBody, textBody });
+};
+
+const sendCustomerAccountDeleted = async (customer) => {
+    const { subject, htmlBody, textBody } = templates.customer.accountDeleted(customer);
+    await send({ to: customer.email, subject, htmlBody, textBody });
+};
+
 module.exports = {
     customer: {
         sendWelcome: sendCustomerWelcome,
@@ -174,6 +189,7 @@ module.exports = {
         sendReviewRequest: sendCustomerReviewRequest,
         sendWalletTopup: sendCustomerWalletTopup,
         sendAccountChanged: sendCustomerAccountChanged,
+        sendAccountDeleted: sendCustomerAccountDeleted,
     },
     partner: {
         sendWelcome: sendPartnerWelcome,
@@ -190,6 +206,8 @@ module.exports = {
         sendHousekeepingAssigned: sendPartnerHousekeepingAssigned,
         sendPromotionCreated: sendPartnerPromotionCreated,
         sendAccountChanged: sendPartnerAccountChanged,
+        sendNewPartnerNotification: sendPartnerNewRegistration,
+        sendAccountDeleted: sendPartnerAccountDeleted,
     },
     sendDailyDigest,
     send,

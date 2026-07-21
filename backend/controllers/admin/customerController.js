@@ -67,10 +67,13 @@ const deleteCustomer = async (req, res, next) => {
         const id = resolveId(req.params.id);
         const result = await Customer.collection.findOneAndDelete({ _id: id });
         if (!result) return res.status(404).json({ success: false, message: 'Customer not found' });
-        const customerIdStr = result._id.toString();
-        await Booking.collection.deleteMany({ customer: customerIdStr });
-        await Payment.collection.deleteMany({ customer: customerIdStr });
-        res.json({ success: true, message: 'Customer and associated data deleted' });
+        await Booking.collection.deleteMany({ customer: req.params.id });
+        await Payment.collection.deleteMany({ customer: req.params.id });
+
+        const { customer: customerEmails } = require('../../services/emailService');
+        customerEmails.sendAccountDeleted(result).catch(e => logger.error(`Delete notification failed: ${e.message}`));
+
+        res.json({ success: true, message: 'Customer permanently deleted and notified' });
     } catch (error) { next(error); }
 };
 

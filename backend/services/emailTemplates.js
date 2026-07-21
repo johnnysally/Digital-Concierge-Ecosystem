@@ -470,6 +470,51 @@ const dailyDigest = (user, summary) => ({
     textBody: `Hi ${user.firstName}, here's your daily summary.`,
 });
 
+const partnerNewRegistration = (admin, partner) => ({
+    subject: `New Partner Registration - ${partner.businessName}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeInfo}">New Registration</span>
+            <h1 style="${styles.title};margin-top:16px">New Partner Registration</h1>
+            <p style="${styles.text}">Hi ${admin.firstName}, a new partner has registered on the platform and requires your review.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Business</span><span style="${styles.detailValue}">${partner.businessName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Contact</span><span style="${styles.detailValue}">${partner.firstName} ${partner.lastName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Email</span><span style="${styles.detailValue}">${partner.email}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Type</span><span style="${styles.detailValue}">${partner.businessType || partner.cuisine || 'N/A'}</span></div>
+            </div>
+            <a href="${process.env.ADMIN_URL || 'http://localhost:3001'}/partners" style="${styles.button}">Review Partner</a>
+        </div>
+    `, 'New Partner Registration'),
+    textBody: `New partner registration: ${partner.businessName} (${partner.email}). Review: ${process.env.ADMIN_URL || 'http://localhost:3001'}/partners`,
+});
+
+const partnerAccountDeleted = (partner) => ({
+    subject: 'Your Partner Account Has Been Removed',
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeDanger}">Account Removed</span>
+            <h1 style="${styles.title};margin-top:16px">Account Removed</h1>
+            <p style="${styles.text}">Hi ${partner.firstName}, your partner account for <strong>${partner.businessName}</strong> has been permanently removed from the Digital Concierge platform.</p>
+            <p style="${styles.text}">If you believe this was a mistake, please contact our support team at ${process.env.SUPPORT_EMAIL || 'support@digitalconcierge.com'}.</p>
+        </div>
+    `, 'Account Removed'),
+    textBody: `Hi ${partner.firstName}, your partner account for ${partner.businessName} has been removed. Contact support if this was a mistake.`,
+});
+
+const customerAccountDeleted = (customer) => ({
+    subject: 'Your Account Has Been Removed',
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeDanger}">Account Removed</span>
+            <h1 style="${styles.title};margin-top:16px">Account Removed</h1>
+            <p style="${styles.text}">Hi ${customer.firstName}, your Digital Concierge account has been permanently removed from the platform.</p>
+            <p style="${styles.text}">If you believe this was a mistake, please contact our support team at ${process.env.SUPPORT_EMAIL || 'support@digitalconcierge.com'}.</p>
+        </div>
+    `, 'Account Removed'),
+    textBody: `Hi ${customer.firstName}, your Digital Concierge account has been removed. Contact support if this was a mistake.`,
+});
+
 module.exports = {
     customer: {
         welcome: customerWelcome,
@@ -485,6 +530,7 @@ module.exports = {
         reviewRequest: customerReviewRequest,
         walletTopup: customerWalletTopup,
         accountChanged: customerAccountChanged,
+        accountDeleted: customerAccountDeleted,
     },
     partner: {
         welcome: partnerWelcome,
@@ -501,6 +547,8 @@ module.exports = {
         housekeepingAssigned: partnerHousekeepingAssigned,
         promotionCreated: partnerPromotionCreated,
         accountChanged: partnerAccountChanged,
+        newPartnerRegistration: partnerNewRegistration,
+        accountDeleted: partnerAccountDeleted,
     },
     dailyDigest,
 };

@@ -165,12 +165,14 @@ const deletePartner = async (req, res, next) => {
     try {
         const id = resolveId(req.params.id);
         let result = await AccommodationPartner.collection.findOneAndDelete({ _id: id });
-        if (!result) result = await RestaurantPartner.collection.findOneAndDelete({ _id: id });
-        if (!result) result = await TransportPartner.collection.findOneAndDelete({ _id: id });
+        let partnerType = 'accommodation';
+        if (!result) { result = await RestaurantPartner.collection.findOneAndDelete({ _id: id }); partnerType = 'restaurant'; }
+        if (!result) { result = await TransportPartner.collection.findOneAndDelete({ _id: id }); partnerType = 'transport'; }
         if (!result) return res.status(404).json({ success: false, message: 'Partner not found' });
 
-        res.json({ success: true, message: 'Partner permanently deleted' });
+        partnerEmails.sendAccountDeleted(result).catch(e => logger.error(`Delete notification failed: ${e.message}`));
+
+        res.json({ success: true, message: 'Partner permanently deleted and notified' });
     } catch (error) { next(error); }
 };
-
 module.exports = { getAllPartners, getPartner, approvePartner, suspendPartner, activatePartner, deletePartner };

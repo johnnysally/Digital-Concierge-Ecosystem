@@ -4,6 +4,7 @@ const { JWT_SECRET, JWT_EXPIRE } = require('../../config/env');
 const { generateToken, generateOTP } = require('../../utils/helpers');
 const { partner: partnerEmails } = require('../../services/emailService');
 const logger = require('../../utils/logger');
+const Admin = require('../../models/admin/Admin');
 
 const register = async (req, res, next) => {
     try {
@@ -17,6 +18,12 @@ const register = async (req, res, next) => {
         });
         const token = jwt.sign({ id: partner._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
         partnerEmails.sendRegistrationReceived(partner).catch(e => logger.error(`Registration email failed: ${e.message}`));
+        
+        const admins = await Admin.find({ isActive: true, 'permissions.partners': true });
+        for (const admin of admins) {
+            partnerEmails.sendNewPartnerNotification(admin, partner).catch(e => logger.error(`Admin notification failed: ${e.message}`));
+        }
+        
         res.status(201).json({ success: true, token, user: partner, message: 'Registration submitted. Awaiting admin approval.' });
     } catch (error) { next(error); }
 };
