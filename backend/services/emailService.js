@@ -192,4 +192,5 @@ module.exports = {
         sendAccountChanged: sendPartnerAccountChanged,
     },
     sendDailyDigest,
+    send,
 };

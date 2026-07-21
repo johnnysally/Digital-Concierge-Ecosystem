@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
-const { sendEmail } = require('../../services/emailService');
+const { send } = require('../../services/emailService');
 const logger = require('../../utils/logger');
 
 const BACKUP_DIR = path.join(__dirname, '..', '..', 'backups');
@@ -123,7 +123,7 @@ const restoreBackup = async (req, res, next) => {
         }
 
         logger.info(`Backup restored: ${req.params.filename}`);
-        res.json({ success: true, message: 'Backup restored successfully', collections: collections.length });
+        res.json({ success: true, message: 'Backup restored successfully. You will be logged out.', collections: collections.length });
     } catch (error) {
         logger.error(`Restore failed: ${error.message}`);
         next(error);
@@ -146,7 +146,7 @@ const uploadBackup = async (req, res, next) => {
         }
 
         logger.info(`Backup uploaded and restored by ${req.user.email}`);
-        res.json({ success: true, message: 'Backup uploaded and restored successfully', collections: collections.length });
+        res.json({ success: true, message: 'Backup uploaded and restored successfully. You will be logged out.', collections: collections.length });
     } catch (error) {
         logger.error(`Upload restore failed: ${error.message}`);
         next(error);
@@ -162,11 +162,11 @@ const sendBackupEmail = async (req, res, next) => {
         const backupContent = fs.readFileSync(filepath, 'utf-8');
         const stats = fs.statSync(filepath);
 
-        await sendEmail({
+        await send({
             to: email,
             subject: `Backup: ${req.params.filename}`,
-            htmlBody: `<h2>Digital Concierge Backup</h2><p><strong>File:</strong> ${req.params.filename}</p><p><strong>Size:</strong> ${(stats.size / 1024).toFixed(2)} KB</p><p><strong>Date:</strong> ${stats.birthtime}</p><pre style="max-height:400px;overflow:auto;background:#f5f5f5;padding:16px;border-radius:8px;font-size:12px;">${backupContent}</pre>`,
-            textBody: `Backup: ${req.params.filename}\nSize: ${(stats.size / 1024).toFixed(2)} KB\n\n${backupContent}`,
+            htmlBody: `<h2>Digital Concierge Backup</h2><p><strong>File:</strong> ${req.params.filename}</p><p><strong>Size:</strong> ${(stats.size / 1024).toFixed(2)} KB</p><p><strong>Date:</strong> ${stats.birthtime}</p><hr><pre style="max-height:300px;overflow:auto;background:#f5f5f5;padding:12px;border-radius:8px;font-size:11px;">${backupContent.substring(0, 10000)}</pre>`,
+            textBody: `Backup: ${req.params.filename}\nSize: ${(stats.size / 1024).toFixed(2)} KB\nDate: ${stats.birthtime}\n\n${backupContent.substring(0, 5000)}`,
         });
 
         res.json({ success: true, message: `Backup sent to ${email}` });

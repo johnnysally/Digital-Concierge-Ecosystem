@@ -16,7 +16,7 @@ const RegisterPage = () => {
         try {
             const response = await register(form);
             localStorage.setItem('digitalsafaris_accommodation', JSON.stringify({ token: response.token, user: response.user }));
-            navigate('/accommodation/dashboard', { replace: true });
+            navigate('/accommodation/login', { replace: true });
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Registration failed');
         } finally {

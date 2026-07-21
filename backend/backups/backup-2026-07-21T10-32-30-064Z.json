@@ -1,0 +1,1273 @@
+{
+  "bookings": [],
+  "accommodationpartners": [
+    {
+      "_id": "6a5b3d9c3a3f5f0510ff5327",
+      "firstName": "john",
+      "lastName": "mwas",
+      "email": "mwasjohn758@gmail.com",
+      "phone": "0759589399",
+      "avatar": null,
+      "businessName": "B2b q",
+      "businessType": "hotel",
+      "isVerified": true,
+      "isActive": false,
+      "preferences": {
+        "notifications": {
+          "email": true,
+          "sms": true,
+          "push": true
+        },
+        "portalSettings": {
+          "businessName": "B2b q",
+          "contactEmail": "mwasjohn758@gmail.com",
+          "contactPhone": "",
+          "address": "",
+          "timezone": "Africa/Nairobi",
+          "currency": "KES",
+          "language": "en",
+          "portalName": "Digital Safaris Accommodation",
+          "portalTagline": "Manage stays, reservations, and guest operations",
+          "accentColor": "#10b981",
+          "secondaryColor": "#0f766e",
+          "defaultView": "dashboard",
+          "allowInstantBooking": true,
+          "requireApproval": false,
+          "autoConfirmReservations": true,
+          "sendArrivalReminders": true,
+          "sendCheckoutReminders": true,
+          "sendHousekeepingAlerts": true,
+          "enableEmailNotifications": true,
+          "enableSmsNotifications": true,
+          "enableGuestMessaging": true,
+          "enableReviewRequests": true,
+          "paymentProvider": "stripe",
+          "calendarSync": true,
+          "cloudStorage": true,
+          "supportEmail": "mwasjohn758@gmail.com",
+          "supportPhone": "",
+          "termsUrl": "/terms",
+          "privacyUrl": "/privacy",
+          "maintenanceMode": false,
+          "themeMode": "light",
+          "themePreset": "ocean"
+        }
+      },
+      "verificationExpire": "2026-07-19T08:47:24.385Z",
+      "createdAt": "2026-07-18T08:47:24.444Z",
+      "updatedAt": "2026-07-18T11:39:00.298Z",
+      "__v": 0
+    }
+  ],
+  "restaurantpromotions": [],
+  "promotions": [],
+  "housekeepings": [],
+  "vehicles": [],
+  "restaurantpartners": [],
+  "admins": [
+    {
+      "_id": "6a5f4a741d89e39967c3717f",
+      "firstName": "Davix",
+      "lastName": "HDM",
+      "email": "davismcintyre5@gmail.com",
+      "role": "super_admin",
+      "avatar": null,
+      "isActive": true,
+      "permissions": {
+        "partners": true,
+        "customers": true,
+        "transactions": true,
+        "disputes": true,
+        "reports": true,
+        "settings": false
+      },
+      "createdAt": "2026-07-21T10:31:16.740Z",
+      "updatedAt": "2026-07-21T10:31:32.452Z",
+      "__v": 0,
+      "lastLogin": "2026-07-21T10:31:32.429Z"
+    },
+    {
+      "_id": "6a5f4a8d8dbe6e9eab882bb4",
+      "firstName": "mwas",
+      "lastName": "dev",
+      "email": "mwasjohn758@gmail.com",
+      "role": "super_admin",
+      "avatar": null,
+      "isActive": true,
+      "permissions": {
+        "partners": true,
+        "customers": true,
+        "transactions": true,
+        "disputes": true,
+        "reports": true,
+        "settings": false
+      },
+      "createdAt": "2026-07-21T10:31:41.500Z",
+      "updatedAt": "2026-07-21T10:32:06.871Z",
+      "__v": 0,
+      "lastLogin": "2026-07-21T10:32:06.862Z"
+    }
+  ],
+  "restaurantstaffs": [],
+  "menuitems": [],
+  "commissions": [],
+  "properties": [],
+  "chatmessages": [
+    {
+      "_id": "6a589f9beb471ebbbef3a549",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "customer",
+      "message": "hello",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:08:43.635Z",
+      "updatedAt": "2026-07-16T09:08:43.635Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a589f9feb471ebbbef3a556",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "ai",
+      "message": "Hello there! 👋 Welcome to Digital Concierge. How can I assist you with your travel plans or anything else today? 😊",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:08:47.128Z",
+      "updatedAt": "2026-07-16T09:08:47.128Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a589fafeb471ebbbef3a559",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "customer",
+      "message": "do you know nakuru",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:09:03.259Z",
+      "updatedAt": "2026-07-16T09:09:03.259Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a589fb2eb471ebbbef3a566",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "ai",
+      "message": "Sorry, I couldn't process that.",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:09:06.189Z",
+      "updatedAt": "2026-07-16T09:09:06.189Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a014eb471ebbbef3a569",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "customer",
+      "message": "do you know Nairobi",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:10:44.753Z",
+      "updatedAt": "2026-07-16T09:10:44.753Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a019eb471ebbbef3a576",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "ai",
+      "message": "Hello there! 👋\n\nYes, I certainly know about Nairobi – it's a vibrant city!\n\nHowever, our platform currently doesn't have any specific properties, rooms, restaurant items, or transport vehicles listed *for Nairobi* at the moment.\n\nIs there something specific you were hoping to find or book in Nairobi through our platform? I can direct you to the right page if you'd like to browse what might become available in the future! 😊",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:10:49.997Z",
+      "updatedAt": "2026-07-16T09:10:49.997Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a03beb471ebbbef3a579",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "customer",
+      "message": "any bnb around there",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:11:23.026Z",
+      "updatedAt": "2026-07-16T09:11:23.026Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a040eb471ebbbef3a586",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "ai",
+      "message": "I'm sorry, but it looks like we don't have any properties, including BnBs, listed on our platform at the moment. 😔\n\nYou can always check our Search page for the latest availability!",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:11:28.894Z",
+      "updatedAt": "2026-07-16T09:11:28.894Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a0daeb471ebbbef3a589",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "customer",
+      "message": "what about hotelsy",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:14:02.231Z",
+      "updatedAt": "2026-07-16T09:14:02.231Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a0deeb471ebbbef3a596",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "ai",
+      "message": "I'm sorry, but it looks like we don't have any hotels or properties listed on our platform at the moment. 🏨\n\nYou can always check our Search page for any updates on available accommodations in the future!",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:14:06.919Z",
+      "updatedAt": "2026-07-16T09:14:06.919Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a12eeb471ebbbef3a5a9",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "customer",
+      "message": "hello",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:15:26.257Z",
+      "updatedAt": "2026-07-16T09:15:26.257Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58a132eb471ebbbef3a5b6",
+      "customer": "6a5876e9ed7a109549290566",
+      "sender": "ai",
+      "message": "Hello there! 👋 I'm your Digital Concierge AI assistant, here to help you with all your travel needs.\n\nWhile our platform is still growing and we don't have any properties, rooms, menu items, or vehicles listed just yet, I'm happy to answer any general questions you might have or guide you on how things will work once we do!\n\nHow can I assist you today? 😊",
+      "suggestions": [],
+      "createdAt": "2026-07-16T09:15:30.889Z",
+      "updatedAt": "2026-07-16T09:15:30.889Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4a674b6e4a3aa3945f02",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "hello",
+      "suggestions": [],
+      "createdAt": "2026-07-17T15:29:43.117Z",
+      "updatedAt": "2026-07-17T15:29:43.117Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4a684b6e4a3aa3945f0f",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I'm here to help with your travel needs. I can assist with accommodations, dining, transport, bookings, payments, and local recommendations. What would you like to know?",
+      "suggestions": [
+        "Find a hotel",
+        "Order food",
+        "Book a ride",
+        "Check my bookings"
+      ],
+      "createdAt": "2026-07-17T15:29:44.281Z",
+      "updatedAt": "2026-07-17T15:29:44.281Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4a7a4b6e4a3aa3945f12",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "am in naivasha do you know hotels around me",
+      "suggestions": [],
+      "createdAt": "2026-07-17T15:30:02.224Z",
+      "updatedAt": "2026-07-17T15:30:02.224Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4a7a4b6e4a3aa3945f1f",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I found several great options for you. Based on your preferences, I recommend checking properties in the city center with ratings above 4.5. Would you like me to filter by budget or amenities?",
+      "suggestions": [
+        "Show budget-friendly options",
+        "Filter by pool and gym",
+        "Show family-friendly stays"
+      ],
+      "createdAt": "2026-07-17T15:30:02.653Z",
+      "updatedAt": "2026-07-17T15:30:02.653Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4a8c4b6e4a3aa3945f22",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "do so",
+      "suggestions": [],
+      "createdAt": "2026-07-17T15:30:20.565Z",
+      "updatedAt": "2026-07-17T15:30:20.565Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4a8c4b6e4a3aa3945f2f",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I'm here to help with your travel needs. I can assist with accommodations, dining, transport, bookings, payments, and local recommendations. What would you like to know?",
+      "suggestions": [
+        "Find a hotel",
+        "Order food",
+        "Book a ride",
+        "Check my bookings"
+      ],
+      "createdAt": "2026-07-17T15:30:20.890Z",
+      "updatedAt": "2026-07-17T15:30:20.890Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4ae04b6e4a3aa3945f32",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "how do i find a hotel in this system",
+      "suggestions": [],
+      "createdAt": "2026-07-17T15:31:44.233Z",
+      "updatedAt": "2026-07-17T15:31:44.233Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4ae04b6e4a3aa3945f3f",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I found several great options for you. Based on your preferences, I recommend checking properties in the city center with ratings above 4.5. Would you like me to filter by budget or amenities?",
+      "suggestions": [
+        "Show budget-friendly options",
+        "Filter by pool and gym",
+        "Show family-friendly stays"
+      ],
+      "createdAt": "2026-07-17T15:31:44.419Z",
+      "updatedAt": "2026-07-17T15:31:44.419Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4aec4b6e4a3aa3945f42",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "filter",
+      "suggestions": [],
+      "createdAt": "2026-07-17T15:31:56.203Z",
+      "updatedAt": "2026-07-17T15:31:56.203Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5a4aec4b6e4a3aa3945f4f",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I'm here to help with your travel needs. I can assist with accommodations, dining, transport, bookings, payments, and local recommendations. What would you like to know?",
+      "suggestions": [
+        "Find a hotel",
+        "Order food",
+        "Book a ride",
+        "Check my bookings"
+      ],
+      "createdAt": "2026-07-17T15:31:56.400Z",
+      "updatedAt": "2026-07-17T15:31:56.400Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b81054ab21ee1acce7ba4",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "is there any hotels posted already",
+      "suggestions": [],
+      "createdAt": "2026-07-18T13:35:01.870Z",
+      "updatedAt": "2026-07-18T13:35:01.870Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b810a4ab21ee1acce7bb1",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "Hello there! 👋\n\nCurrently, we don't have any hotels or properties listed on our platform. Our team is working hard to add exciting new options soon!\n\nYou can keep an eye on our Search page for updates as new properties become available. We'll be sure to let you know when they do! 😊",
+      "suggestions": [],
+      "createdAt": "2026-07-18T13:35:06.623Z",
+      "updatedAt": "2026-07-18T13:35:06.623Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b9994e1904d53db85216b",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "hello",
+      "suggestions": [],
+      "createdAt": "2026-07-18T15:19:48.148Z",
+      "updatedAt": "2026-07-18T15:19:48.148Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b9994e1904d53db852178",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I'm here to help with your travel needs. I can assist with accommodations, dining, transport, bookings, payments, and local recommendations. What would you like to know?",
+      "suggestions": [
+        "Find a hotel",
+        "Order food",
+        "Book a ride",
+        "Check my bookings"
+      ],
+      "createdAt": "2026-07-18T15:19:48.204Z",
+      "updatedAt": "2026-07-18T15:19:48.204Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b99afe1904d53db85217c",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "how do i make payments",
+      "suggestions": [],
+      "createdAt": "2026-07-18T15:20:15.163Z",
+      "updatedAt": "2026-07-18T15:20:15.163Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b99afe1904d53db852189",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "Your wallet is ready for payments. You can top up via M-Pesa or Stripe from the Wallet page. Would you like me to guide you?",
+      "suggestions": [
+        "Top up wallet",
+        "View payment history",
+        "Add payment method"
+      ],
+      "createdAt": "2026-07-18T15:20:15.196Z",
+      "updatedAt": "2026-07-18T15:20:15.196Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b99c4e1904d53db85218c",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "customer",
+      "message": "yes guide me on how to do it",
+      "suggestions": [],
+      "createdAt": "2026-07-18T15:20:36.523Z",
+      "updatedAt": "2026-07-18T15:20:36.523Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a5b99c4e1904d53db852199",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "sender": "ai",
+      "message": "I'm here to help with your travel needs. I can assist with accommodations, dining, transport, bookings, payments, and local recommendations. What would you like to know?",
+      "suggestions": [
+        "Find a hotel",
+        "Order food",
+        "Book a ride",
+        "Check my bookings"
+      ],
+      "createdAt": "2026-07-18T15:20:36.554Z",
+      "updatedAt": "2026-07-18T15:20:36.554Z",
+      "__v": 0
+    }
+  ],
+  "drivers": [],
+  "rooms": [],
+  "rides": [],
+  "staffs": [],
+  "transportpromotions": [],
+  "reservations": [],
+  "notifications": [],
+  "customers": [
+    {
+      "_id": "6a58a65feb471ebbbef3a5e8",
+      "firstName": "john",
+      "lastName": "mwas",
+      "email": "mwasjohn758@gmail.com",
+      "avatar": null,
+      "language": "en",
+      "currency": "KES",
+      "isVerified": false,
+      "isActive": true,
+      "twoFactorEnabled": false,
+      "preferences": {
+        "notifications": {
+          "email": true,
+          "sms": true,
+          "push": true
+        }
+      },
+      "verificationExpire": "2026-07-17T09:37:35.530Z",
+      "savedAddresses": [],
+      "createdAt": "2026-07-16T09:37:35.551Z",
+      "updatedAt": "2026-07-16T09:38:13.695Z",
+      "__v": 0,
+      "lastLogin": "2026-07-16T09:38:13.694Z"
+    }
+  ],
+  "reviews": [],
+  "orders": [],
+  "platformsettings": [
+    {
+      "_id": "6a589d5e4d3e7032f3567ff7",
+      "key": "site_name",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.068Z",
+      "description": "Platform name displayed across all apps",
+      "updatedAt": "2026-07-16T08:59:10.068Z",
+      "value": "Digital Concierge"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ff8",
+      "key": "site_tagline",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.102Z",
+      "description": "Short description below site name",
+      "updatedAt": "2026-07-16T08:59:10.102Z",
+      "value": "Your complete travel command center"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ff9",
+      "key": "site_description",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.106Z",
+      "description": "Meta description for SEO",
+      "updatedAt": "2026-07-16T08:59:10.106Z",
+      "value": "Unified platform for booking stays, ordering dining, arranging transport, and managing rewards."
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ffa",
+      "key": "site_logo",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.109Z",
+      "description": "URL to site logo",
+      "updatedAt": "2026-07-16T08:59:10.109Z",
+      "value": ""
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ffb",
+      "key": "site_favicon",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.111Z",
+      "description": "URL to favicon",
+      "updatedAt": "2026-07-16T08:59:10.111Z",
+      "value": ""
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ffc",
+      "key": "primary_color",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.114Z",
+      "description": "Primary brand color hex",
+      "updatedAt": "2026-07-16T08:59:10.114Z",
+      "value": "#3b82f6"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ffd",
+      "key": "secondary_color",
+      "__v": 0,
+      "category": "general",
+      "createdAt": "2026-07-16T08:59:10.116Z",
+      "description": "Secondary brand color hex",
+      "updatedAt": "2026-07-16T08:59:10.116Z",
+      "value": "#22c55e"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567ffe",
+      "key": "support_email",
+      "__v": 0,
+      "category": "contact",
+      "createdAt": "2026-07-16T08:59:10.118Z",
+      "description": "Customer support email",
+      "updatedAt": "2026-07-18T15:11:03.195Z",
+      "value": "support@digitalsafaris.com",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3567fff",
+      "key": "support_phone",
+      "__v": 0,
+      "category": "contact",
+      "createdAt": "2026-07-16T08:59:10.121Z",
+      "description": "Customer support phone",
+      "updatedAt": "2026-07-18T15:11:32.663Z",
+      "value": "+254 759 589 399",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568000",
+      "key": "support_hours",
+      "__v": 0,
+      "category": "contact",
+      "createdAt": "2026-07-16T08:59:10.123Z",
+      "description": "Support availability hours",
+      "updatedAt": "2026-07-16T08:59:10.123Z",
+      "value": "24/7"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568001",
+      "key": "emergency_contact",
+      "__v": 0,
+      "category": "contact",
+      "createdAt": "2026-07-16T08:59:10.125Z",
+      "description": "Emergency contact number",
+      "updatedAt": "2026-07-18T15:10:44.059Z",
+      "value": "+254 759 589 399",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568002",
+      "key": "admin_email",
+      "__v": 0,
+      "category": "contact",
+      "createdAt": "2026-07-16T08:59:10.127Z",
+      "description": "Admin notifications email",
+      "updatedAt": "2026-07-16T08:59:10.127Z",
+      "value": "admin@digitalconcierge.com"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568003",
+      "key": "default_currency",
+      "__v": 0,
+      "category": "localization",
+      "createdAt": "2026-07-16T08:59:10.129Z",
+      "description": "Default currency for all transactions",
+      "updatedAt": "2026-07-16T08:59:10.129Z",
+      "value": "KES"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568004",
+      "key": "default_language",
+      "__v": 0,
+      "category": "localization",
+      "createdAt": "2026-07-16T08:59:10.130Z",
+      "description": "Default language",
+      "updatedAt": "2026-07-16T08:59:10.130Z",
+      "value": "en"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568005",
+      "key": "timezone",
+      "__v": 0,
+      "category": "localization",
+      "createdAt": "2026-07-16T08:59:10.132Z",
+      "description": "Default timezone",
+      "updatedAt": "2026-07-16T08:59:10.132Z",
+      "value": "Africa/Nairobi"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568006",
+      "key": "date_format",
+      "__v": 0,
+      "category": "localization",
+      "createdAt": "2026-07-16T08:59:10.133Z",
+      "description": "Date display format",
+      "updatedAt": "2026-07-16T08:59:10.133Z",
+      "value": "MM/DD/YYYY"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568007",
+      "key": "available_currencies",
+      "__v": 0,
+      "category": "localization",
+      "createdAt": "2026-07-16T08:59:10.135Z",
+      "description": "Supported currencies",
+      "updatedAt": "2026-07-16T08:59:10.135Z",
+      "value": [
+        "KES",
+        "USD",
+        "EUR",
+        "GBP"
+      ]
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568008",
+      "key": "available_languages",
+      "__v": 0,
+      "category": "localization",
+      "createdAt": "2026-07-16T08:59:10.137Z",
+      "description": "Supported languages",
+      "updatedAt": "2026-07-16T08:59:10.137Z",
+      "value": [
+        "en",
+        "sw",
+        "fr"
+      ]
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568009",
+      "key": "email_provider",
+      "__v": 0,
+      "category": "email",
+      "createdAt": "2026-07-16T08:59:10.139Z",
+      "description": "Email service provider (brevo/hdm)",
+      "updatedAt": "2026-07-16T08:59:59.007Z",
+      "value": "hdm",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356800a",
+      "key": "email_from_name",
+      "__v": 0,
+      "category": "email",
+      "createdAt": "2026-07-16T08:59:10.141Z",
+      "description": "Sender name for emails",
+      "updatedAt": "2026-07-18T15:08:45.191Z",
+      "value": "Digital Safaris",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356800b",
+      "key": "email_from_address",
+      "__v": 0,
+      "category": "email",
+      "createdAt": "2026-07-16T08:59:10.143Z",
+      "description": "Sender email address",
+      "updatedAt": "2026-07-16T09:02:03.367Z",
+      "value": "davismcintyre5@gmail.com",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356800c",
+      "key": "email_footer_text",
+      "__v": 0,
+      "category": "email",
+      "createdAt": "2026-07-16T08:59:10.144Z",
+      "description": "Email footer text",
+      "updatedAt": "2026-07-18T15:08:28.593Z",
+      "value": "© Digital Safaris. All rights reserved.",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356800d",
+      "key": "welcome_email_enabled",
+      "__v": 0,
+      "category": "email",
+      "createdAt": "2026-07-16T08:59:10.147Z",
+      "description": "Send welcome email on registration",
+      "updatedAt": "2026-07-16T08:59:10.147Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356800e",
+      "key": "booking_confirmation_enabled",
+      "__v": 0,
+      "category": "email",
+      "createdAt": "2026-07-16T08:59:10.149Z",
+      "description": "Send booking confirmation email",
+      "updatedAt": "2026-07-16T08:59:10.149Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356800f",
+      "key": "payment_methods",
+      "__v": 0,
+      "category": "payment",
+      "createdAt": "2026-07-16T08:59:10.151Z",
+      "description": "Available payment methods",
+      "updatedAt": "2026-07-16T08:59:10.151Z",
+      "value": [
+        "stripe",
+        "mpesa",
+        "wallet",
+        "airtel"
+      ]
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568010",
+      "key": "commission_accommodation",
+      "__v": 0,
+      "category": "payment",
+      "createdAt": "2026-07-16T08:59:10.153Z",
+      "description": "Commission percentage for accommodation",
+      "updatedAt": "2026-07-16T08:59:10.153Z",
+      "value": 10
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568011",
+      "key": "commission_restaurant",
+      "__v": 0,
+      "category": "payment",
+      "createdAt": "2026-07-16T08:59:10.155Z",
+      "description": "Commission percentage for restaurants",
+      "updatedAt": "2026-07-16T08:59:10.155Z",
+      "value": 15
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568012",
+      "key": "commission_transport",
+      "__v": 0,
+      "category": "payment",
+      "createdAt": "2026-07-16T08:59:10.157Z",
+      "description": "Commission percentage for transport",
+      "updatedAt": "2026-07-16T08:59:10.157Z",
+      "value": 12
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568013",
+      "key": "min_payout",
+      "__v": 0,
+      "category": "payment",
+      "createdAt": "2026-07-16T08:59:10.159Z",
+      "description": "Minimum payout amount",
+      "updatedAt": "2026-07-16T08:59:10.159Z",
+      "value": 50
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568014",
+      "key": "payout_schedule",
+      "__v": 0,
+      "category": "payment",
+      "createdAt": "2026-07-16T08:59:10.161Z",
+      "description": "Payout frequency",
+      "updatedAt": "2026-07-16T08:59:10.161Z",
+      "value": "weekly"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568015",
+      "key": "max_login_attempts",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.163Z",
+      "description": "Max failed login attempts before lockout",
+      "updatedAt": "2026-07-16T08:59:10.163Z",
+      "value": 5
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568016",
+      "key": "session_timeout",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.165Z",
+      "description": "Session timeout in minutes",
+      "updatedAt": "2026-07-16T08:59:10.165Z",
+      "value": 60
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568017",
+      "key": "two_factor_required",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.167Z",
+      "description": "Require 2FA for all users",
+      "updatedAt": "2026-07-16T08:59:10.167Z",
+      "value": false
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568018",
+      "key": "password_min_length",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.169Z",
+      "description": "Minimum password length",
+      "updatedAt": "2026-07-16T08:59:10.169Z",
+      "value": 6
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568019",
+      "key": "maintenance_mode",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.171Z",
+      "description": "Put platform in maintenance mode",
+      "updatedAt": "2026-07-16T08:59:10.171Z",
+      "value": false
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356801a",
+      "key": "backup_auto_enabled",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.172Z",
+      "description": "Enable automatic backups",
+      "updatedAt": "2026-07-16T08:59:10.172Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356801b",
+      "key": "backup_frequency",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.174Z",
+      "description": "Backup frequency (daily/weekly/monthly)",
+      "updatedAt": "2026-07-16T08:59:10.174Z",
+      "value": "daily"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356801c",
+      "key": "backup_email_enabled",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.176Z",
+      "description": "Email backup after creation",
+      "updatedAt": "2026-07-16T08:59:10.176Z",
+      "value": false
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356801d",
+      "key": "backup_email_address",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.177Z",
+      "description": "Email to send backups to",
+      "updatedAt": "2026-07-16T08:59:10.177Z",
+      "value": "admin@digitalconcierge.com"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356801e",
+      "key": "backup_retention_days",
+      "__v": 0,
+      "category": "security",
+      "createdAt": "2026-07-16T08:59:10.179Z",
+      "description": "Days to keep backups before deletion",
+      "updatedAt": "2026-07-16T08:59:10.179Z",
+      "value": 30
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356801f",
+      "key": "ai_provider",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.181Z",
+      "description": "AI provider: keyword, openai, hdm",
+      "updatedAt": "2026-07-16T09:03:39.271Z",
+      "value": "hdm",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568020",
+      "key": "ai_model",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.183Z",
+      "description": "AI model (for OpenAI)",
+      "updatedAt": "2026-07-16T09:03:22.831Z",
+      "value": "hdm",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568021",
+      "key": "ai_max_tokens",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.185Z",
+      "description": "Max tokens per response",
+      "updatedAt": "2026-07-16T08:59:10.185Z",
+      "value": 500
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568022",
+      "key": "ai_temperature",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.186Z",
+      "description": "AI creativity level (0-1)",
+      "updatedAt": "2026-07-16T08:59:10.186Z",
+      "value": 0.7
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568023",
+      "key": "ai_welcome_message",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.188Z",
+      "description": "Welcome message from AI",
+      "updatedAt": "2026-07-18T15:09:27.577Z",
+      "value": "Hello! I'm your Digital Safaris. How can I help you today?",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568024",
+      "key": "ai_suggestions_enabled",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.190Z",
+      "description": "Show AI suggestions after responses",
+      "updatedAt": "2026-07-16T08:59:10.190Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568025",
+      "key": "openai_api_key",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.192Z",
+      "description": "OpenAI API key",
+      "updatedAt": "2026-07-16T08:59:10.192Z",
+      "value": ""
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568026",
+      "key": "hdm_ai_url",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.194Z",
+      "description": "HDM AI base URL",
+      "updatedAt": "2026-07-16T09:04:38.185Z",
+      "value": "https://hdmaiserver.pxxl.click",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568027",
+      "key": "hdm_ai_api_key",
+      "__v": 0,
+      "category": "ai",
+      "createdAt": "2026-07-16T08:59:10.196Z",
+      "description": "HDM AI API key",
+      "updatedAt": "2026-07-16T09:07:47.920Z",
+      "value": "hdm_gen_df24ac04a5928e8278c9a116bcacc883b84780dcb72cf942",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568028",
+      "key": "push_enabled",
+      "__v": 0,
+      "category": "notifications",
+      "createdAt": "2026-07-16T08:59:10.198Z",
+      "description": "Enable push notifications",
+      "updatedAt": "2026-07-16T08:59:10.198Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568029",
+      "key": "sms_enabled",
+      "__v": 0,
+      "category": "notifications",
+      "createdAt": "2026-07-16T08:59:10.200Z",
+      "description": "Enable SMS notifications",
+      "updatedAt": "2026-07-16T08:59:10.200Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356802a",
+      "key": "email_notifications_enabled",
+      "__v": 0,
+      "category": "notifications",
+      "createdAt": "2026-07-16T08:59:10.202Z",
+      "description": "Enable email notifications",
+      "updatedAt": "2026-07-16T08:59:10.202Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356802b",
+      "key": "order_updates_enabled",
+      "__v": 0,
+      "category": "notifications",
+      "createdAt": "2026-07-16T08:59:10.204Z",
+      "description": "Send order status updates",
+      "updatedAt": "2026-07-16T08:59:10.204Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356802c",
+      "key": "booking_reminders_enabled",
+      "__v": 0,
+      "category": "notifications",
+      "createdAt": "2026-07-16T08:59:10.206Z",
+      "description": "Send booking reminders",
+      "updatedAt": "2026-07-16T08:59:10.206Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356802d",
+      "key": "google_maps_api_key",
+      "__v": 0,
+      "category": "integrations",
+      "createdAt": "2026-07-16T08:59:10.208Z",
+      "description": "Google Maps API key",
+      "updatedAt": "2026-07-16T08:59:10.208Z",
+      "value": ""
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356802e",
+      "key": "stripe_public_key",
+      "__v": 0,
+      "category": "integrations",
+      "createdAt": "2026-07-16T08:59:10.210Z",
+      "description": "Stripe publishable key",
+      "updatedAt": "2026-07-16T08:59:10.210Z",
+      "value": ""
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356802f",
+      "key": "cloudinary_enabled",
+      "__v": 0,
+      "category": "integrations",
+      "createdAt": "2026-07-16T08:59:10.212Z",
+      "description": "Enable Cloudinary for images",
+      "updatedAt": "2026-07-16T08:59:10.212Z",
+      "value": true
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568030",
+      "key": "sms_provider",
+      "__v": 0,
+      "category": "integrations",
+      "createdAt": "2026-07-16T08:59:10.214Z",
+      "description": "SMS provider",
+      "updatedAt": "2026-07-16T08:59:10.214Z",
+      "value": "twilio"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568031",
+      "key": "terms_url",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.216Z",
+      "description": "Terms of service URL",
+      "updatedAt": "2026-07-16T08:59:10.216Z",
+      "value": "/terms"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568032",
+      "key": "privacy_url",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.218Z",
+      "description": "Privacy policy URL",
+      "updatedAt": "2026-07-16T08:59:10.218Z",
+      "value": "/privacy"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568033",
+      "key": "refund_policy_url",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.219Z",
+      "description": "Refund policy URL",
+      "updatedAt": "2026-07-16T08:59:10.219Z",
+      "value": "/refunds"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568034",
+      "key": "company_name",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.221Z",
+      "description": "Legal company name",
+      "updatedAt": "2026-07-16T08:59:10.221Z",
+      "value": "Digital Concierge Ltd"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568035",
+      "key": "company_address",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.222Z",
+      "description": "Company address",
+      "updatedAt": "2026-07-16T08:59:10.222Z",
+      "value": "Nairobi, Kenya"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568036",
+      "key": "terms_content",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.224Z",
+      "description": "terms page content",
+      "updatedAt": "2026-07-18T15:11:50.822Z",
+      "value": "<h2>Terms and Conditions</h2><p>Welcome to Digital Safaris. By using our platform, you agree to these terms.</p>",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568037",
+      "key": "terms_updated",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.225Z",
+      "description": "terms last updated",
+      "updatedAt": "2026-07-18T15:11:50.831Z",
+      "value": "2026-07-18T15:11:50.830Z",
+      "updatedBy": "6a589785253ce5a727bbfaec"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568038",
+      "key": "privacy_content",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.227Z",
+      "description": "Privacy policy page content",
+      "updatedAt": "2026-07-16T08:59:10.227Z",
+      "value": "<h2>Privacy Policy</h2><p>We value your privacy. This policy explains how we collect and use your data.</p>"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f3568039",
+      "key": "privacy_updated",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.228Z",
+      "description": "Privacy policy last updated date",
+      "updatedAt": "2026-07-16T08:59:10.228Z",
+      "value": "2026-07-16T08:59:10.029Z"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356803a",
+      "key": "cookies_content",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.230Z",
+      "description": "Cookie policy page content",
+      "updatedAt": "2026-07-16T08:59:10.230Z",
+      "value": "<h2>Cookie Policy</h2><p>We use cookies to enhance your experience. Learn about our cookie practices.</p>"
+    },
+    {
+      "_id": "6a589d5e4d3e7032f356803b",
+      "key": "cookies_updated",
+      "__v": 0,
+      "category": "legal",
+      "createdAt": "2026-07-16T08:59:10.231Z",
+      "description": "Cookie policy last updated date",
+      "updatedAt": "2026-07-16T08:59:10.231Z",
+      "value": "2026-07-16T08:59:10.029Z"
+    }
+  ],
+  "supporttickets": [],
+  "wallets": [
+    {
+      "_id": "6a587751ed7a109549290576",
+      "customer": "6a5876e9ed7a109549290566",
+      "balance": 0,
+      "currency": "KES",
+      "rewardsPoints": 0,
+      "savedMethods": [],
+      "transactions": [],
+      "createdAt": "2026-07-16T06:16:49.581Z",
+      "updatedAt": "2026-07-16T06:16:49.581Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a58b4f4eb471ebbbef3a5fb",
+      "customer": "6a58a65feb471ebbbef3a5e8",
+      "balance": 0,
+      "currency": "KES",
+      "rewardsPoints": 0,
+      "savedMethods": [],
+      "transactions": [],
+      "createdAt": "2026-07-16T10:39:48.884Z",
+      "updatedAt": "2026-07-16T10:39:48.884Z",
+      "__v": 0
+    }
+  ],
+  "payments": [],
+  "transportpartners": [
+    {
+      "_id": "6a5e2e6ee1904d53db852bf5",
+      "firstName": "john",
+      "lastName": "mwangi",
+      "email": "mwasjohn758@gmail.com",
+      "phone": "0759589399",
+      "avatar": null,
+      "businessName": "Quantix Transporters",
+      "businessType": "ride_hailing",
+      "isVerified": true,
+      "isActive": true,
+      "preferences": {
+        "notifications": {
+          "email": true,
+          "sms": true,
+          "push": true
+        }
+      },
+      "verificationExpire": "2026-07-21T14:19:26.337Z",
+      "createdAt": "2026-07-20T14:19:26.384Z",
+      "updatedAt": "2026-07-20T16:03:28.073Z",
+      "__v": 0,
+      "lastLogin": "2026-07-20T16:03:28.067Z"
+    }
+  ],
+  "documents": [],
+  "disputes": [],
+  "metadata": {
+    "version": "2.0.0",
+    "timestamp": "2026-07-21T10:32:37.637Z",
+    "collections": 30,
+    "createdBy": "davismcintyre5@gmail.com",
+    "size": 30793
+  }
+}

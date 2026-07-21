@@ -1,0 +1,31 @@
+{
+  "watch": [
+    "server.js",
+    "config/",
+    "models/",
+    "middleware/",
+    "validators/",
+    "controllers/",
+    "routes/",
+    "services/",
+    "utils/",
+    "scripts/",
+    "templates/",
+    ".env"
+  ],
+  "ext": "js,json,html,txt,env,mjs,cjs",
+  "ignore": [
+    "node_modules/",
+    "logs/",
+    "uploads/",
+    "backups/",
+    "tests/",
+    ".git/"
+  ],
+  "delay": "500",
+  "verbose": true,
+  "events": {
+    "restart": "echo '🔄 Server restarted at' $(date '+%H:%M:%S')",
+    "crash": "echo '❌ Server crashed. Check logs for details.'"
+  }
+}
