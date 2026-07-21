@@ -25,19 +25,17 @@ const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const partner = await TransportPartner.findOne({ email }).select('+password');
-        if (!partner) return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        if (!partner) return res.status(401).json({ success: false, message: 'Invalid email or password.' });
         const isMatch = await partner.comparePassword(password);
-        if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
-        if (!partner.isVerified || !partner.isActive) {
-            return res.status(403).json({ success: false, message: 'Account pending approval. Please wait for admin verification.' });
-        }
+        if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+        if (!partner.isVerified) return res.status(403).json({ success: false, message: 'Your account is pending admin approval. You will receive an email once approved.', code: 'PENDING_APPROVAL' });
+        if (!partner.isActive) return res.status(403).json({ success: false, message: 'Your account has been suspended. Please contact support.', code: 'ACCOUNT_SUSPENDED' });
         partner.lastLogin = new Date();
         await partner.save();
         const token = jwt.sign({ id: partner._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
         res.json({ success: true, token, user: partner });
     } catch (error) { next(error); }
 };
-
 const getProfile = async (req, res, next) => {
     try { const partner = await TransportPartner.findById(req.user._id); res.json({ success: true, user: partner }); }
     catch (error) { next(error); }

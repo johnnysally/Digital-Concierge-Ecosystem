@@ -138,7 +138,14 @@ const PropertyEditPage = () => {
         <div className="space-y-6">
             <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Property</p>
-                <h2 className="mt-2 text-2xl font-semibold text-white">{id ? 'Edit Property' : 'Add New Property'}</h2>
+                <h2 className="mt-2 text-2xl font-semibold text-white">
+                    {id ? `Edit: ${form.name || 'Property'}` : 'Add New Property'}
+                </h2>
+                {id && (
+                    <p className="mt-1 text-sm text-slate-400">
+                        Property ID: <span className="font-mono text-slate-500">{id}</span>
+                    </p>
+                )}
             </div>
 
             {error ? <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">{error}</div> : null}
