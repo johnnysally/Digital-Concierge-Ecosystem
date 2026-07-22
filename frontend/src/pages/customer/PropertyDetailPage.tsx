@@ -16,6 +16,7 @@ const PropertyDetailPage = () => {
     const [rooms, setRooms] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState<any>(null);
+    const [viewingPhotos, setViewingPhotos] = useState<string | null>(null);
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [guests, setGuests] = useState(1);
@@ -27,10 +28,7 @@ const PropertyDetailPage = () => {
     useEffect(() => {
         if (!id) return;
         getProperty(id)
-            .then((res) => {
-                setProperty(res.property);
-                setRooms(res.rooms || []);
-            })
+            .then((res) => { setProperty(res.property); setRooms(res.rooms || []); })
             .catch(() => setError('Unable to load property.'))
             .finally(() => setLoading(false));
     }, [id]);
@@ -45,15 +43,8 @@ const PropertyDetailPage = () => {
         setError('');
         setMessage('');
         try {
-            await createBooking({
-                propertyId: property._id,
-                roomId: selectedRoom._id,
-                checkIn,
-                checkOut,
-                guests,
-                specialRequests,
-            });
-            setMessage('Booking confirmed! View it in your bookings page.');
+            await createBooking({ propertyId: property._id, roomId: selectedRoom._id, checkIn, checkOut, guests, specialRequests });
+            setMessage('Booking request sent! Awaiting partner confirmation.');
             setSelectedRoom(null);
             setCheckIn('');
             setCheckOut('');
@@ -89,7 +80,8 @@ const PropertyDetailPage = () => {
                             <div className="grid gap-3 sm:grid-cols-2">
                                 {property.photos.slice(0, 4).map((photo: string, index: number) => (
                                     <img key={index} src={photo} alt={`${property.name} ${index + 1}`}
-                                        className="h-48 w-full rounded-2xl object-cover" />
+                                        className="h-48 w-full rounded-2xl object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                        onClick={() => setViewingPhotos(photo)} />
                                 ))}
                             </div>
                         </div>
@@ -111,26 +103,71 @@ const PropertyDetailPage = () => {
 
                     <div className={cardClass}>
                         <h3 className="text-lg font-semibold text-white">Available Rooms ({rooms.length})</h3>
-                        <div className="mt-4 space-y-3">
+                        <div className="mt-4 space-y-4">
                             {rooms.length === 0 ? (
                                 <p className="text-sm text-slate-400">No rooms available at the moment.</p>
                             ) : (
                                 rooms.map((room) => (
-                                    <div key={room._id} onClick={() => setSelectedRoom(room)}
-                                        className={`p-4 rounded-xl cursor-pointer border-2 transition-colors ${selectedRoom?._id === room._id ? 'border-sky-500 bg-sky-500/10' : isDark ? 'border-slate-800 bg-slate-950 hover:border-sky-700' : 'border-gray-200 bg-gray-50 hover:border-sky-300'}`}>
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="font-semibold text-white capitalize">{room.type} - Room {room.roomNumber}</p>
-                                                <p className="text-xs text-slate-400 mt-1">Capacity: {room.capacity} guests</p>
-                                                <div className="flex gap-2 mt-2">
-                                                    {room.amenities?.slice(0, 3).map((a: string) => (
-                                                        <span key={a} className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-slate-500'}`}>{a}</span>
-                                                    ))}
+                                    <div key={room._id} className={`rounded-xl border-2 transition-all duration-200 overflow-hidden ${
+                                        selectedRoom?._id === room._id
+                                            ? 'border-sky-500 bg-sky-500/10 shadow-lg shadow-sky-500/10'
+                                            : isDark ? 'border-slate-800 bg-slate-950 hover:border-slate-700' : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                                    }`}>
+                                        {room.photos?.length > 0 && (
+                                            <div className="relative h-44 overflow-hidden cursor-pointer group"
+                                                onClick={() => setSelectedRoom(selectedRoom?._id === room._id ? null : room)}>
+                                                <img src={room.photos[0]} alt={`Room ${room.roomNumber}`}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                                                {room.photos.length > 1 && (
+                                                    <span className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+                                                        📷 {room.photos.length} photos
+                                                    </span>
+                                                )}
+                                                <div className="absolute top-3 left-3 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+                                                    Click to {selectedRoom?._id === room._id ? 'deselect' : 'select'}
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-xl font-bold text-white">{formatCurrency(room.price)}</p>
-                                                <p className="text-xs text-slate-400">per night</p>
+                                        )}
+                                        <div className="p-4">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <p className="font-semibold text-white capitalize text-lg">{room.type} Room</p>
+                                                    <p className="text-sm text-slate-400 mt-0.5">Room {room.roomNumber} · {room.capacity} guest{room.capacity > 1 ? 's' : ''}{room.floor ? ` · Floor ${room.floor}` : ''}</p>
+                                                    <div className="flex gap-2 mt-3 flex-wrap">
+                                                        {room.amenities?.slice(0, 4).map((a: string) => (
+                                                            <span key={a} className={`text-xs px-2.5 py-1 rounded-full ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-gray-200 text-slate-600'}`}>{a}</span>
+                                                        ))}
+                                                        {(room.amenities?.length || 0) > 4 && (
+                                                            <span className={`text-xs px-2.5 py-1 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-slate-500'}`}>+{room.amenities.length - 4} more</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="text-right ml-4">
+                                                    <p className="text-2xl font-bold text-white">{formatCurrency(room.price)}</p>
+                                                    <p className="text-xs text-slate-400">per night</p>
+                                                    {room.status !== 'available' && (
+                                                        <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-xs bg-amber-500/20 text-amber-400 capitalize">{room.status}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 mt-4">
+                                                <button
+                                                    onClick={() => setSelectedRoom(selectedRoom?._id === room._id ? null : room)}
+                                                    className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                                                        selectedRoom?._id === room._id
+                                                            ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/25'
+                                                            : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-gray-200 text-slate-600 hover:bg-gray-300'
+                                                    }`}>
+                                                    {selectedRoom?._id === room._id ? '✓ Selected' : 'Select This Room'}
+                                                </button>
+                                                {room.photos?.length > 0 && (
+                                                    <button
+                                                        onClick={() => setViewingPhotos(room.photos[0])}
+                                                        className="rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors bg-slate-800 text-slate-300 hover:bg-slate-700">
+                                                        📷 View Photos
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -152,7 +189,16 @@ const PropertyDetailPage = () => {
                             <div className="mt-4 space-y-4">
                                 <div>
                                     <label className="block text-sm text-slate-400 mb-2">Selected Room</label>
-                                    <div className={inputClass}>{selectedRoom ? `${selectedRoom.type} - Room ${selectedRoom.roomNumber}` : 'Select a room above'}</div>
+                                    <div className={inputClass}>
+                                        {selectedRoom ? (
+                                            <div className="flex items-center justify-between">
+                                                <span>{selectedRoom.type} - Room {selectedRoom.roomNumber}</span>
+                                                <button onClick={() => setSelectedRoom(null)} className="text-xs text-slate-500 hover:text-red-400">Clear</button>
+                                            </div>
+                                        ) : (
+                                            <span className="text-slate-500">Select a room below</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm text-slate-400 mb-2">Check-in *</label>
@@ -172,8 +218,7 @@ const PropertyDetailPage = () => {
                                     <label className="block text-sm text-slate-400 mb-2">Special Requests</label>
                                     <textarea value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)}
                                         placeholder="Any special requests, late check-in, etc."
-                                        rows={2}
-                                        className={inputClass + ' resize-none'} />
+                                        rows={2} className={inputClass + ' resize-none'} />
                                 </div>
                                 {selectedRoom && checkIn && checkOut && (
                                     <div className={`p-4 rounded-xl ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
@@ -185,13 +230,26 @@ const PropertyDetailPage = () => {
                                 )}
                                 <button onClick={handleBook} disabled={booking || !selectedRoom || !checkIn || !checkOut}
                                     className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                                    {booking ? 'Booking...' : 'Confirm Booking'}
+                                    {booking ? 'Booking...' : 'Request Booking'}
                                 </button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
+
+            {viewingPhotos && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+                    onClick={() => setViewingPhotos(null)}>
+                    <div className="relative max-w-3xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                        <img src={viewingPhotos} alt="Room photo" className="max-w-full max-h-[85vh] rounded-2xl object-contain" />
+                        <button onClick={() => setViewingPhotos(null)}
+                            className="absolute top-4 right-4 bg-black/60 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl hover:bg-black/80 transition-colors">
+                            ×
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

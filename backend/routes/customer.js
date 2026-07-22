@@ -9,5 +9,6 @@ router.use('/wallet', require('./customer/walletRoutes'));
 router.use('/orders', require('./customer/orderRoutes'));
 router.use('/rides', require('./customer/rideRoutes'));
 router.use('/support', require('./customer/supportRoutes'));
+router.use('/dashboard', require('./customer/dashboardRoutes'));
 
 module.exports = router;

@@ -1,7 +1,8 @@
 const Room = require('../../models/accommodation/Room');
 const Property = require('../../models/accommodation/Property');
-const path = require('path');
+const cloudinary = require('../../config/cloudinary');
 const fs = require('fs');
+const logger = require('../../utils/logger');
 
 const createRoom = async (req, res, next) => {
     try {
@@ -55,9 +56,22 @@ const uploadRoomImages = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'No images uploaded' });
         }
 
-        const urls = req.files.map((file) => `/uploads/${file.filename}`);
-        res.json({ success: true, images: urls });
+        const uploadPromises = req.files.map(file => {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload(file.path, {
+                    folder: 'digital-safaris/rooms',
+                }, (error, result) => {
+                    fs.unlink(file.path, () => {});
+                    if (error) reject(error);
+                    else resolve(result.secure_url);
+                });
+            });
+        });
+
+        const imageUrls = await Promise.all(uploadPromises);
+        res.json({ success: true, images: imageUrls });
     } catch (error) {
+        logger.error(`Room image upload failed: ${error.message}`);
         next(error);
     }
 };
