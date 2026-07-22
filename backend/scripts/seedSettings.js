@@ -83,6 +83,7 @@ const defaultSettings = [
     { key: 'privacy_updated', value: new Date().toISOString(), category: 'legal', description: 'Privacy policy last updated timestamp' },
     { key: 'cookies_content', value: '<h2>Cookie Policy</h2><p>We use cookies to enhance your experience. Learn about our cookie practices and how to manage them.</p><p>Last updated: ' + new Date().toISOString().split('T')[0] + '</p>', category: 'legal', description: 'Full cookie policy HTML content' },
     { key: 'cookies_updated', value: new Date().toISOString(), category: 'legal', description: 'Cookie policy last updated timestamp' },
+    { key: 'google_maps_api_key', value: 'YOUR_GOOGLE_MAPS_API_KEY', category: 'integrations', description: 'Google Maps API key for maps and geolocation' },
 ];
 
 mongoose.connect(process.env.MONGO_URI).then(async () => {
