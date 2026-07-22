@@ -8,6 +8,8 @@ const groups = [
         title: 'General',
         items: [
             { label: 'Dashboard', path: '/', icon: '🏠' },
+            { label: 'Food', path: '/food', icon: '🍽️' },
+            { label: 'Transport', path: '/transport', icon: '🚗' },
             { label: 'Notifications', path: '/notifications', icon: '🔔' },
             { label: 'AI Assistant', path: '/chat', icon: '🤖' },
         ],
@@ -18,18 +20,6 @@ const groups = [
             { label: 'Search Stays', path: '/search', icon: '🔍' },
             { label: 'Bookings', path: '/bookings', icon: '📅' },
             { label: 'Reviews', path: '/reviews', icon: '⭐' },
-        ],
-    },
-    {
-        title: 'Food & Dining',
-        items: [
-            { label: 'Browse Restaurants', path: '/food', icon: '🍽️' },
-        ],
-    },
-    {
-        title: 'Transport',
-        items: [
-            { label: 'Request Ride', path: '/transport', icon: '🚗' },
         ],
     },
     {

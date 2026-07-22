@@ -13,7 +13,6 @@ const groups = [
     {
         title: 'People',
         items: [
-            { label: 'Staff', path: '/restaurant-admin/staff', icon: '👥' },
             { label: 'Reviews', path: '/restaurant-admin/reviews', icon: '⭐' },
         ],
     },
