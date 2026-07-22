@@ -49,7 +49,7 @@ const createBooking = async (req, res, next) => {
             guests: guests || 1,
             totalAmount,
             specialRequests,
-            status: 'confirmed',
+            status: 'pending',
         });
 
         room.status = 'occupied';
@@ -64,13 +64,13 @@ const createBooking = async (req, res, next) => {
             checkOut: checkOutDate.toISOString().split('T')[0],
             guests: guests || 1,
             totalAmount,
-        }).catch(e => logger.error(`Booking confirmation email failed: ${e.message}`));
+        }).catch(e => logger.error(`Booking email failed: ${e.message}`));
 
         createNotification({
             customerId: req.user._id,
             type: 'booking',
-            title: 'Booking Confirmed',
-            message: `Your stay at ${property.name} is confirmed for ${checkInDate.toISOString().split('T')[0]}.`,
+            title: 'Booking Request Sent',
+            message: `Your booking request for ${property.name} is pending partner confirmation.`,
             link: `/bookings/${booking._id}`,
         }).catch(e => logger.error(`Notification failed: ${e.message}`));
 
@@ -89,12 +89,12 @@ const createBooking = async (req, res, next) => {
             createNotification({
                 customerId: partner._id,
                 type: 'booking',
-                title: 'New Reservation',
-                message: `${customerName} booked ${property.name} - Room ${room.roomNumber}.`,
+                title: 'New Booking Request',
+                message: `${customerName} requested to book ${property.name} - Room ${room.roomNumber}. Awaiting your confirmation.`,
             }).catch(e => logger.error(`Partner notification failed: ${e.message}`));
         }
 
-        res.status(201).json({ success: true, booking });
+        res.status(201).json({ success: true, booking, message: 'Booking request sent. Awaiting partner confirmation.' });
     } catch (error) {
         next(error);
     }
@@ -157,7 +157,7 @@ const cancelBooking = async (req, res, next) => {
             refundStatus: 'Processing',
         }).catch(e => logger.error(`Cancellation email failed: ${e.message}`));
 
-        res.json({ success: true, booking });
+        res.json({ success: true, booking, message: 'Booking cancelled. Refund is being processed.' });
     } catch (error) {
         next(error);
     }
