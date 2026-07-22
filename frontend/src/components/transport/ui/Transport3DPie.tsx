@@ -47,7 +47,7 @@ const Transport3DPie = ({ data, colors = defaultColors, height = '100%' }: { dat
     };
 
     return (
-        <div style={{ width: '100%', height, minHeight: 240, backgroundColor: '#0f172a' }} className="relative rounded-3xl p-3 shadow-xl shadow-black/20">
+        <div style={{ width: '100%', height, minHeight: 320, backgroundColor: '#0f172a' }} className="relative rounded-3xl p-3 shadow-xl shadow-black/20">
             <div className="absolute left-4 top-4 text-xs uppercase tracking-[0.24em] text-slate-300">Distribution</div>
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>

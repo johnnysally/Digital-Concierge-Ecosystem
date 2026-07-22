@@ -192,7 +192,7 @@ const DashboardPage = () => {
                 <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-sm">
                     <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Wallet health</p>
                     <p className="mt-4 text-sm text-slate-400">{walletInfo.available ? 'Wallet tracking is active for your transport payments.' : 'Wallet data is unavailable for transport at this time.'}</p>
-                    <div className="mt-6 grid gap-3">
+                    <div className="mt-6 flex flex-col gap-8">
                         <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3">
                             <p className="text-sm text-slate-300">Payment status distribution</p>
                             <div className="mt-3 h-48">
@@ -201,7 +201,7 @@ const DashboardPage = () => {
                         </div>
                         <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3">
                             <p className="text-sm text-slate-300">Ride status distribution</p>
-                            <div className="mt-3 h-48">
+                            <div className="mt-3 h-72 min-h-[24rem]">
                                 <Transport3DPie data={rideStatusDistribution} />
                             </div>
                         </div>
