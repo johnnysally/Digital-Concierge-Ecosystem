@@ -1,8 +1,8 @@
 const Property = require('../../models/accommodation/Property');
+const cloudinary = require('../../config/cloudinary');
+const fs = require('fs');
 const { partner: partnerEmails } = require('../../services/emailService');
 const logger = require('../../utils/logger');
-const path = require('path');
-const fs = require('fs');
 
 const createProperty = async (req, res, next) => {
     try { const property = await Property.create({ ...req.body, partner: req.user._id }); res.status(201).json({ success: true, property }); }
@@ -47,9 +47,22 @@ const uploadPropertyImages = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'No images uploaded' });
         }
 
-        const urls = req.files.map((file) => `/uploads/${file.filename}`);
-        res.json({ success: true, images: urls });
+        const uploadPromises = req.files.map(file => {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload(file.path, {
+                    folder: 'digital-safaris/properties',
+                }, (error, result) => {
+                    fs.unlink(file.path, () => {});
+                    if (error) reject(error);
+                    else resolve(result.secure_url);
+                });
+            });
+        });
+
+        const imageUrls = await Promise.all(uploadPromises);
+        res.json({ success: true, images: imageUrls });
     } catch (error) {
+        logger.error(`Image upload failed: ${error.message}`);
         next(error);
     }
 };

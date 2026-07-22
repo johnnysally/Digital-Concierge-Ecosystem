@@ -515,6 +515,114 @@ const dailyDigest = (user, summary) => ({
     textBody: `Hi ${user.firstName}, here's your daily summary.`,
 });
 
+const customerOrderConfirmed = (user, order) => ({
+    subject: `Order Confirmed — ${order.restaurantName} — KES ${order.total}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeSuccess}">Confirmed</span>
+            <h1 style="${styles.title};margin-top:16px">Order Confirmed!</h1>
+            <p style="${styles.text}">Great news, ${user.firstName}! Your order from <strong>${order.restaurantName}</strong> has been placed and is being prepared.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Restaurant</span><span style="${styles.detailValue}">${order.restaurantName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Items</span><span style="${styles.detailValue}">${order.itemsCount} items</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Order Type</span><span style="${styles.detailValue}">${order.orderType}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${order.total.toLocaleString()}</span></div>
+                ${order.estimatedTime ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Est. Delivery</span><span style="${styles.detailValue}">${order.estimatedTime} minutes</span></div>` : ''}
+                ${order.deliveryAddress ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Delivery Address</span><span style="${styles.detailValue}">${order.deliveryAddress}</span></div>` : ''}
+                ${order.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${order.phone}</span></div>` : ''}
+            </div>
+            <h3 style="margin-top:20px;color:#0f172a;">Order Items</h3>
+            ${(order.items || []).map(item => `
+                <div style="${styles.card}">
+                    <div style="${styles.detailRow}">
+                        <span style="${styles.detailLabel}">${item.name} x${item.quantity}</span>
+                        <span style="${styles.detailValue}">KES ${(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('')}
+            ${order.notes ? `<p style="${styles.text};margin-top:16px;font-style:italic">Notes: ${order.notes}</p>` : ''}
+        </div>
+    `, 'Order Confirmed'),
+    textBody: `Order Confirmed! ${order.restaurantName} — ${order.itemsCount} items — KES ${order.total}. Est. delivery: ${order.estimatedTime || 'N/A'} min.`,
+});
+
+const customerRideConfirmed = (user, ride) => ({
+    subject: `Ride Booked — ${ride.vehicleName}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeSuccess}">Confirmed</span>
+            <h1 style="${styles.title};margin-top:16px">Ride Booked!</h1>
+            <p style="${styles.text}">Your ride has been booked successfully, ${user.firstName}!</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${ride.vehicleName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Type</span><span style="${styles.detailValue}">${ride.rideType || 'Immediate'}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Pickup</span><span style="${styles.detailValue}">${ride.pickup}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Dropoff</span><span style="${styles.detailValue}">${ride.dropoff}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Distance</span><span style="${styles.detailValue}">${ride.distance} km</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Estimated Fare</span><span style="${styles.detailValue}">KES ${ride.total.toLocaleString()}</span></div>
+                ${ride.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${ride.phone}</span></div>` : ''}
+                ${ride.scheduledTime ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Scheduled</span><span style="${styles.detailValue}">${new Date(ride.scheduledTime).toLocaleString()}</span></div>` : ''}
+            </div>
+        </div>
+    `, 'Ride Booked'),
+    textBody: `Ride booked: ${ride.vehicleName}. ${ride.pickup} → ${ride.dropoff}. Fare: KES ${ride.total}. Distance: ${ride.distance}km.`,
+});
+
+const partnerNewOrder = (partner, order) => ({
+    subject: `New Order — ${order.customerName} — KES ${order.total}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeInfo}">New Order</span>
+            <h1 style="${styles.title};margin-top:16px">New Order Received!</h1>
+            <p style="${styles.text}">You have a new order from <strong>${order.customerName}</strong>.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Customer</span><span style="${styles.detailValue}">${order.customerName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Items</span><span style="${styles.detailValue}">${order.itemsCount} items</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Order Type</span><span style="${styles.detailValue}">${order.orderType}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${order.total.toLocaleString()}</span></div>
+                ${order.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${order.phone}</span></div>` : ''}
+                ${order.deliveryAddress ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Delivery</span><span style="${styles.detailValue}">${order.deliveryAddress}</span></div>` : ''}
+                ${order.notes ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Notes</span><span style="${styles.detailValue}">${order.notes}</span></div>` : ''}
+            </div>
+            <h3 style="margin-top:20px;color:#0f172a;">Order Items</h3>
+            ${(order.items || []).map(item => `
+                <div style="${styles.card}">
+                    <div style="${styles.detailRow}">
+                        <span style="${styles.detailLabel}">${item.name} x${item.quantity}</span>
+                        <span style="${styles.detailValue}">KES ${(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('')}
+            <a href="${PARTNER_URL || 'http://localhost:3000'}/orders/${order.id}" style="${styles.button}">View Order</a>
+        </div>
+    `, 'New Order'),
+    textBody: `New order from ${order.customerName}: ${order.itemsCount} items — KES ${order.total}. ${order.deliveryAddress || ''}`,
+});
+
+const partnerNewRide = (partner, ride) => ({
+    subject: `New Ride — ${ride.customerName} — ${ride.vehicleName}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeInfo}">New Ride</span>
+            <h1 style="${styles.title};margin-top:16px">New Ride Request!</h1>
+            <p style="${styles.text}">You have a new ride request from <strong>${ride.customerName}</strong>.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Customer</span><span style="${styles.detailValue}">${ride.customerName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${ride.vehicleName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Type</span><span style="${styles.detailValue}">${ride.rideType || 'Immediate'}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Pickup</span><span style="${styles.detailValue}">${ride.pickup}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Dropoff</span><span style="${styles.detailValue}">${ride.dropoff}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Distance</span><span style="${styles.detailValue}">${ride.distance} km</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Fare</span><span style="${styles.detailValue}">KES ${ride.total.toLocaleString()}</span></div>
+                ${ride.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${ride.phone}</span></div>` : ''}
+                ${ride.scheduledTime ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Scheduled</span><span style="${styles.detailValue}">${new Date(ride.scheduledTime).toLocaleString()}</span></div>` : ''}
+            </div>
+            <a href="${PARTNER_URL || 'http://localhost:3000'}/rides/${ride.id}" style="${styles.button}">View Ride</a>
+        </div>
+    `, 'New Ride'),
+    textBody: `New ride from ${ride.customerName}: ${ride.vehicleName}. ${ride.pickup} → ${ride.dropoff}. Fare: KES ${ride.total}.`,
+});
+
 module.exports = {
     customer: {
         welcome: customerWelcome,
@@ -531,6 +639,8 @@ module.exports = {
         walletTopup: customerWalletTopup,
         accountChanged: customerAccountChanged,
         accountDeleted: customerAccountDeleted,
+        orderConfirmed: customerOrderConfirmed,
+        rideConfirmed: customerRideConfirmed,
     },
     partner: {
         welcome: partnerWelcome,
@@ -549,6 +659,8 @@ module.exports = {
         accountChanged: partnerAccountChanged,
         newPartnerRegistration: partnerNewRegistration,
         accountDeleted: partnerAccountDeleted,
+        newOrder: partnerNewOrder,
+        newRide: partnerNewRide,
     },
     dailyDigest,
 };

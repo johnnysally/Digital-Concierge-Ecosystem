@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
     partner: { type: mongoose.Schema.Types.ObjectId, ref: 'RestaurantPartner', required: true },
     customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
+    customerPhone: { type: String },
     items: [{
         menuItem: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem', required: true },
         name: { type: String, required: true },

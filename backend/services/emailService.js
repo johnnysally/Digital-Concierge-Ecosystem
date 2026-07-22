@@ -174,6 +174,26 @@ const sendDailyDigest = async (user, summary) => {
     await send({ to: user.email, subject, htmlBody, textBody });
 };
 
+const sendCustomerOrderConfirmed = async (user, order) => {
+    const { subject, htmlBody, textBody } = templates.customer.orderConfirmed(user, order);
+    await send({ to: user.email, subject, htmlBody, textBody });
+};
+
+const sendCustomerRideConfirmed = async (user, ride) => {
+    const { subject, htmlBody, textBody } = templates.customer.rideConfirmed(user, ride);
+    await send({ to: user.email, subject, htmlBody, textBody });
+};
+
+const sendPartnerNewOrder = async (partner, order) => {
+    const { subject, htmlBody, textBody } = templates.partner.newOrder(partner, order);
+    await send({ to: partner.email, subject, htmlBody, textBody });
+};
+
+const sendPartnerNewRide = async (partner, ride) => {
+    const { subject, htmlBody, textBody } = templates.partner.newRide(partner, ride);
+    await send({ to: partner.email, subject, htmlBody, textBody });
+};
+
 module.exports = {
     customer: {
         sendWelcome: sendCustomerWelcome,
@@ -190,6 +210,8 @@ module.exports = {
         sendWalletTopup: sendCustomerWalletTopup,
         sendAccountChanged: sendCustomerAccountChanged,
         sendAccountDeleted: sendCustomerAccountDeleted,
+        sendOrderConfirmed: sendCustomerOrderConfirmed,
+        sendRideConfirmed: sendCustomerRideConfirmed,
     },
     partner: {
         sendWelcome: sendPartnerWelcome,
@@ -208,6 +230,8 @@ module.exports = {
         sendAccountChanged: sendPartnerAccountChanged,
         sendNewPartnerNotification: sendPartnerNewRegistration,
         sendAccountDeleted: sendPartnerAccountDeleted,
+        sendNewOrder: sendPartnerNewOrder,
+        sendNewRide: sendPartnerNewRide,
     },
     sendDailyDigest,
     send,

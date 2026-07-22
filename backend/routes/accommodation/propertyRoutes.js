@@ -6,10 +6,10 @@ const upload = require('../../middleware/global/upload');
 
 router.use(accommodationAuth);
 router.post('/', propertyRules, createProperty);
-router.post('/upload-images', upload.array('images', 8), uploadPropertyImages);
 router.get('/', getMyProperties);
 router.get('/:id', getProperty);
 router.put('/:id', updateProperty);
 router.delete('/:id', deleteProperty);
+router.post('/upload-images', upload.array('images', 10), uploadPropertyImages);
 
 module.exports = router;

@@ -18,23 +18,19 @@ const DashboardPage = () => {
             try {
                 const [ordersRes, itemsRes, staffRes, paymentsRes] = await Promise.all([
                     getOrders({ limit: 6 }).catch((err) => {
-                        if (err?.response?.status === 401) return { orders: [] };
-                        if (err?.response?.status === 404) return { orders: [] };
+                        if (err?.response?.status === 401 || err?.response?.status === 404) return { orders: [] };
                         throw err;
                     }),
                     getItems({ limit: 8 }).catch((err) => {
-                        if (err?.response?.status === 401) return { items: [] };
-                        if (err?.response?.status === 404) return { items: [] };
+                        if (err?.response?.status === 401 || err?.response?.status === 404) return { items: [] };
                         throw err;
                     }),
                     getStaff({ active: true }).catch((err) => {
-                        if (err?.response?.status === 401) return { staff: [] };
-                        if (err?.response?.status === 404) return { staff: [] };
+                        if (err?.response?.status === 401 || err?.response?.status === 404) return { staff: [] };
                         throw err;
                     }),
                     getPayments({ limit: 6 }).catch((err) => {
-                        if (err?.response?.status === 401) return { payments: [] };
-                        if (err?.response?.status === 404) return { payments: [] };
+                        if (err?.response?.status === 401 || err?.response?.status === 404) return { payments: [] };
                         throw err;
                     }),
                 ]);
@@ -56,13 +52,19 @@ const DashboardPage = () => {
     const isLight = getStoredRestaurantTheme() === 'light';
 
     const stats = useMemo(() => [
-        { label: 'Orders', value: orders.length, hint: 'Latest orders', icon: '🧾' },
+        { label: 'Orders', value: orders.length, hint: 'Latest orders', icon: '📦' },
         { label: 'Menu items', value: items.length, hint: 'Live catalog', icon: '🍽️' },
         { label: 'Active staff', value: staff.length, hint: 'On shift', icon: '👩‍🍳' },
         { label: 'Payments', value: payments.length, hint: 'Recent settlements', icon: '💳' },
     ], [orders.length, items.length, staff.length, payments.length]);
 
-    const pendingOrders = orders.filter((order) => order.status !== 'delivered').length;
+    const pendingOrders = orders.filter((order) => order.status !== 'delivered' && order.status !== 'cancelled').length;
+
+    const getDeliveryAddress = (order: any) => {
+        if (!order.deliveryAddress) return 'No address';
+        if (typeof order.deliveryAddress === 'string') return order.deliveryAddress;
+        return order.deliveryAddress.street || order.deliveryAddress.address || 'Address provided';
+    };
 
     return (
         <div className="space-y-6">
@@ -74,7 +76,7 @@ const DashboardPage = () => {
                         <p className={`mt-3 max-w-2xl text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>The restaurant portal is now aligned with the backend menu, orders, staff, payments, and profile modules.</p>
                     </div>
                     <div className={`rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm ${isLight ? 'text-amber-700' : 'text-amber-200'}`}>
-                        <p className="font-semibold">Today’s pulse</p>
+                        <p className="font-semibold">Today's pulse</p>
                         <p className={`${isLight ? 'text-slate-700' : 'text-slate-300'}`}>{pendingOrders} live orders need attention</p>
                     </div>
                 </div>
@@ -105,19 +107,34 @@ const DashboardPage = () => {
                         <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-700 bg-slate-950 text-slate-300'}`}>Live</span>
                     </div>
                     <div className="mt-4 space-y-3">
-                        {loading ? <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>Loading orders...</div> : orders.length ? orders.map((order: any) => (
-                            <div key={order._id} className={`rounded-2xl border p-3 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <p className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>{order.customer?.firstName || 'Customer'} {order.customer?.lastName || ''}</p>
-                                        <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{order.items?.length || 0} items • {order.deliveryAddress || 'Delivery address pending'}</p>
+                        {loading ? (
+                            <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>Loading orders...</div>
+                        ) : orders.length ? (
+                            orders.map((order: any) => (
+                                <div key={order._id} className={`rounded-2xl border p-3 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
+                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                        <div>
+                                            <p className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                                                {order.customer?.firstName || 'Customer'} {order.customer?.lastName || ''}
+                                            </p>
+                                            <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                                                {order.items?.length || 0} items · {getDeliveryAddress(order)}
+                                            </p>
+                                        </div>
+                                        <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${
+                                            order.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600' :
+                                            order.status === 'ready' ? 'bg-amber-500/10 text-amber-600' :
+                                            order.status === 'cancelled' ? 'bg-rose-500/10 text-rose-600' :
+                                            isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                        }`}>
+                                            {order.status || 'Pending'}
+                                        </span>
                                     </div>
-                                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${order.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600' : order.status === 'ready' ? 'bg-amber-500/10 text-amber-600' : isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'}`}>
-                                        {order.status || 'Pending'}
-                                    </span>
                                 </div>
-                            </div>
-                        )) : <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>No recent orders found.</div>}
+                            ))
+                        ) : (
+                            <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>No recent orders found.</div>
+                        )}
                     </div>
                 </div>
 
