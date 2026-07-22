@@ -26,7 +26,7 @@ const LoginPage = () => {
           <div>
             <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/70 bg-slate-800/70 px-3 py-1.5 text-sm font-medium text-slate-200">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-violet-500 text-sm font-semibold text-white">DS</span>
-              DigitalSafaris Concierge
+              Digital Safaris
             </div>
             <h1 className="mt-6 text-2xl font-semibold tracking-tight text-white sm:mt-8 sm:text-4xl">Welcome back to your travel command center</h1>
             <p className="mt-3 max-w-xl text-sm leading-6 text-slate-400 sm:mt-4 sm:text-base sm:leading-7">Access accommodation, dining, transport, wallet, and support in one refined experience built for modern travel.</p>

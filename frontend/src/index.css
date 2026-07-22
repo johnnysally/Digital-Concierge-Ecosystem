@@ -200,6 +200,54 @@ html.transport-theme-light .shadow-slate-950\/40 {
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08) !important;
 }
 
+.restaurant-theme-light {
+  color-scheme: light;
+}
+
+.restaurant-theme-light body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.restaurant-theme-light [class*="bg-slate-900"],
+.restaurant-theme-light [class*="bg-slate-950"],
+.restaurant-theme-light [class*="bg-slate-800"],
+.restaurant-theme-light [class*="bg-slate-700"] {
+  background-color: #ffffff !important;
+}
+
+.restaurant-theme-light [class*="border-slate-800"],
+.restaurant-theme-light [class*="border-slate-700"],
+.restaurant-theme-light [class*="border-slate-950"] {
+  border-color: #e2e8f0 !important;
+}
+
+.restaurant-theme-light [class*="border-slate-200"],
+.restaurant-theme-light [class*="border-slate-300"] {
+  border-color: #cbd5e1 !important;
+}
+
+.restaurant-theme-light [class*="text-white"],
+.restaurant-theme-light [class*="text-slate-50"],
+.restaurant-theme-light [class*="text-slate-100"],
+.restaurant-theme-light [class*="text-slate-200"] {
+  color: #0f172a !important;
+}
+
+.restaurant-theme-light [class*="text-slate-400"],
+.restaurant-theme-light [class*="text-slate-500"],
+.restaurant-theme-light [class*="text-slate-300"] {
+  color: #475569 !important;
+}
+
+.restaurant-theme-light input,
+.restaurant-theme-light textarea,
+.restaurant-theme-light select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
 #root {
   min-height: 100vh;
 }

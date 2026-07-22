@@ -23,7 +23,11 @@ axiosClient.interceptors.request.use((config) => {
         const accommodationSession = getStoredSession('digitalsafaris_accommodation');
         const customerSession = getStoredSession('digitalsafaris_customer');
         const transportSession = getStoredSession('digitalsafaris_transport');
+        const restaurantSession = getStoredSession('digitalsafaris_restaurant');
 
+        if (config.url?.includes('/restaurant') && restaurantSession?.token) {
+            return restaurantSession.token;
+        }
         if (config.url?.includes('/accommodation') && accommodationSession?.token) {
             return accommodationSession.token;
         }
@@ -32,6 +36,9 @@ axiosClient.interceptors.request.use((config) => {
         }
         if (config.url?.includes('/transport') && transportSession?.token) {
             return transportSession.token;
+        }
+        if (restaurantSession?.token) {
+            return restaurantSession.token;
         }
         if (accommodationSession?.token) {
             return accommodationSession.token;
@@ -59,13 +66,16 @@ axiosClient.interceptors.response.use(
         if (error.response?.status === 401) {
             const requestUrl = error.config?.url || '';
             const hasAuthHeader = Boolean(error.config?.headers?.Authorization);
-            const isAuthRoute = requestUrl.includes('/accommodation/auth/') || requestUrl.includes('/customer/auth/') || requestUrl.includes('/transport/auth/');
+            const isAuthRoute = requestUrl.includes('/accommodation/auth/') || requestUrl.includes('/customer/auth/') || requestUrl.includes('/transport/auth/') || requestUrl.includes('/restaurant/auth/');
 
             if (!hasAuthHeader || isAuthRoute) {
                 return Promise.reject(error);
             }
 
-            if (requestUrl.includes('/transport')) {
+            if (requestUrl.includes('/restaurant')) {
+                localStorage.removeItem('digitalsafaris_restaurant');
+                window.location.href = '/restaurant-admin/login';
+            } else if (requestUrl.includes('/transport')) {
                 localStorage.removeItem('digitalsafaris_transport');
                 window.location.href = '/transport-admin/login';
             } else if (requestUrl.includes('/accommodation')) {

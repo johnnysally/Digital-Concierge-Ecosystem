@@ -26,7 +26,8 @@ const ForgotPasswordPage = () => {
         <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8 flex items-center justify-center">
             <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-10 shadow-2xl shadow-slate-900/40">
                 <div className="text-center mb-8">
-                    <span className="text-4xl">🔐</span>
+                    <div className="mx-auto inline-flex items-center rounded-full border border-slate-700/70 bg-slate-800/70 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.25em] text-sky-300">Digital Safaris</div>
+                    <span className="mt-4 flex justify-center text-4xl">🔐</span>
                     <h1 className="mt-4 text-2xl font-bold text-white">Forgot Password</h1>
                     <p className="mt-2 text-sm text-slate-400">Enter your email and we'll send reset instructions.</p>
                 </div>

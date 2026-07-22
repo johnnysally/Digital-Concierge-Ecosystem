@@ -36,7 +36,7 @@ const RegisterPage = () => {
                     <div>
                         <div className="inline-flex items-center gap-3 rounded-full border border-emerald-700/60 bg-emerald-900/60 px-3 py-1.5 text-sm font-medium text-emerald-100">
                             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-violet-400 text-sm font-semibold text-slate-950">DS</span>
-                            DigitalSafaris Membership
+                            Digital Safaris
                         </div>
                         <h1 className="mt-6 text-2xl font-semibold tracking-tight text-white sm:mt-8 sm:text-4xl">Create your premium travel account</h1>
                         <p className="mt-3 max-w-xl text-sm leading-6 text-slate-400 sm:mt-4 sm:text-base sm:leading-7">Join a unified platform for booking stays, ordering dining, arranging transport, and managing rewards effortlessly.</p>
