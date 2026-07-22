@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createDriver, getDriver, updateDriver } from '../../api/transport/driverApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const DriverFormPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -55,7 +56,7 @@ const DriverFormPage = () => {
             } else {
                 await createDriver(payload);
             }
-            navigate('/transport-admin/drivers', { replace: true });
+            navigate(getTransportPath('/drivers'), { replace: true });
         } catch {
             setError('Unable to save driver. Please check the form and try again.');
         } finally {

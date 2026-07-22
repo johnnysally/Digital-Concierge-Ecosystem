@@ -254,11 +254,12 @@ const AccommodationLayout = () => {
     return (
         <div className={`min-h-screen overflow-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-br from-white via-slate-50 to-slate-100 text-slate-900'}`} style={themeSurfaceStyle}>
             <div className="h-screen w-full overflow-hidden px-2 sm:px-3 lg:px-4">
-                <div className="relative flex h-full flex-col lg:flex-row lg:gap-5">
-                    <div className="hidden lg:sticky lg:top-0 lg:block lg:h-screen lg:self-start">
-                        <aside className={`w-full lg:w-72 lg:shrink-0`}>
-                            <div className={`flex h-screen flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] lg:h-screen ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-slate-200 bg-white'}`}>
-                                <div className={`border-b p-6 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                <div className="relative flex h-full flex-col lg:flex-row lg:gap-0">
+                    <div className="hidden lg:block lg:shrink-0">
+                        <div className="fixed left-0 top-0 h-screen w-72">
+                            <aside className="h-full w-full">
+                                <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-slate-200 bg-white'}`}>
+                                    <div className={`border-b p-6 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
                                     <div className="mb-4 flex items-center gap-3">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 text-sm font-semibold text-white shadow-sm">
                                             DS
@@ -329,8 +330,9 @@ const AccommodationLayout = () => {
                             </div>
                         </aside>
                     </div>
+                    </div>
 
-                    <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+                    <div className="flex min-w-0 flex-1 flex-col overflow-hidden lg:pl-72">
                         <header className={`sticky top-0 z-20 mb-4 mt-2 rounded-[28px] border px-4 py-3.5 shadow-[0_18px_45px_-20px_rgba(15,23,42,0.55)] backdrop-blur-xl sm:px-5 lg:mt-3 ${isDark ? 'border-slate-800 bg-slate-900/85' : 'border-slate-200/80 bg-white/85'}`}>
                             <div className="flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-3">
@@ -371,11 +373,11 @@ const AccommodationLayout = () => {
 
                         <div className="flex-1 overflow-hidden pb-3 sm:pb-4 lg:pb-5">
                             <main className="h-full min-w-0">
-                                <div className="h-full overflow-y-auto px-1 py-1 sm:px-2 lg:px-2">
+                                <div className="h-full overflow-y-auto px-0 py-0 sm:px-0 lg:px-0">
                                     <div className="min-h-full">
                                         {isDashboardRoute ? (
                                             <>
-                                                <section className={`rounded-[32px] border px-4 py-5 shadow-xl transition sm:px-6 sm:py-7 ${isDark ? 'border-slate-800 bg-slate-950/95 text-slate-100 shadow-slate-950/30' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                <section className={`px-4 py-5 transition sm:px-6 sm:py-7 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
                                                     <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:gap-4 xl:flex-row xl:items-center xl:justify-between">
                                                         <div className="space-y-2">
                                                             <div className="flex flex-wrap items-center gap-2">
@@ -413,7 +415,7 @@ const AccommodationLayout = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className={`mb-4 grid gap-2 rounded-[24px] border p-3 sm:mb-6 sm:gap-3 sm:p-4 md:grid-cols-4 ${isDark ? 'border-slate-800 bg-slate-900/70' : 'border-slate-200 bg-slate-50'}`}>
+                                                    <div className={`mb-4 grid gap-2 rounded-[24px] border border-transparent p-3 sm:mb-6 sm:gap-3 sm:p-4 md:grid-cols-4 ${isDark ? 'bg-slate-900/40' : 'bg-slate-50/70'}`}>
                                                         <div className="flex items-center gap-3">
                                                             <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${isDark ? 'bg-emerald-500/15 text-emerald-300' : 'bg-emerald-100 text-emerald-700'}`}>●</div>
                                                             <div>
@@ -445,7 +447,7 @@ const AccommodationLayout = () => {
                                                     </div>
 
                                                     <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                                        <div className={`rounded-[24px] border px-4 py-4 sm:rounded-[28px] sm:px-5 sm:py-5 ${isDark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'}`}>
+                                                        <div className={`rounded-[24px] border border-transparent px-4 py-4 sm:rounded-[28px] sm:px-5 sm:py-5 ${isDark ? 'bg-slate-900/40' : 'bg-white/80'}`}>
                                                             <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400 sm:text-xs">Properties</p>
                                                             <p className={`mt-3 text-xl font-semibold sm:mt-4 sm:text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{summaryLoading ? '...' : summaryStats.properties}</p>
                                                             <p className={`mt-2 text-xs leading-5 sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Live properties connected to your account.</p>
@@ -469,7 +471,7 @@ const AccommodationLayout = () => {
                                                 </section>
 
                                                 <section className="mt-5">
-                                                    <div className={`rounded-[28px] border p-6 shadow-xl transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/30' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                    <div className={`rounded-[28px] border border-transparent p-6 transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                                             <div>
                                                                 <p className={`text-xs font-semibold uppercase tracking-[0.35em] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Workspace</p>
@@ -481,13 +483,13 @@ const AccommodationLayout = () => {
                                                                 <button type="button" onClick={() => navigate('/accommodation/reservations')} className={`rounded-2xl border px-3 py-2 text-sm font-medium transition ${isDark ? 'border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-900 hover:bg-slate-100'}`}>New reservation</button>
                                                             </div>
                                                         </div>
-                                                        <div className={`rounded-[28px] border p-5 transition ${isDark ? 'border-slate-700 bg-slate-900 text-slate-100' : 'border-slate-200 bg-slate-50 text-slate-900'}`}>
+                                                        <div className={`rounded-[28px] border border-transparent p-5 transition ${isDark ? 'bg-slate-900/50 text-slate-100' : 'bg-slate-50/80 text-slate-900'}`}>
                                                             <Outlet />
                                                         </div>
                                                     </div>
                                                 </section>
 
-                                                <section className={`mt-5 rounded-[28px] border p-6 shadow-xl transition ${isDark ? 'border-slate-800 bg-slate-950/95 text-slate-100 shadow-slate-950/30' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                <section className={`mt-5 rounded-[28px] border border-transparent p-6 transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                     <div className="mb-4 flex items-center justify-between gap-3">
                                                         <div>
                                                             <p className={`text-xs font-semibold uppercase tracking-[0.35em] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Recent activity</p>
@@ -513,7 +515,7 @@ const AccommodationLayout = () => {
 
                                                 <section className="mt-5 grid gap-6 xl:grid-cols-[2.3fr_1fr]">
                                                     <div className="space-y-6">
-                                                        <div className={`rounded-[28px] border p-8 min-h-[420px] shadow-xl transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/30' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                        <div className={`rounded-[28px] border border-transparent p-8 min-h-[420px] transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                                                 <div>
                                                                     <p className={`text-xs uppercase tracking-[0.24em] text-emerald-400`}>Today's priority</p>
@@ -528,7 +530,7 @@ const AccommodationLayout = () => {
                                                             </div>
                                                         </div>
 
-                                                        <div className={`rounded-[28px] border p-8 shadow-xl transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/30' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                        <div className={`rounded-[28px] border border-transparent p-8 transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                             <div className="flex items-start justify-between gap-4">
                                                                 <div>
                                                                     <p className={`text-xs uppercase tracking-[0.24em] ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Guest care</p>
@@ -568,7 +570,7 @@ const AccommodationLayout = () => {
                                                     </div>
 
                                                     <aside className="space-y-6">
-                                                        <div className={`rounded-[28px] border p-5 transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/20' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                        <div className={`rounded-[28px] border border-transparent p-5 transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                             <div className="mb-4 flex items-center justify-between gap-3">
                                                                 <div>
                                                                     <p className={`text-xs font-semibold uppercase tracking-[0.35em] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Notifications</p>
@@ -599,7 +601,7 @@ const AccommodationLayout = () => {
                                                             </div>
                                                         </div>
 
-                                                        <div className={`rounded-[32px] border p-6 transition ${isDark ? 'border-slate-800 bg-slate-950 text-slate-100 shadow-slate-950/20' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                        <div className={`rounded-[32px] border border-transparent p-6 transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                             <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Quick actions</p>
                                                             <div className="mt-6 grid gap-4">
                                                                 <button type="button" onClick={() => navigate('/accommodation/reservations')} className={`w-full min-h-[72px] rounded-3xl border px-5 py-4 text-left text-base font-semibold transition ${isDark ? 'border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800' : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-100'}`}>View reservations</button>
@@ -612,7 +614,7 @@ const AccommodationLayout = () => {
                                             </>
                                         ) : (
                                             <div className="space-y-4">
-                                                <div className={`rounded-[28px] border px-6 py-6 shadow-xl transition ${isDark ? 'border-slate-800 bg-slate-950/95 text-slate-100 shadow-slate-950/30' : 'border-slate-200 bg-white text-slate-900 shadow-slate-900/10'}`}>
+                                                <div className={`rounded-[28px] border border-transparent px-6 py-6 transition ${isDark ? 'bg-slate-900/40 text-slate-100' : 'bg-white/80 text-slate-900'}`}>
                                                     <div className="flex items-center justify-between gap-3">
                                                         <div>
                                                             <p className={`text-xs font-semibold uppercase tracking-[0.35em] ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Workspace</p>

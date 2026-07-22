@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getRide, updateRideStatus } from '../../api/transport/rideApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const statusLabels: Record<string, string> = {
     requested: 'Requested',
@@ -63,7 +64,7 @@ const RideDetailsPage = () => {
                     </div>
                     <button
                         type="button"
-                        onClick={() => navigate('/transport-admin/rides')}
+                        onClick={() => navigate(getTransportPath('/rides'))}
                         className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                     >
                         Back to rides

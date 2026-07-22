@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPromotion, getPromotion, updatePromotion } from '../../api/transport/promotionApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const PromotionFormPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -61,7 +62,7 @@ const PromotionFormPage = () => {
             } else {
                 await createPromotion(payload);
             }
-            navigate('/transport-admin/promotions', { replace: true });
+            navigate(getTransportPath('/promotions'), { replace: true });
         } catch {
             setError('Unable to save promotion. Check the values and try again.');
         } finally {

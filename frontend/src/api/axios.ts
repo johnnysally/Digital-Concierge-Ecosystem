@@ -83,7 +83,7 @@ axiosClient.interceptors.response.use(
                 window.location.href = '/accommodation/login';
             } else {
                 localStorage.removeItem('digitalsafaris_customer');
-                window.location.href = '/customer/login';
+                window.location.href = '/login';
             }
         }
         return Promise.reject(error);

@@ -13,59 +13,60 @@ const ForgotPasswordPage = () => {
         setLoading(true);
         setError('');
         try {
-            await forgotPassword({ email });
+            await forgotPassword({ email: email.trim() });
             setSubmitted(true);
-        } catch {
-            setError('Failed to send reset instructions. Try again.');
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Failed to send reset instructions. Try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8 flex items-center justify-center">
-            <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-10 shadow-2xl shadow-slate-900/40">
-                <div className="text-center mb-8">
-                    <div className="mx-auto inline-flex items-center rounded-full border border-slate-700/70 bg-slate-800/70 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.25em] text-sky-300">Digital Safaris</div>
-                    <span className="mt-4 flex justify-center text-4xl">🔐</span>
-                    <h1 className="mt-4 text-2xl font-bold text-white">Forgot Password</h1>
-                    <p className="mt-2 text-sm text-slate-400">Enter your email and we'll send reset instructions.</p>
+        <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_28%),linear-gradient(135deg,_#f8fafc,_#e2e8f0)] px-3 py-4 text-slate-800 sm:px-6 lg:px-8">
+            <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white/95 p-6 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] backdrop-blur-xl sm:p-8 lg:p-10">
+                <div className="mb-8 text-center">
+                    <div className="mx-auto inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.25em] text-amber-700">Digital Safaris</div>
+                    <div className="mt-4 flex justify-center text-4xl">🔐</div>
+                    <h1 className="mt-4 text-2xl font-bold text-slate-900">Forgot Password</h1>
+                    <p className="mt-2 text-sm text-slate-600">Enter your email and we’ll send reset instructions.</p>
                 </div>
 
-                {error && (
-                    <div className="mb-4 rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">{error}</div>
-                )}
+                {error ? (
+                    <div className="mb-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-600">{error}</div>
+                ) : null}
 
                 {submitted ? (
-                    <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-6 text-center">
-                        <p className="text-emerald-400 text-sm">Instructions have been sent to <strong>{email}</strong> if an account exists.</p>
-                        <Link to="/login" className="mt-4 inline-block text-sm text-sky-400 hover:text-sky-300">← Back to Login</Link>
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
+                        <p className="text-sm text-emerald-700">Instructions have been sent to <strong>{email}</strong> if an account exists.</p>
+                        <Link to="/login" className="mt-4 inline-block text-sm font-semibold text-amber-600 hover:text-amber-500">← Back to sign in</Link>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <label className="block text-sm text-slate-300">
+                        <label className="block text-sm text-slate-700">
                             Email address
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(event) => setEmail(event.target.value)}
+                                autoComplete="email"
                                 required
                                 placeholder="you@example.com"
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
                             />
                         </label>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:opacity-50"
+                            className="w-full rounded-2xl bg-amber-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                            {loading ? 'Sending...' : 'Send Reset Instructions'}
+                            {loading ? 'Sending...' : 'Send reset instructions'}
                         </button>
                     </form>
                 )}
 
                 <div className="mt-6 text-center text-sm text-slate-500">
-                    Remember your password? <Link to="/login" className="font-semibold text-white hover:text-sky-300">Sign in</Link>
+                    Remember your password? <Link to="/login" className="font-semibold text-amber-600 hover:text-amber-500">Sign in</Link>
                 </div>
             </div>
         </div>

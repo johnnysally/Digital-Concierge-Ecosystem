@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTransportTheme } from '../../../context/transport/ThemeContext';
+import { getTransportPath } from '../../../utils/transportRoutes';
 
 type TransportNavbarProps = {
     onMenuToggle: () => void;
@@ -10,7 +11,7 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
     const { isDark, toggleTheme } = useTransportTheme();
 
     return (
-        <header className={`sticky top-0 z-40 border-b ${isDark ? 'border-slate-800 bg-slate-950/90' : 'border-gray-200 bg-white'}`}>
+        <header className={`sticky top-0 z-40 ${isDark ? 'border-slate-800 bg-slate-950/90' : 'border-gray-200 bg-white'}`}>
             <div className="mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-4 lg:px-8 max-w-[1400px]">
                 <div className="flex items-center gap-3">
                     <button
@@ -20,7 +21,7 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
                     >
                         ☰
                     </button>
-                    <Link to="/transport-admin" className="flex items-center gap-3 whitespace-nowrap">
+                    <Link to={getTransportPath('')} className="flex items-center gap-3 whitespace-nowrap">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-violet-600 text-sm font-semibold text-white shadow-sm">
                             DS
                         </div>
@@ -33,13 +34,13 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
 
                 <div className={`flex flex-wrap items-center gap-2 rounded-full border px-2 py-2 text-xs sm:text-sm ${isDark ? 'border-slate-800 bg-slate-900/80 text-slate-300' : 'border-gray-100 bg-white text-slate-700'}`}>
                     <Link
-                        to="/transport-admin"
+                        to={getTransportPath('')}
                         className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}
                     >
                         Home
                     </Link>
                     <Link
-                        to="/transport-admin/settings"
+                        to={getTransportPath('/settings')}
                         className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}
                     >
                         Settings
@@ -52,12 +53,12 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
                         {isDark ? 'Light' : 'Dark'}
                     </button>
                     <Link
-                        to="/transport-admin/support"
+                        to={getTransportPath('/support')}
                         className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}
                     >
                         Support
                     </Link>
-                    <Link to="/transport-admin/profile" className="rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white transition">
+                    <Link to={getTransportPath('/profile')} className="rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white transition">
                         Profile
                     </Link>
                 </div>

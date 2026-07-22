@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getRides } from '../../api/transport/rideApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const rideTypeLabels: Record<string, string> = {
     immediate: 'Immediate',
@@ -127,7 +128,7 @@ const RideRequestsPage = () => {
                                         <td className="px-3 py-3 sm:px-4 text-slate-400 text-xs whitespace-nowrap">{ride.createdAt ? new Date(ride.createdAt).toLocaleDateString() : 'N/A'}</td>
                                         <td className="px-3 py-3 sm:px-4">
                                             <Link
-                                                to={`/transport-admin/rides/${ride._id || ride.id}`}
+                                                to={getTransportPath(`/rides/${ride._id || ride.id}`)}
                                                 className="text-sky-500 hover:underline"
                                             >
                                                 View
@@ -155,7 +156,7 @@ const RideRequestsPage = () => {
                                         <p className="mt-1 truncate text-sm font-semibold text-white">{(ride._id || ride.id)?.slice(-8)}</p>
                                     </div>
                                     <Link
-                                        to={`/transport-admin/rides/${ride._id || ride.id}`}
+                                        to={getTransportPath(`/rides/${ride._id || ride.id}`)}
                                         className="whitespace-nowrap text-sky-500 hover:underline"
                                     >
                                         View

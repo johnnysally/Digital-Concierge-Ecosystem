@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { User } from '../../types/customer';
-import { login as loginApi, getProfile } from '../../api/customer/authApi';
+import { login as loginApi, register as registerApi, getProfile } from '../../api/customer/authApi';
 
 interface AuthContextState {
     user: User | null;
@@ -8,6 +8,7 @@ interface AuthContextState {
     isAuthenticated: boolean;
     loading: boolean;
     login: (payload: { email: string; password: string }) => Promise<void>;
+    register: (payload: { firstName: string; lastName: string; email: string; password: string }) => Promise<void>;
     logout: () => void;
     refreshSession: () => Promise<void>;
 }
@@ -29,11 +30,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
     }, []);
 
+    const persistSession = (userData: User, authToken: string) => {
+        localStorage.setItem('digitalsafaris_customer', JSON.stringify({ user: userData, token: authToken }));
+        setUser(userData);
+        setToken(authToken);
+    };
+
     const login = async (payload: { email: string; password: string }) => {
         const response = await loginApi(payload);
-        localStorage.setItem('digitalsafaris_customer', JSON.stringify({ user: response.user, token: response.token }));
-        setUser(response.user);
-        setToken(response.token);
+        persistSession(response.user, response.token);
+    };
+
+    const register = async (payload: { firstName: string; lastName: string; email: string; password: string }) => {
+        const response = await registerApi(payload);
+        persistSession(response.user, response.token);
     };
 
     const logout = () => {
@@ -53,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, isAuthenticated: Boolean(user && token), loading, login, logout, refreshSession }}>
+        <AuthContext.Provider value={{ user, token, isAuthenticated: Boolean(user && token), loading, login, register, logout, refreshSession }}>
             {children}
         </AuthContext.Provider>
     );

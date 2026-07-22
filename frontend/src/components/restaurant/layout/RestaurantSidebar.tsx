@@ -50,7 +50,7 @@ const RestaurantSidebar = ({ onNavigate, theme, onToggleTheme }: RestaurantSideb
     const isLight = theme === 'light';
 
     return (
-        <aside className={`flex h-screen w-full flex-col overflow-hidden rounded-[28px] border p-4 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] lg:w-72 ${isLight ? 'border-slate-200 bg-white/95 text-slate-800' : 'border-slate-800 bg-slate-900/95 text-slate-100'}`}>
+        <aside className={`flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border p-4 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] transition-colors duration-200 lg:w-72 ${isLight ? 'border-slate-200 bg-white/95 text-slate-800' : 'border-slate-800 bg-slate-900/95 text-slate-100'}`}>
             <div className={`mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 ${isLight ? 'bg-amber-50' : 'bg-amber-500/10'}`}>
                 <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 via-orange-400 to-rose-500 text-sm font-semibold text-white">
@@ -75,7 +75,7 @@ const RestaurantSidebar = ({ onNavigate, theme, onToggleTheme }: RestaurantSideb
                                     to={item.path}
                                     onClick={onNavigate}
                                     end={item.path === '/restaurant-admin'}
-                                    className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isActive ? (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/15 text-amber-200') : (isLight ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' : 'text-slate-300 hover:bg-slate-800 hover:text-white')}`}
+                                    className={({ isActive }) => `flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isActive ? (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/15 text-amber-200') : (isLight ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' : 'text-slate-300 hover:bg-slate-800 hover:text-white')}`}
                                 >
                                     <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm ${isLight ? 'bg-slate-100 text-slate-700' : 'bg-slate-800 text-slate-200'}`}>{item.icon}</span>
                                     <span>{item.label}</span>
@@ -90,14 +90,14 @@ const RestaurantSidebar = ({ onNavigate, theme, onToggleTheme }: RestaurantSideb
                 <button
                     type="button"
                     onClick={onToggleTheme}
-                    className={`w-full rounded-2xl border px-3 py-3 text-sm font-semibold transition ${isLight ? 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200' : 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
+                    className={`w-full rounded-2xl border px-3 py-3 text-sm font-semibold transition-colors duration-200 ${isLight ? 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200' : 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
                 >
                     {theme === 'light' ? '☀️ Light mode' : '🌙 Dark mode'}
                 </button>
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className={`w-full rounded-2xl border px-3 py-3 text-sm font-semibold transition ${isLight ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100' : 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
+                    className={`w-full rounded-2xl border px-3 py-3 text-sm font-semibold transition-colors duration-200 ${isLight ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100' : 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'}`}
                 >
                     Logout
                 </button>

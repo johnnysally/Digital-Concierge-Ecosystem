@@ -1,6 +1,7 @@
 ﻿import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../../api/transport/authApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const LoginPage = () => {
         try {
             const data = await login({ email, password });
             localStorage.setItem('digitalsafaris_transport', JSON.stringify(data));
-            navigate('/transport-admin', { replace: true });
+            navigate(getTransportPath(''), { replace: true });
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Unable to sign in. Please check your credentials.');
         } finally {
@@ -26,9 +27,12 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-100">
-            <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-8 shadow-2xl shadow-black/50">
+        <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.2),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.18),_transparent_28%),#020617] px-4 py-10 text-slate-100">
+            <div className="w-full max-w-md rounded-[32px] border border-slate-800/80 bg-slate-900/70 p-8 shadow-[0_25px_70px_-20px_rgba(2,6,23,0.85)] backdrop-blur-xl">
                 <div className="mb-6">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-500 to-violet-600 text-lg font-semibold text-white shadow-lg">
+                        DS
+                    </div>
                     <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Digital Safaris</p>
                     <h1 className="mt-2 text-3xl font-semibold text-white">Sign in to your transport workspace</h1>
                     <p className="mt-2 text-sm text-slate-400">Sign in to manage drivers, vehicles, rides, promotions and transport operations.</p>
@@ -44,7 +48,7 @@ const LoginPage = () => {
                             onChange={(event) => setEmail(event.target.value)}
                             type="email"
                             required
-                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
+                            className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none ring-0 transition focus:border-emerald-400"
                         />
                     </div>
                     <div>
@@ -54,24 +58,24 @@ const LoginPage = () => {
                             onChange={(event) => setPassword(event.target.value)}
                             type="password"
                             required
-                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
+                            className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none ring-0 transition focus:border-emerald-400"
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
+                        className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-105 disabled:opacity-60"
                     >
                         {loading ? 'Signing in...' : 'Sign in'}
                     </button>
                 </form>
 
                 <div className="mt-6 grid gap-3 text-center text-sm text-slate-400">
-                    <Link to="/transport-admin/forgot-password" className="text-emerald-400 hover:text-emerald-300">
+                    <Link to={getTransportPath('/forgot-password')} className="text-emerald-400 hover:text-emerald-300">
                         Forgot your password?
                     </Link>
                     <div>
-                        Need an account? <Link to="/transport-admin/register" className="text-emerald-400 hover:text-emerald-300">Create one</Link>
+                        Need an account? <Link to={getTransportPath('/register')} className="text-emerald-400 hover:text-emerald-300">Create one</Link>
                     </div>
                 </div>
             </div>

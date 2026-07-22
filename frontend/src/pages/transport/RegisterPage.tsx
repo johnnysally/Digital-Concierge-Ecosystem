@@ -1,6 +1,7 @@
 ﻿import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/transport/authApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const RegisterPage = () => {
 
         try {
             await register({ firstName, lastName, email, password, phone, businessName, businessType });
-            navigate('/transport-admin/login', { replace: true });
+            navigate(getTransportPath('/login'), { replace: true });
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Unable to register. Please try again later.');
         } finally {
@@ -30,9 +31,12 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-100">
-            <div className="w-full max-w-lg rounded-3xl border border-slate-800 bg-slate-900/95 p-8 shadow-2xl shadow-black/50">
+        <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.2),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.18),_transparent_28%),#020617] px-4 py-10 text-slate-100">
+            <div className="w-full max-w-lg rounded-[32px] border border-slate-800/80 bg-slate-900/70 p-8 shadow-[0_25px_70px_-20px_rgba(2,6,23,0.85)] backdrop-blur-xl">
                 <div className="mb-6">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-500 to-violet-600 text-lg font-semibold text-white shadow-lg">
+                        DS
+                    </div>
                     <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Digital Safaris</p>
                     <h1 className="mt-2 text-3xl font-semibold text-white">Create your transport workspace</h1>
                     <p className="mt-2 text-sm text-slate-400">Register and start managing transport operations in the portal.</p>
@@ -117,14 +121,14 @@ const RegisterPage = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
+                        className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-105 disabled:opacity-60"
                     >
                         {loading ? 'Creating account...' : 'Create account'}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center text-sm text-slate-400">
-                    Already have an account? <Link to="/transport-admin/login" className="text-emerald-400 hover:text-emerald-300">Sign in</Link>
+                    Already have an account? <Link to={getTransportPath('/login')} className="text-emerald-400 hover:text-emerald-300">Sign in</Link>
                 </div>
             </div>
         </div>

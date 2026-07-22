@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getRides } from '../../api/transport/rideApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const RidesListPage = () => {
     const [rides, setRides] = useState<any[]>([]);
@@ -50,7 +51,7 @@ const RidesListPage = () => {
                                     <td className="px-4 py-3 text-slate-300">{ride.status || 'Unknown'}</td>
                                     <td className="px-4 py-3">
                                         <Link
-                                            to={`/transport-admin/rides/${ride._id || ride.id}`}
+                                            to={getTransportPath(`/rides/${ride._id || ride.id}`)}
                                             className="text-sky-600 hover:underline"
                                         >
                                             View

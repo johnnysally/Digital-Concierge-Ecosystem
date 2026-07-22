@@ -6,8 +6,7 @@ import { getPromotions } from '../../api/transport/promotionApi';
 import { getPayments } from '../../api/transport/paymentApi';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../../utils/formatCurrency';
-import Transport3DPie from '../../components/transport/ui/Transport3DPie';
-import Transport3DBar from '../../components/transport/ui/Transport3DBar';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const parsePayments = (data: any): any[] => {
     if (Array.isArray(data)) return data;
@@ -126,106 +125,133 @@ const DashboardPage = () => {
         load();
     }, []);
 
+    const summaryCards = [
+        { label: 'Drivers', value: stats.drivers, icon: '👥', hint: 'On roster' },
+        { label: 'Vehicles', value: stats.vehicles, icon: '🚘', hint: 'Fleet ready' },
+        { label: 'Rides', value: stats.rides, icon: '🚖', hint: 'Tracked' },
+        { label: 'Promotions', value: stats.promotions, icon: '🎁', hint: 'Live offers' },
+    ];
+
+    const quickActions = [
+        { label: 'Live Map', path: getTransportPath('/live'), icon: '🗺️', description: 'Monitor routes in real time' },
+        { label: 'Ride Requests', path: getTransportPath('/ride-requests'), icon: '📥', description: 'Assign pickup demand' },
+        { label: 'Dispatch', path: getTransportPath('/dispatch'), icon: '🎯', description: 'Coordinate the fleet' },
+        { label: 'Vehicles', path: getTransportPath('/vehicles'), icon: '🚘', description: 'Check availability' },
+    ];
+
+    const spotlightItems = [
+        { label: 'Payment status', value: paymentDistribution[0]?.name || 'Stable', detail: `${paymentDistribution[0]?.value || 0} recent statuses` },
+        { label: 'Ride health', value: rideStatusDistribution[0]?.name || 'Live', detail: `${rideStatusDistribution[0]?.value || 0} active states` },
+        { label: 'Driver readiness', value: driverStatusDistribution[0]?.name || 'Ready', detail: `${driverStatusDistribution[0]?.value || 0} current state` },
+    ];
+
     return (
         <div className="space-y-6">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/20">
-                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Transport operations</p>
-                <h2 className="mt-3 text-3xl font-semibold text-white">Welcome to your transport control center</h2>
-                <p className="mt-3 max-w-2xl text-sm text-slate-400">Track vehicle availability, ride volume, promotions, and wallet activity from one unified dashboard.</p>
+            <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="max-w-2xl">
+                        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Transport operations</p>
+                        <h2 className="mt-2 text-3xl font-semibold text-white">Operations overview</h2>
+                        <p className="mt-2 text-sm text-slate-400">A lighter view of fleet activity, payments, and dispatch essentials without the extra chart clutter.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {quickActions.slice(0, 2).map((action) => (
+                            <Link key={action.label} to={action.path} className="rounded-2xl border border-slate-800 bg-slate-950 px-3 py-2 text-sm font-medium text-slate-300 transition hover:border-slate-600 hover:text-white">
+                                {action.label}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {['Drivers', 'Vehicles', 'Rides', 'Promotions'].map((label, index) => {
-                    const value = [stats.drivers, stats.vehicles, stats.rides, stats.promotions][index];
-                    return (
-                        <div key={label} className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-sm">
-                            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">{label}</p>
-                            <p className="mt-4 text-4xl font-bold text-white">{loading ? '—' : value}</p>
+                {summaryCards.map((card) => (
+                    <div key={card.label} className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+                        <div className="flex items-center justify-between gap-3">
+                            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">{card.label}</p>
+                            <span className="text-xl text-slate-300">{card.icon}</span>
                         </div>
-                    );
-                })}
+                        <p className="mt-4 text-3xl font-semibold text-white">{loading ? '—' : card.value}</p>
+                        <p className="mt-2 text-sm text-slate-500">{card.hint}</p>
+                    </div>
+                ))}
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-4">
+            <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                    <div className="flex items-center justify-between gap-3">
                         <div>
-                            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Wallet</p>
-                            <h3 className="mt-2 text-2xl font-semibold text-white">Payment activity</h3>
-                            <p className="mt-2 text-sm text-slate-400">See recent wallet transactions and track system payments in transport.</p>
+                            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Wallet snapshot</p>
+                            <h3 className="mt-2 text-xl font-semibold text-white">Payment health at a glance</h3>
                         </div>
-                        <Link
-                            to="/transport-admin/wallet"
-                            className="rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
-                        >
-                            Open wallet
+                        <Link to={getTransportPath('/wallet')} className="text-sm font-medium text-sky-400 transition hover:text-sky-300">
+                            View wallet
                         </Link>
                     </div>
 
-                    <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                        <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
-                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Transactions</p>
-                            <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : walletInfo.available ? walletInfo.count : 'N/A'}</p>
+                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                        <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
+                            <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Transactions</p>
+                            <p className="mt-3 text-2xl font-semibold text-white">{loading ? '—' : walletInfo.available ? walletInfo.count : 'N/A'}</p>
+                            <p className="mt-2 text-sm text-slate-500">Recent payments recorded</p>
                         </div>
-                        <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
-                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Total amount</p>
-                            <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : walletInfo.available ? formatCurrency(walletInfo.total, 'KES') : 'N/A'}</p>
-                        </div>
-                        <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
-                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Last payment</p>
-                            <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : walletInfo.available ? walletInfo.latestStatus : 'Unavailable'}</p>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
-                        <div className="flex items-center justify-between gap-4">
-                            <p className="text-sm font-semibold text-slate-300">Wallet activity trend</p>
-                            <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">
-                                {walletInfo.available ? 'Live' : 'Unavailable'}
-                            </span>
-                        </div>
-                        <div className="mt-4 h-44">
-                            <Transport3DBar data={paymentDistribution.length ? paymentDistribution : [{ name: 'No data', value: 1 }]} />
+                        <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
+                            <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Total value</p>
+                            <p className="mt-3 text-2xl font-semibold text-white">{loading ? '—' : walletInfo.available ? formatCurrency(walletInfo.total, 'KES') : 'N/A'}</p>
+                            <p className="mt-2 text-sm text-slate-500">Across the latest batch</p>
                         </div>
                     </div>
                 </div>
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-sm">
-                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Wallet health</p>
-                    <p className="mt-4 text-sm text-slate-400">{walletInfo.available ? 'Wallet tracking is active for your transport payments.' : 'Wallet data is unavailable for transport at this time.'}</p>
-                    <div className="mt-6 flex flex-col gap-8">
-                        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3">
-                            <p className="text-sm text-slate-300">Payment status distribution</p>
-                            <div className="mt-3 h-48">
-                                <Transport3DPie data={paymentDistribution} />
-                            </div>
-                        </div>
-                        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3">
-                            <p className="text-sm text-slate-300">Ride status distribution</p>
-                            <div className="mt-3 h-72 min-h-[24rem]">
-                                <Transport3DPie data={rideStatusDistribution} />
-                            </div>
-                        </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Quick actions</p>
+                    <div className="mt-4 space-y-3">
+                        {quickActions.map((action) => (
+                            <Link key={action.label} to={action.path} className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/80 px-3 py-3 transition hover:border-slate-600 hover:bg-slate-800/80">
+                                <div>
+                                    <p className="text-sm font-semibold text-white">{action.label}</p>
+                                    <p className="text-sm text-slate-500">{action.description}</p>
+                                </div>
+                                <span className="text-lg text-slate-500">↗</span>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-sm">
-                    <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Drivers status</p>
-                    <div className="mt-4 h-52">
-                        <Transport3DPie data={driverStatusDistribution} />
-                    </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Drivers</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : stats.drivers}</p>
+                    <p className="mt-2 text-sm text-slate-500">{driverStatusDistribution[0]?.name || 'Available'} · {driverStatusDistribution[0]?.value || 0}</p>
                 </div>
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-sm">
-                    <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Vehicles status</p>
-                    <div className="mt-4 h-52">
-                        <Transport3DPie data={vehicleStatusDistribution} />
-                    </div>
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Vehicles</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : stats.vehicles}</p>
+                    <p className="mt-2 text-sm text-slate-500">{vehicleStatusDistribution[0]?.name || 'Ready'} · {vehicleStatusDistribution[0]?.value || 0}</p>
                 </div>
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-sm">
-                    <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Ride types</p>
-                    <div className="mt-4 h-52">
-                        <Transport3DPie data={rideTypeDistribution} />
-                    </div>
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Rides</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : stats.rides}</p>
+                    <p className="mt-2 text-sm text-slate-500">{rideStatusDistribution[0]?.name || 'Live'} · {rideStatusDistribution[0]?.value || 0}</p>
+                </div>
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Promotions</p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : stats.promotions}</p>
+                    <p className="mt-2 text-sm text-slate-500">{paymentDistribution[0]?.name || 'Active'} offers in flow</p>
+                </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">Operations snapshot</p>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    {spotlightItems.map((item) => (
+                        <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
+                            <p className="text-sm text-slate-300">{item.label}</p>
+                            <p className="mt-2 text-lg font-semibold text-white">{item.value}</p>
+                            <p className="mt-1 text-sm text-slate-500">{item.detail}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

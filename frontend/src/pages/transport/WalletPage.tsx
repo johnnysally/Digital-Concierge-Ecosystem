@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getPayments } from '../../api/transport/paymentApi';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const parsePayments = (data: any): any[] => {
     if (Array.isArray(data)) return data;
@@ -44,7 +45,7 @@ const WalletPage = () => {
                         <p className="mt-2 max-w-2xl text-sm text-slate-400">Track your transport payments, recent wallet transactions, and payment status in one place.</p>
                     </div>
                     <Link
-                        to="/transport-admin"
+                        to={getTransportPath('')}
                         className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                     >
                         Back to dashboard

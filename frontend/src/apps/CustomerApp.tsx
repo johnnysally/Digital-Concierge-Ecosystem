@@ -59,6 +59,10 @@ const CustomerApp = () => (
                                     <Route path="/login" element={<LoginPage />} />
                                     <Route path="/register" element={<RegisterPage />} />
                                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                                    <Route path="/customer/login" element={<LoginPage />} />
+                                    <Route path="/customer/register" element={<RegisterPage />} />
+                                    <Route path="/customer/forgot-password" element={<ForgotPasswordPage />} />
+                                    <Route path="/customer" element={<Navigate to="/" replace />} />
                                     <Route path="/" element={<CustomerLayout />}>
                                         <Route index element={<HomePage />} />
                                         <Route path="search" element={<AccommodationSearchPage />} />

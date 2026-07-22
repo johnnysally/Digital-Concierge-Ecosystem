@@ -19,3 +19,8 @@ export const updateProfile = async (data: any) => {
     const res = await api.put('/restaurant/auth/profile', data);
     return res.data;
 };
+
+export const changePassword = async (data: { currentPassword: string; newPassword: string }) => {
+    const res = await api.put('/restaurant/auth/change-password', data);
+    return res.data;
+};

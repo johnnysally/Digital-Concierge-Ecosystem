@@ -66,11 +66,11 @@ const DashboardPage = () => {
 
     return (
         <div className="space-y-6">
-            <div className={`rounded-[28px] border border-amber-500/20 p-6 shadow-[0_18px_60px_-20px_rgba(245,158,11,0.35)] ${isLight ? 'bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.18),_transparent_28%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(248,250,252,0.96))]' : 'bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.18),_transparent_28%),linear-gradient(135deg,_rgba(17,24,39,0.95),_rgba(2,6,23,0.95))]'}`}>
+            <div className={`rounded-[28px] border border-amber-500/20 p-4 shadow-[0_18px_60px_-20px_rgba(245,158,11,0.35)] sm:p-6 ${isLight ? 'bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.18),_transparent_28%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(248,250,252,0.96))]' : 'bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.18),_transparent_28%),linear-gradient(135deg,_rgba(17,24,39,0.95),_rgba(2,6,23,0.95))]'}`}>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-amber-400">Restaurant Dashboard</p>
-                        <h1 className={`mt-3 text-3xl font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Run your kitchen from one live workspace</h1>
+                        <h1 className={`mt-3 text-2xl font-semibold sm:text-3xl ${isLight ? 'text-slate-900' : 'text-white'}`}>Run your kitchen from one live workspace</h1>
                         <p className={`mt-3 max-w-2xl text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>The restaurant portal is now aligned with the backend menu, orders, staff, payments, and profile modules.</p>
                     </div>
                     <div className={`rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm ${isLight ? 'text-amber-700' : 'text-amber-200'}`}>
@@ -82,58 +82,58 @@ const DashboardPage = () => {
 
             {error ? <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">{error}</div> : null}
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {stats.map((card) => (
-                    <div key={card.label} className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-sm">
+                    <div key={card.label} className={`rounded-[24px] border p-4 shadow-sm sm:p-5 ${isLight ? 'border-slate-200 bg-white/90' : 'border-slate-800 bg-slate-900/80'}`}>
                         <div className="flex items-center justify-between">
-                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{card.label}</p>
+                            <p className={`text-xs uppercase tracking-[0.24em] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{card.label}</p>
                             <span className="text-xl">{card.icon}</span>
                         </div>
-                        <p className="mt-3 text-2xl font-semibold text-white">{card.value}</p>
-                        <p className="mt-2 text-sm text-slate-400">{card.hint}</p>
+                        <p className={`mt-3 text-2xl font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>{card.value}</p>
+                        <p className={`mt-2 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{card.hint}</p>
                     </div>
                 ))}
             </div>
 
             <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-                <div className="rounded-[24px] border border-slate-800 bg-slate-900/80 p-5 shadow-sm">
-                    <div className="flex items-center justify-between">
+                <div className={`rounded-[24px] border p-4 shadow-sm sm:p-5 ${isLight ? 'border-slate-200 bg-white/90' : 'border-slate-800 bg-slate-900/80'}`}>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 className="text-lg font-semibold text-white">Recent orders</h2>
-                            <p className="mt-1 text-sm text-slate-400">Status updates come directly from the restaurant order API.</p>
+                            <h2 className={`text-lg font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Recent orders</h2>
+                            <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Status updates come directly from the restaurant order API.</p>
                         </div>
-                        <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-300">Live</span>
+                        <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-700 bg-slate-950 text-slate-300'}`}>Live</span>
                     </div>
                     <div className="mt-4 space-y-3">
-                        {loading ? <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3 text-sm text-slate-400">Loading orders...</div> : orders.length ? orders.map((order: any) => (
-                            <div key={order._id} className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3">
-                                <div className="flex items-center justify-between gap-3">
+                        {loading ? <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>Loading orders...</div> : orders.length ? orders.map((order: any) => (
+                            <div key={order._id} className={`rounded-2xl border p-3 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
-                                        <p className="text-sm font-semibold text-white">{order.customer?.firstName || 'Customer'} {order.customer?.lastName || ''}</p>
-                                        <p className="mt-1 text-sm text-slate-400">{order.items?.length || 0} items • {order.deliveryAddress || 'Delivery address pending'}</p>
+                                        <p className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>{order.customer?.firstName || 'Customer'} {order.customer?.lastName || ''}</p>
+                                        <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{order.items?.length || 0} items • {order.deliveryAddress || 'Delivery address pending'}</p>
                                     </div>
-                                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${order.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-300' : order.status === 'ready' ? 'bg-amber-500/10 text-amber-300' : 'bg-slate-800 text-slate-300'}`}>
+                                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${order.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-600' : order.status === 'ready' ? 'bg-amber-500/10 text-amber-600' : isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'}`}>
                                         {order.status || 'Pending'}
                                     </span>
                                 </div>
                             </div>
-                        )) : <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3 text-sm text-slate-400">No recent orders found.</div>}
+                        )) : <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>No recent orders found.</div>}
                     </div>
                 </div>
 
-                <div className="rounded-[24px] border border-slate-800 bg-slate-900/80 p-5 shadow-sm">
-                    <h2 className="text-lg font-semibold text-white">Kitchen readiness</h2>
+                <div className={`rounded-[24px] border p-4 shadow-sm sm:p-5 ${isLight ? 'border-slate-200 bg-white/90' : 'border-slate-800 bg-slate-900/80'}`}>
+                    <h2 className={`text-lg font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Kitchen readiness</h2>
                     <div className="mt-4 space-y-3">
-                        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3 text-sm text-slate-400">
-                            <p className="font-semibold text-white">Menu coverage</p>
+                        <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>
+                            <p className={`${isLight ? 'text-slate-900' : 'text-white'} font-semibold`}>Menu coverage</p>
                             <p className="mt-1">{items.length} dishes currently available for guests.</p>
                         </div>
-                        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3 text-sm text-slate-400">
-                            <p className="font-semibold text-white">Staff availability</p>
+                        <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>
+                            <p className={`${isLight ? 'text-slate-900' : 'text-white'} font-semibold`}>Staff availability</p>
                             <p className="mt-1">{staff.length} team members are set to active.</p>
                         </div>
-                        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3 text-sm text-slate-400">
-                            <p className="font-semibold text-white">Payment activity</p>
+                        <div className={`rounded-2xl border p-3 text-sm ${isLight ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-slate-800 bg-slate-950/70 text-slate-400'}`}>
+                            <p className={`${isLight ? 'text-slate-900' : 'text-white'} font-semibold`}>Payment activity</p>
                             <p className="mt-1">{payments.length} recent payment records are available.</p>
                         </div>
                     </div>

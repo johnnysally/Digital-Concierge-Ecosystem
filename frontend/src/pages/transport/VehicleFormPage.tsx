@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createVehicle, getVehicle, updateVehicle } from '../../api/transport/vehicleApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const VehicleFormPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -61,7 +62,7 @@ const VehicleFormPage = () => {
             } else {
                 await createVehicle(payload);
             }
-            navigate('/transport-admin/vehicles', { replace: true });
+            navigate(getTransportPath('/vehicles'), { replace: true });
         } catch {
             setError('Unable to save vehicle. Please check the form and try again.');
         } finally {

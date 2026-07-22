@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { deleteDriver, getDrivers } from '../../api/transport/driverApi';
+import { getTransportPath } from '../../utils/transportRoutes';
 
 const DriversListPage = () => {
     const [drivers, setDrivers] = useState<any[]>([]);
@@ -42,7 +43,7 @@ const DriversListPage = () => {
                     <p className="mt-2 text-sm text-slate-400">Track driver availability, contact details, and fleet assignments.</p>
                 </div>
                 <Link
-                    to="/transport-admin/drivers/new"
+                    to={getTransportPath('/drivers/new')}
                     className="inline-flex items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
                 >
                     Add driver
@@ -79,7 +80,7 @@ const DriversListPage = () => {
                                         <td className="px-4 py-3">
                                             <div className="flex flex-wrap gap-2">
                                                 <Link
-                                                    to={`/transport-admin/drivers/${driverId}/edit`}
+                                                    to={getTransportPath(`/drivers/${driverId}/edit`)}
                                                     className="rounded-2xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-800"
                                                 >
                                                     Edit

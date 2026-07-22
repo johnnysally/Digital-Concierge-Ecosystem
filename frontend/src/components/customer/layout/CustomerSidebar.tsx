@@ -67,8 +67,8 @@ const CustomerSidebar = ({ onNavigate, className = '' }: CustomerSidebarProps) =
 
     return (
         <aside className={`w-full lg:w-72 lg:shrink-0 ${className}`}>
-            <div className={`flex h-screen flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] lg:h-screen ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
-                <div className={`border-b p-6 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+            <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
+                <div className={`shrink-0 border-b p-6 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
                     <div className="mb-4 flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 via-orange-400 to-amber-300 text-sm font-semibold text-white shadow-sm">
                             DS
@@ -83,7 +83,7 @@ const CustomerSidebar = ({ onNavigate, className = '' }: CustomerSidebarProps) =
                     </div>
                 </div>
 
-                <nav className="flex-1 space-y-4 overflow-y-auto p-4">
+                <nav className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
                     <button
                         type="button"
                         onClick={toggleTheme}
