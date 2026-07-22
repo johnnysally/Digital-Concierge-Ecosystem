@@ -18,7 +18,7 @@ const RegisterPage = () => {
         try {
             const response = await register(form);
             localStorage.setItem('digitalsafaris_restaurant', JSON.stringify({ token: response.token, user: response.user }));
-            navigate('/restaurant-admin', { replace: true });
+            navigate('/restaurant-admin/login', { replace: true });
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Unable to create account.');
         } finally {
