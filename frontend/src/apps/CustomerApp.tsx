@@ -25,6 +25,8 @@ import ReviewsPage from '../pages/customer/ReviewsPage';
 import SettingsPage from '../pages/customer/SettingsPage';
 import ChatbotPage from '../pages/customer/ChatbotPage';
 import PropertyDetailPage from '../pages/customer/PropertyDetailPage';
+import Error304Page from '../pages/Error304Page';
+import StatusErrorPage from '../pages/StatusErrorPage';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -63,11 +65,15 @@ const CustomerApp = () => (
                                     <Route path="/customer/register" element={<RegisterPage />} />
                                     <Route path="/customer/forgot-password" element={<ForgotPasswordPage />} />
                                     <Route path="/customer" element={<Navigate to="/" replace />} />
+                                    <Route path="/404" element={<StatusErrorPage statusCode={404} />} />
+                                    <Route path="/304" element={<Error304Page />} />
+                                    <Route path="/500" element={<StatusErrorPage statusCode={500} />} />
+                                    <Route path="/error/:statusCode" element={<StatusErrorPage />} />
                                     <Route path="/" element={<CustomerLayout />}>
                                         <Route index element={<HomePage />} />
                                         <Route path="search" element={<AccommodationSearchPage />} />
-                                        <Route path="food" element={<FoodDeliveryPage />} />
-                                        <Route path="transport" element={<TransportDashboardPage />} />
+                                        <Route path="food" element={<RequireAuth><FoodDeliveryPage /></RequireAuth>} />
+                                        <Route path="transport" element={<RequireAuth><TransportDashboardPage /></RequireAuth>} />
                                         <Route path="promotions" element={<PromotionsPage />} />
                                         <Route path="reviews" element={<ReviewsPage />} />
                                         <Route path="support" element={<SupportCenterPage />} />
@@ -80,7 +86,7 @@ const CustomerApp = () => (
                                         <Route path="chat" element={<RequireAuth><ChatbotPage /></RequireAuth>} />
                                         <Route path="property/:id" element={<PropertyDetailPage />} />
                                     </Route>
-                                    <Route path="*" element={<Navigate to="/" replace />} />
+                                    <Route path="*" element={<StatusErrorPage statusCode={404} />} />
                                 </Routes>
                             </WalletProvider>
                         </ChatProvider>

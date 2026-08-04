@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import SectionHeader from '../../components/customer/ui/SectionHeader';
 import { getVehicles } from '../../api/customer/vehicleApi';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -6,7 +7,7 @@ import { api } from '../../api/axios';
 import { useAuth } from '../../context/customer/AuthContext';
 
 const TransportDashboardPage = () => {
-    const { user } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const [vehicles, setVehicles] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [vehicleType, setVehicleType] = useState('');
@@ -28,7 +29,12 @@ const TransportDashboardPage = () => {
             .finally(() => setLoading(false));
     }, [vehicleType]);
 
+    if (!authLoading && !isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
     const bookRide = async (vehicleId: string) => {
+        if (!isAuthenticated) return;
         if (!pickup || !dropoff) { setRideError('Please enter pickup and dropoff addresses.'); return; }
         setRideError('');
         setBookingId(vehicleId);

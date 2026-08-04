@@ -20,6 +20,11 @@ export const updateReservationStatus = async (id: string, status: string) => {
     return res.data;
 };
 
+export const updateReservationPaymentStatus = async (id: string, paymentStatus: string) => {
+    const res = await api.put(`/accommodation/reservations/${id}/payment-status`, { paymentStatus });
+    return res.data;
+};
+
 export const deleteReservation = async (id: string) => {
     const res = await api.delete(`/accommodation/reservations/${id}`);
     return res.data;

@@ -1,5 +1,7 @@
 ﻿import { Navigate, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '../context/transport/ThemeContext';
+import Error304Page from '../pages/Error304Page';
+import StatusErrorPage from '../pages/StatusErrorPage';
 import TransportLayout from '../components/transport/layout/TransportLayout';
 import DashboardPage from '../pages/transport/DashboardPage';
 import LoginPage from '../pages/transport/LoginPage';
@@ -45,6 +47,10 @@ const TransportApp = () => (
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="404" element={<StatusErrorPage statusCode={404} />} />
+            <Route path="304" element={<Error304Page />} />
+            <Route path="500" element={<StatusErrorPage statusCode={500} />} />
+            <Route path="error/:statusCode" element={<StatusErrorPage />} />
 
             <Route
                 path=""
@@ -78,7 +84,7 @@ const TransportApp = () => (
             <Route path="settings" element={<SettingsPage />} />
         </Route>
 
-            <Route path="*" element={<Navigate to="login" replace />} />
+            <Route path="*" element={<StatusErrorPage statusCode={404} />} />
         </Routes>
     </ThemeProvider>
 );

@@ -2,6 +2,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { createRoom, getRoom, updateRoom, uploadRoomImages } from '../../api/accommodation/roomApi';
 import { getMyProperties } from '../../api/accommodation/propertyApi';
+import { compressImageFiles } from '../../utils/imageUpload';
 
 const RoomFormPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -27,6 +28,7 @@ const RoomFormPage = () => {
     const [uploadingImages, setUploadingImages] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
     const parseList = (value: string) => value.split(/\n|,/).map((item) => item.trim()).filter(Boolean);
 
@@ -70,8 +72,11 @@ const RoomFormPage = () => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
         setUploadingImages(true);
+        setError('');
+        setMessage('');
         try {
-            const res = await uploadRoomImages(files);
+            const compressedFiles = await compressImageFiles(files);
+            const res = await uploadRoomImages(compressedFiles);
             const urls = res.images || [];
             if (urls.length > 0) {
                 setPhotos((current) => [...current, ...urls]);
@@ -224,7 +229,7 @@ const RoomFormPage = () => {
                                     <div className="mt-3 grid grid-cols-3 gap-2">
                                         {photos.map((url, i) => (
                                             <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-700">
-                                                <img src={url} alt={`Room ${i + 1}`} className="w-full h-24 object-cover" />
+                                                <img src={url} alt={`Room ${i + 1}`} className="w-full h-24 object-cover cursor-pointer" onClick={() => setSelectedPhoto(url)} />
                                                 <button type="button" onClick={() => removePhoto(i)}
                                                     className="absolute top-1 right-1 bg-rose-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                             </div>
@@ -254,6 +259,15 @@ const RoomFormPage = () => {
                     </form>
                 )}
             </div>
+
+            {selectedPhoto && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPhoto(null)}>
+                    <div className="relative max-w-4xl max-h-[90vh]" onClick={(event) => event.stopPropagation()}>
+                        <img src={selectedPhoto} alt="Room preview" className="max-h-[85vh] max-w-full rounded-2xl object-contain" />
+                        <button type="button" onClick={() => setSelectedPhoto(null)} className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/70 text-xl text-white">×</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

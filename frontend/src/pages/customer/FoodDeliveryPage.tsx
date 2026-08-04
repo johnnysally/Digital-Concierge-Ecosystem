@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import SectionHeader from '../../components/customer/ui/SectionHeader';
 import { getMenu } from '../../api/customer/menuApi';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -6,9 +7,9 @@ import { api } from '../../api/axios';
 import { useAuth } from '../../context/customer/AuthContext';
 
 const FoodDeliveryPage = () => {
-    const { user } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const [items, setItems] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [menuLoading, setMenuLoading] = useState(true);
     const [category, setCategory] = useState('');
     const [orderItems, setOrderItems] = useState<any[]>([]);
     const [orderPlaced, setOrderPlaced] = useState(false);
@@ -22,10 +23,15 @@ const FoodDeliveryPage = () => {
         getMenu(category ? { category } : {})
             .then((res) => setItems(res.items || []))
             .catch(() => setItems([]))
-            .finally(() => setLoading(false));
+            .finally(() => setMenuLoading(false));
     }, [category]);
 
+    if (!authLoading && !isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
     const addToOrder = (item: any) => {
+        if (!isAuthenticated) return;
         const existing = orderItems.find((oi) => oi.menuItem === item._id);
         if (existing) {
             setOrderItems(orderItems.map((oi) => oi.menuItem === item._id ? { ...oi, quantity: oi.quantity + 1 } : oi));
@@ -41,7 +47,7 @@ const FoodDeliveryPage = () => {
     const getTotal = () => orderItems.reduce((sum, oi) => sum + oi.price * oi.quantity, 0);
 
     const placeOrder = async () => {
-        if (orderItems.length === 0) return;
+        if (!isAuthenticated || orderItems.length === 0) return;
         setOrderError('');
         try {
             await api.post('/customer/orders', {
@@ -85,7 +91,7 @@ const FoodDeliveryPage = () => {
 
             <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
                 <div className="space-y-3">
-                    {loading ? (
+                    {menuLoading ? (
                         <div className="text-slate-400 py-8 text-center">Loading menu...</div>
                     ) : items.length === 0 ? (
                         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-10 text-center text-slate-400">

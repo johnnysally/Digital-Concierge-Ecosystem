@@ -9,12 +9,14 @@ interface RoomItem {
     status?: string;
     price?: number;
     property?: { name?: string };
+    photos?: string[];
 }
 
 const RoomsListPage = () => {
     const [rooms, setRooms] = useState<RoomItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchRooms = async () => {
@@ -61,19 +63,55 @@ const RoomsListPage = () => {
                                 to={`/accommodation/rooms/${room._id}`}
                                 className="block rounded-2xl border border-slate-800 bg-slate-950/70 p-4 transition hover:border-emerald-500"
                             >
-                                <div className="flex items-center justify-between gap-4">
-                                    <div>
-                                        <p className="font-medium text-white">{room.roomNumber || 'Room'}</p>
-                                        <p className="text-sm text-slate-400">{room.type || 'Room type'} • {room.property?.name || 'Unassigned'}</p>
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                                    <div className="flex-shrink-0">
+                                        {room.photos?.length ? (
+                                            <img
+                                                src={room.photos[0]}
+                                                alt={room.roomNumber || 'Room'}
+                                                className="h-24 w-32 rounded-xl border border-slate-800 object-cover"
+                                                onClick={(event) => {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+                                                    setSelectedPhoto(room.photos?.[0] || null);
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="flex h-24 w-32 items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-900/70 text-xs text-slate-500">
+                                                No image
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="text-sm text-slate-300">{room.status || 'available'}</div>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div>
+                                                <p className="font-medium text-white">{room.roomNumber || 'Room'}</p>
+                                                <p className="text-sm text-slate-400">{room.type || 'Room type'} • {room.property?.name || 'Unassigned'}</p>
+                                            </div>
+                                            <div className="text-sm text-slate-300">{room.status || 'available'}</div>
+                                        </div>
+                                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+                                            <span className="text-emerald-300">{room.price ? `KES ${room.price}` : 'Price unavailable'}</span>
+                                            {room.photos?.length ? (
+                                                <span className="text-xs text-slate-400">{room.photos.length} uploaded image{room.photos.length > 1 ? 's' : ''}</span>
+                                            ) : null}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="mt-3 text-sm text-emerald-300">{room.price ? `KES ${room.price}` : 'Price unavailable'}</div>
                             </Link>
                         ))}
                     </div>
                 )}
             </div>
+
+            {selectedPhoto && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPhoto(null)}>
+                    <div className="relative max-w-4xl max-h-[90vh]" onClick={(event) => event.stopPropagation()}>
+                        <img src={selectedPhoto} alt="Room preview" className="max-h-[85vh] max-w-full rounded-2xl object-contain" />
+                        <button type="button" onClick={() => setSelectedPhoto(null)} className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/70 text-xl text-white">×</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

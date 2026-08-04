@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import RestaurantLayout from '../components/restaurant/layout/RestaurantLayout';
+import Error304Page from '../pages/Error304Page';
+import StatusErrorPage from '../pages/StatusErrorPage';
 import DashboardPage from '../pages/restaurant/DashboardPage';
 import ForgotPasswordPage from '../pages/restaurant/ForgotPasswordPage';
 import LoginPage from '../pages/restaurant/LoginPage';
@@ -37,6 +39,10 @@ const RestaurantApp = () => (
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="404" element={<StatusErrorPage statusCode={404} />} />
+        <Route path="304" element={<Error304Page />} />
+        <Route path="500" element={<StatusErrorPage statusCode={500} />} />
+        <Route path="error/:statusCode" element={<StatusErrorPage />} />
 
         <Route
             path=""
@@ -64,7 +70,7 @@ const RestaurantApp = () => (
             <Route path="settings" element={<SettingsPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="login" replace />} />
+        <Route path="*" element={<StatusErrorPage statusCode={404} />} />
     </Routes>
 );
 

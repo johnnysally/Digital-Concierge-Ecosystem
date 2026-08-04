@@ -16,7 +16,7 @@ const PropertyDetailPage = () => {
     const [rooms, setRooms] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState<any>(null);
-    const [viewingPhotos, setViewingPhotos] = useState<string | null>(null);
+    const [viewingPhotos, setViewingPhotos] = useState<string[] | null>(null);
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [guests, setGuests] = useState(1);
@@ -81,7 +81,7 @@ const PropertyDetailPage = () => {
                                 {property.photos.slice(0, 4).map((photo: string, index: number) => (
                                     <img key={index} src={photo} alt={`${property.name} ${index + 1}`}
                                         className="h-48 w-full rounded-2xl object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                        onClick={() => setViewingPhotos(photo)} />
+                                        onClick={() => setViewingPhotos(property.photos || [])} />
                                 ))}
                             </div>
                         </div>
@@ -163,7 +163,7 @@ const PropertyDetailPage = () => {
                                                 </button>
                                                 {room.photos?.length > 0 && (
                                                     <button
-                                                        onClick={() => setViewingPhotos(room.photos[0])}
+                                                        onClick={() => setViewingPhotos(room.photos || [])}
                                                         className="rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors bg-slate-800 text-slate-300 hover:bg-slate-700">
                                                         📷 View Photos
                                                     </button>
@@ -241,8 +241,28 @@ const PropertyDetailPage = () => {
             {viewingPhotos && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
                     onClick={() => setViewingPhotos(null)}>
-                    <div className="relative max-w-3xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                        <img src={viewingPhotos} alt="Room photo" className="max-w-full max-h-[85vh] rounded-2xl object-contain" />
+                    <div className="relative max-w-4xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-center">
+                            <img src={viewingPhotos[0]} alt="Photo gallery" className="max-w-full max-h-[85vh] rounded-2xl object-contain" />
+                        </div>
+                        {viewingPhotos.length > 1 && (
+                            <div className="mt-3 flex flex-wrap justify-center gap-2">
+                                {viewingPhotos.map((photo, index) => (
+                                    <img
+                                        key={`${photo}-${index}`}
+                                        src={photo}
+                                        alt={`Gallery ${index + 1}`}
+                                        className="h-16 w-16 rounded-lg border border-white/20 object-cover cursor-pointer"
+                                        onClick={() => {
+                                            const nextPhotos = [...viewingPhotos];
+                                            const [selected] = nextPhotos.splice(index, 1);
+                                            nextPhotos.unshift(selected);
+                                            setViewingPhotos(nextPhotos);
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        )}
                         <button onClick={() => setViewingPhotos(null)}
                             className="absolute top-4 right-4 bg-black/60 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl hover:bg-black/80 transition-colors">
                             ×

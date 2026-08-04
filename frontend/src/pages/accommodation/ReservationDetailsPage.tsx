@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { deleteReservation, getReservation, updateReservationStatus } from '../../api/accommodation/reservationApi';
+import { deleteReservation, getReservation, updateReservationPaymentStatus, updateReservationStatus } from '../../api/accommodation/reservationApi';
 
 const ReservationDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -9,6 +9,7 @@ const ReservationDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [status, setStatus] = useState('');
+    const [paymentStatus, setPaymentStatus] = useState('');
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -19,6 +20,7 @@ const ReservationDetailsPage = () => {
                 const response = await getReservation(id);
                 setReservation(response.reservation);
                 setStatus(response.reservation?.status || 'pending');
+                setPaymentStatus(response.reservation?.paymentStatus || 'pending');
             } catch (err: any) {
                 setError(err?.response?.data?.message || 'Unable to load reservation');
             } finally {
@@ -39,6 +41,21 @@ const ReservationDetailsPage = () => {
             setReservation(response.reservation);
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Unable to update status');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handlePaymentStatusUpdate = async () => {
+        if (!id) return;
+        setSaving(true);
+        setError('');
+
+        try {
+            const response = await updateReservationPaymentStatus(id, paymentStatus);
+            setReservation(response.reservation);
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Unable to update payment status');
         } finally {
             setSaving(false);
         }
@@ -108,40 +125,66 @@ const ReservationDetailsPage = () => {
                             </div>
                         </div>
 
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div>
-                                <label className="mb-2 block text-sm text-slate-300">Status</label>
-                                <select
-                                    value={status}
-                                    onChange={(e) => setStatus(e.target.value)}
-                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
-                                >
-                                    <option value="pending">Pending</option>
-                                    <option value="confirmed">Confirmed</option>
-                                    <option value="checked_in">Checked in</option>
-                                    <option value="checked_out">Checked out</option>
-                                    <option value="cancelled">Cancelled</option>
-                                    <option value="no_show">No show</option>
-                                </select>
-                            </div>
-                            <div className="flex flex-col gap-3 sm:items-end">
+                        <div className="grid gap-4 lg:grid-cols-2">
+                            <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                                <div>
+                                    <label className="mb-2 block text-sm text-slate-300">Reservation status</label>
+                                    <select
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                        className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                    >
+                                        <option value="pending">Pending</option>
+                                        <option value="confirmed">Confirmed</option>
+                                        <option value="checked_in">Checked in</option>
+                                        <option value="checked_out">Checked out</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="no_show">No show</option>
+                                    </select>
+                                </div>
                                 <button
                                     type="button"
                                     onClick={handleStatusUpdate}
                                     disabled={saving}
-                                    className="rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
+                                    className="w-full rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
                                 >
-                                    Update status
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCancel}
-                                    disabled={saving}
-                                    className="rounded-2xl border border-rose-500 px-5 py-3 text-sm text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-60"
-                                >
-                                    Cancel booking
+                                    Update reservation status
                                 </button>
                             </div>
+                            <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                                <div>
+                                    <label className="mb-2 block text-sm text-slate-300">Payment status</label>
+                                    <select
+                                        value={paymentStatus}
+                                        onChange={(e) => setPaymentStatus(e.target.value)}
+                                        className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
+                                    >
+                                        <option value="pending">Pending</option>
+                                        <option value="paid">Paid</option>
+                                        <option value="partial">Partial</option>
+                                        <option value="refunded">Refunded</option>
+                                    </select>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handlePaymentStatusUpdate}
+                                    disabled={saving}
+                                    className="w-full rounded-2xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-60"
+                                >
+                                    Update payment status
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3 sm:items-start">
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                disabled={saving}
+                                className="rounded-2xl border border-rose-500 px-5 py-3 text-sm text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-60"
+                            >
+                                Cancel booking
+                            </button>
                         </div>
                     </div>
                 ) : (

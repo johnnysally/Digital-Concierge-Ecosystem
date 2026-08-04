@@ -4,6 +4,7 @@ import CustomerApp from './apps/CustomerApp';
 import RestaurantApp from './apps/RestaurantApp';
 import TransportApp from './apps/TransportApp';
 import Error304Page from './pages/Error304Page';
+import StatusErrorPage from './pages/StatusErrorPage';
 
 const App = () => (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -12,6 +13,10 @@ const App = () => (
             <Route path="/accommodation/*" element={<AccommodationApp />} />
             <Route path="/restaurant-admin/*" element={<RestaurantApp />} />
             <Route path="/TransportPartner/*" element={<TransportApp />} />
+            <Route path="/404" element={<StatusErrorPage statusCode={404} />} />
+            <Route path="/304" element={<Error304Page />} />
+            <Route path="/500" element={<StatusErrorPage statusCode={500} />} />
+            <Route path="/error/:statusCode" element={<StatusErrorPage />} />
             <Route path="/error-304" element={<Error304Page />} />
             <Route path="*" element={<CustomerApp />} />
         </Routes>

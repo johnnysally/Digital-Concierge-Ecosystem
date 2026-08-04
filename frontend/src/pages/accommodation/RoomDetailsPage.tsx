@@ -8,6 +8,7 @@ const RoomDetailsPage = () => {
     const [room, setRoom] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
     useEffect(() => {
         if (!id) return;
@@ -83,6 +84,22 @@ const RoomDetailsPage = () => {
                                 <p className="mt-1 font-medium text-white">{room.price ? `KES ${room.price}` : 'N/A'}</p>
                             </div>
                         </div>
+                        {room.photos?.length > 0 && (
+                            <div>
+                                <p className="text-slate-400">Photos</p>
+                                <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                                    {room.photos.map((photo: string, index: number) => (
+                                        <img
+                                            key={`${photo}-${index}`}
+                                            src={photo}
+                                            alt={`Room ${room.roomNumber || 'photo'} ${index + 1}`}
+                                            className="h-32 w-full cursor-pointer rounded-2xl border border-slate-700 object-cover transition hover:opacity-90"
+                                            onClick={() => setSelectedPhoto(photo)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <div>
                             <p className="text-slate-400">Description</p>
                             <p className="mt-1 text-slate-200">{room.description || 'No description available.'}</p>
@@ -92,6 +109,15 @@ const RoomDetailsPage = () => {
                     <p className="text-sm text-slate-400">Room not found.</p>
                 )}
             </div>
+
+            {selectedPhoto && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setSelectedPhoto(null)}>
+                    <div className="relative max-w-4xl max-h-[90vh]" onClick={(event) => event.stopPropagation()}>
+                        <img src={selectedPhoto} alt="Room photo" className="max-h-[85vh] max-w-full rounded-2xl object-contain" />
+                        <button type="button" onClick={() => setSelectedPhoto(null)} className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-black/70 text-xl text-white">×</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

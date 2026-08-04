@@ -12,6 +12,7 @@ export const uploadRoomImages = async (files: FileList | File[]) => {
 
     const res = await api.post('/accommodation/rooms/upload-images', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000,
     });
     return res.data;
 };

@@ -145,6 +145,29 @@ const updateReservationStatus = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
+const updateReservationPaymentStatus = async (req, res, next) => {
+    try {
+        const { paymentStatus } = req.body;
+        let reservation = await Reservation.findOneAndUpdate(
+            { _id: req.params.id, partner: req.user._id },
+            { paymentStatus },
+            { new: true }
+        );
+
+        if (!reservation) {
+            const booking = await Booking.findById(req.params.id);
+            if (booking) {
+                booking.paymentStatus = paymentStatus;
+                await booking.save();
+                reservation = booking;
+            }
+        }
+
+        if (!reservation) return res.status(404).json({ success: false, message: 'Reservation not found' });
+        res.json({ success: true, reservation });
+    } catch (error) { next(error); }
+};
+
 const deleteReservation = async (req, res, next) => {
     try {
         const reservation = await Reservation.findOneAndDelete({ _id: req.params.id, partner: req.user._id });
@@ -162,4 +185,4 @@ const deleteReservation = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-module.exports = { createReservation, getReservations, getReservation, updateReservationStatus, deleteReservation };
+module.exports = { createReservation, getReservations, getReservation, updateReservationStatus, updateReservationPaymentStatus, deleteReservation };

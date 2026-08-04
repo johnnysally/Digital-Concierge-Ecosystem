@@ -27,6 +27,7 @@ import SettingsPage from '../pages/accommodation/SettingsPage';
 import AnalyticsPage from '../pages/accommodation/AnalyticsPage';
 import NotificationsPage from '../pages/accommodation/NotificationsPage';
 import Error304Page from '../pages/Error304Page';
+import StatusErrorPage from '../pages/StatusErrorPage';
 import { AccommodationThemeProvider } from '../context/accommodation/ThemeContext';
 
 const getStoredAccommodationSession = () => {
@@ -97,11 +98,15 @@ const AccommodationApp = () => {
                     <Route path="payments" element={<PaymentsPage />} />
                     <Route path="wallet" element={<WalletPage />} />
                     <Route path="reviews" element={<ReviewsPage />} />
+                    <Route path="404" element={<StatusErrorPage statusCode={404} />} />
+                    <Route path="304" element={<Error304Page />} />
+                    <Route path="500" element={<StatusErrorPage statusCode={500} />} />
+                    <Route path="error/:statusCode" element={<StatusErrorPage />} />
                     <Route path="error-304" element={<Error304Page />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<SettingsPage />} />
                 </Route>
-                <Route path="*" element={<Navigate to="dashboard" replace />} />
+                <Route path="*" element={<StatusErrorPage statusCode={404} />} />
             </Routes>
         </AccommodationThemeProvider>
     );
