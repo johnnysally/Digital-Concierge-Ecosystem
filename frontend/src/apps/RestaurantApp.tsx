@@ -4,6 +4,7 @@ import Error304Page from '../pages/Error304Page';
 import StatusErrorPage from '../pages/StatusErrorPage';
 import DashboardPage from '../pages/restaurant/DashboardPage';
 import ForgotPasswordPage from '../pages/restaurant/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/restaurant/ResetPasswordPage';
 import LoginPage from '../pages/restaurant/LoginPage';
 import MenuItemFormPage from '../pages/restaurant/MenuItemFormPage';
 import MenuListPage from '../pages/restaurant/MenuListPage';
@@ -39,6 +40,7 @@ const RestaurantApp = () => (
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="404" element={<StatusErrorPage statusCode={404} />} />
         <Route path="304" element={<Error304Page />} />
         <Route path="500" element={<StatusErrorPage statusCode={500} />} />

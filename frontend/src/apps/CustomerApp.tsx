@@ -11,6 +11,7 @@ import HomePage from '../pages/customer/HomePage';
 import LoginPage from '../pages/customer/LoginPage';
 import RegisterPage from '../pages/customer/RegisterPage';
 import ForgotPasswordPage from '../pages/customer/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/customer/ResetPasswordPage';
 import AccommodationSearchPage from '../pages/customer/AccommodationSearchPage';
 import BookingOverviewPage from '../pages/customer/BookingOverviewPage';
 import FoodDeliveryPage from '../pages/customer/FoodDeliveryPage';
@@ -61,9 +62,11 @@ const CustomerApp = () => (
                                     <Route path="/login" element={<LoginPage />} />
                                     <Route path="/register" element={<RegisterPage />} />
                                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                                    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                                     <Route path="/customer/login" element={<LoginPage />} />
                                     <Route path="/customer/register" element={<RegisterPage />} />
                                     <Route path="/customer/forgot-password" element={<ForgotPasswordPage />} />
+                                    <Route path="/customer/reset-password/:token" element={<ResetPasswordPage />} />
                                     <Route path="/customer" element={<Navigate to="/" replace />} />
                                     <Route path="/404" element={<StatusErrorPage statusCode={404} />} />
                                     <Route path="/304" element={<Error304Page />} />

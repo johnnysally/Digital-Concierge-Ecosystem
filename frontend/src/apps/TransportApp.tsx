@@ -7,6 +7,7 @@ import DashboardPage from '../pages/transport/DashboardPage';
 import LoginPage from '../pages/transport/LoginPage';
 import RegisterPage from '../pages/transport/RegisterPage';
 import ForgotPasswordPage from '../pages/transport/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/transport/ResetPasswordPage';
 import DriversListPage from '../pages/transport/DriversListPage';
 import DriverFormPage from '../pages/transport/DriverFormPage';
 import VehiclesListPage from '../pages/transport/VehiclesListPage';
@@ -47,6 +48,7 @@ const TransportApp = () => (
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="reset-password/:token" element={<ResetPasswordPage />} />
             <Route path="404" element={<StatusErrorPage statusCode={404} />} />
             <Route path="304" element={<Error304Page />} />
             <Route path="500" element={<StatusErrorPage statusCode={500} />} />

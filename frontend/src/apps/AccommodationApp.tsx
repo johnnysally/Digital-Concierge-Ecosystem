@@ -7,6 +7,7 @@ import PropertyListPage from '../pages/accommodation/PropertyListPage';
 import PropertyEditPage from '../pages/accommodation/PropertyEditPage';
 import RegisterPage from '../pages/accommodation/RegisterPage';
 import ForgotPasswordPage from '../pages/accommodation/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/accommodation/ResetPasswordPage';
 import ReservationsListPage from '../pages/accommodation/ReservationsListPage';
 import ReservationDetailsPage from '../pages/accommodation/ReservationDetailsPage';
 import RoomsListPage from '../pages/accommodation/RoomsListPage';
@@ -55,6 +56,7 @@ const AccommodationApp = () => {
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="reset-password/:token" element={<ResetPasswordPage />} />
                 <Route
                     path="dashboard"
                     element={

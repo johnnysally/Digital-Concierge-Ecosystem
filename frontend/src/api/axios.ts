@@ -77,7 +77,7 @@ axiosClient.interceptors.response.use(
                 window.location.href = '/restaurant-admin/login';
             } else if (requestUrl.includes('/transport')) {
                 localStorage.removeItem('digitalsafaris_transport');
-                window.location.href = '/transport-admin/login';
+                window.location.href = '/TransportPartner/login';
             } else if (requestUrl.includes('/accommodation')) {
                 localStorage.removeItem('digitalsafaris_accommodation');
                 window.location.href = '/accommodation/login';
