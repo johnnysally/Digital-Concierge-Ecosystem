@@ -16,7 +16,7 @@ const GuestDetailsPage = () => {
             try {
                 const response = await getGuest(id);
                 setGuest(response.guest);
-                setReservations(response.reservations || []);
+                setReservations(response.stays || response.reservations || []);
             } catch (err: any) {
                 setError(err?.response?.data?.message || 'Unable to load guest information');
             } finally {

@@ -2,7 +2,8 @@ const Reservation = require('../../models/accommodation/Reservation');
 const Booking = require('../../models/customer/Booking');
 const Property = require('../../models/accommodation/Property');
 const Room = require('../../models/accommodation/Room');
-const { partner: partnerEmails } = require('../../services/emailService');
+const Customer = require('../../models/customer/Customer');
+const { partner: partnerEmails, customer: customerEmails } = require('../../services/emailService');
 const { createNotification } = require('../../services/notificationService');
 const logger = require('../../utils/logger');
 
@@ -34,7 +35,6 @@ const createReservation = async (req, res, next) => {
 const getReservations = async (req, res, next) => {
     try {
         const { status, propertyId, page = 1, limit = 20 } = req.query;
-
         const properties = await Property.find({ partner: req.user._id }).select('_id');
         const propertyIds = properties.map(p => p._id);
 
@@ -65,6 +65,7 @@ const getReservations = async (req, res, next) => {
                 _id: r._id,
                 guestName: r.guestName || `${r.customer?.firstName || ''} ${r.customer?.lastName || ''}`.trim() || 'Guest',
                 status: r.status,
+                paymentStatus: r.paymentStatus || 'pending',
                 totalAmount: r.totalAmount,
                 checkIn: r.checkIn,
                 checkOut: r.checkOut,
@@ -78,6 +79,7 @@ const getReservations = async (req, res, next) => {
                 _id: b._id,
                 guestName: `${b.customer?.firstName || ''} ${b.customer?.lastName || ''}`.trim() || 'Guest',
                 status: b.status,
+                paymentStatus: b.paymentStatus || 'pending',
                 totalAmount: b.totalAmount,
                 checkIn: b.checkIn,
                 checkOut: b.checkOut,
@@ -92,13 +94,7 @@ const getReservations = async (req, res, next) => {
         const total = allReservations.length;
         const paginated = allReservations.slice((page - 1) * limit, page * limit);
 
-        res.json({
-            success: true,
-            reservations: paginated,
-            total,
-            page: parseInt(page),
-            pages: Math.ceil(total / limit),
-        });
+        res.json({ success: true, reservations: paginated, total, page: parseInt(page), pages: Math.ceil(total / limit) });
     } catch (error) { next(error); }
 };
 
@@ -125,46 +121,89 @@ const getReservation = async (req, res, next) => {
 const updateReservationStatus = async (req, res, next) => {
     try {
         const { status } = req.body;
-        let reservation = await Reservation.findOneAndUpdate(
-            { _id: req.params.id, partner: req.user._id },
-            { status },
-            { new: true }
-        );
+
+        let reservation = await Reservation.findOne({ _id: req.params.id, partner: req.user._id });
+        let isBooking = false;
 
         if (!reservation) {
             const booking = await Booking.findById(req.params.id);
-            if (booking) {
-                booking.status = status;
-                await booking.save();
-                reservation = booking;
+            if (!booking) return res.status(404).json({ success: false, message: 'Reservation not found' });
+
+            const property = await Property.findOne({ _id: booking.property, partner: req.user._id });
+            if (!property) return res.status(404).json({ success: false, message: 'Reservation not found' });
+
+            reservation = booking;
+            isBooking = true;
+        }
+
+        const oldStatus = reservation.status;
+        reservation.status = status;
+
+        // Auto-update payment status
+        const paymentMap = {
+            confirmed: 'paid',
+            checked_in: 'paid',
+            checked_out: 'paid',
+            completed: 'paid',
+            cancelled: 'refunded',
+            no_show: 'refunded',
+        };
+        if (paymentMap[status]) {
+            reservation.paymentStatus = paymentMap[status];
+        }
+
+        await reservation.save();
+
+        // Auto-update room status
+        const room = await Room.findById(reservation.room);
+        if (room) {
+            const roomMap = {
+                confirmed: 'occupied',
+                checked_in: 'occupied',
+                checked_out: 'available',
+                completed: 'available',
+                cancelled: 'available',
+                no_show: 'available',
+            };
+            if (roomMap[status]) {
+                room.status = roomMap[status];
+                await room.save();
             }
         }
 
-        if (!reservation) return res.status(404).json({ success: false, message: 'Reservation not found' });
-        res.json({ success: true, reservation });
-    } catch (error) { next(error); }
-};
+        // Notify customer of status change
+        const customer = await Customer.findById(reservation.customer);
+        if (customer) {
+            const statusMessages = {
+                confirmed: 'Your booking has been confirmed!',
+                checked_in: 'Check-in confirmed. Enjoy your stay!',
+                checked_out: 'Thank you for staying with us!',
+                cancelled: 'Your booking has been cancelled.',
+            };
 
-const updateReservationPaymentStatus = async (req, res, next) => {
-    try {
-        const { paymentStatus } = req.body;
-        let reservation = await Reservation.findOneAndUpdate(
-            { _id: req.params.id, partner: req.user._id },
-            { paymentStatus },
-            { new: true }
-        );
+            customerEmails.sendBookingConfirmed(customer, {
+                id: reservation._id,
+                propertyName: reservation.property?.name || 'Property',
+                checkIn: reservation.checkIn,
+                checkOut: reservation.checkOut,
+                guests: reservation.guests || 1,
+                totalAmount: reservation.totalAmount,
+            }).catch(e => logger.error(`Status update email failed: ${e.message}`));
 
-        if (!reservation) {
-            const booking = await Booking.findById(req.params.id);
-            if (booking) {
-                booking.paymentStatus = paymentStatus;
-                await booking.save();
-                reservation = booking;
-            }
+            createNotification({
+                customerId: customer._id,
+                type: 'booking',
+                title: `Booking ${status.replace('_', ' ')}`,
+                message: statusMessages[status] || `Your booking status has been updated to ${status}.`,
+                link: `/bookings/${reservation._id}`,
+            }).catch(e => logger.error(`Notification failed: ${e.message}`));
         }
 
-        if (!reservation) return res.status(404).json({ success: false, message: 'Reservation not found' });
-        res.json({ success: true, reservation });
+        res.json({
+            success: true,
+            reservation,
+            message: `Status: ${status} | Payment: ${reservation.paymentStatus || 'N/A'} | Room: ${room?.status || 'N/A'}`,
+        });
     } catch (error) { next(error); }
 };
 
@@ -181,8 +220,11 @@ const deleteReservation = async (req, res, next) => {
             checkOut: reservation.checkOut,
         }).catch(e => logger.error(`Cancellation email failed: ${e.message}`));
 
-        res.json({ success: true, message: 'Reservation deleted' });
+        // Free up the room
+        await Room.findByIdAndUpdate(reservation.room, { status: 'available' });
+
+        res.json({ success: true, message: 'Reservation deleted and room freed' });
     } catch (error) { next(error); }
 };
 
-module.exports = { createReservation, getReservations, getReservation, updateReservationStatus, updateReservationPaymentStatus, deleteReservation };
+module.exports = { createReservation, getReservations, getReservation, updateReservationStatus, deleteReservation };
