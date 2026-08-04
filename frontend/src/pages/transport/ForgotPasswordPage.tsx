@@ -1,68 +1,59 @@
-﻿import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../../api/axios';
-import { getTransportPath } from '../../utils/transportRoutes';
+import { forgotPassword } from '../../api/transport/authApi';
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
+    const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
         setError('');
-        setMessage('');
-
         try {
-            const response = await api.post('/transport/auth/forgot-password', { email });
-            setMessage(response.data.message || 'Reset instructions have been sent to your email.');
-        } catch (err: any) {
-            setError(err?.response?.data?.message || 'Unable to send reset link. Please try again.');
+            await forgotPassword({ email });
+            setSubmitted(true);
+        } catch {
+            setError('Failed to send reset instructions.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.2),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.18),_transparent_28%),#020617] px-4 py-10 text-slate-100">
-            <div className="w-full max-w-md rounded-[32px] border border-slate-800/80 bg-slate-900/70 p-8 shadow-[0_25px_70px_-20px_rgba(2,6,23,0.85)] backdrop-blur-xl">
-                <div className="mb-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-500 to-violet-600 text-lg font-semibold text-white shadow-lg">
-                        DS
-                    </div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Digital Safaris</p>
-                    <h1 className="mt-2 text-3xl font-semibold text-white">Transport Portal</h1>
-                    <p className="mt-2 text-sm text-slate-400">Enter the email associated with your transport account and we’ll send reset instructions.</p>
+        <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8 flex items-center justify-center">
+            <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-10 shadow-2xl">
+                <div className="text-center mb-8">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 to-blue-500 text-white font-bold mx-auto">T</div>
+                    <h1 className="mt-4 text-2xl font-bold text-white">Forgot Password</h1>
+                    <p className="mt-2 text-sm text-slate-400">Enter your email for reset instructions.</p>
                 </div>
 
-                {error ? <div className="mb-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">{error}</div> : null}
-                {message ? <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">{message}</div> : null}
+                {error && <div className="mb-4 rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">{error}</div>}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="mb-2 block text-sm text-slate-400">Email</label>
-                        <input
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            type="email"
-                            required
-                            className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none ring-0 transition focus:border-emerald-400"
-                        />
+                {submitted ? (
+                    <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-6 text-center">
+                        <p className="text-emerald-400 text-sm">Instructions sent to <strong>{email}</strong>.</p>
+                        <Link to="/transport-admin/login" className="mt-4 inline-block text-sm text-sky-400 hover:text-sky-300">← Back to Login</Link>
                     </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <label className="block text-sm text-slate-300">
+                            Email address
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="transport@business.com"
+                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-sky-500" />
+                        </label>
+                        <button type="submit" disabled={loading}
+                            className="w-full rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-500 disabled:opacity-50">
+                            {loading ? 'Sending...' : 'Send Reset Instructions'}
+                        </button>
+                    </form>
+                )}
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-105 disabled:opacity-60"
-                    >
-                        {loading ? 'Sending...' : 'Send reset link'}
-                    </button>
-                </form>
-
-                <div className="mt-6 text-center text-sm text-slate-400">
-                    Remembered your password? <Link to={getTransportPath('/login')} className="text-emerald-400 hover:text-emerald-300">Sign in</Link>
+                <div className="mt-6 text-center text-sm text-slate-500">
+                    <Link to="/transport-admin/login" className="font-semibold text-sky-400 hover:text-sky-300">← Sign in</Link>
                 </div>
             </div>
         </div>

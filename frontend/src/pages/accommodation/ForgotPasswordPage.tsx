@@ -1,66 +1,59 @@
-﻿import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { forgotPassword } from '../../api/accommodation/authApi';
-import { useAccommodationTheme } from '../../context/accommodation/ThemeContext';
 
 const ForgotPasswordPage = () => {
-    const { isDark } = useAccommodationTheme();
     const [email, setEmail] = useState('');
+    const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = async (event: FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
         setError('');
-        setMessage('');
-
         try {
-            const response = await forgotPassword({ email });
-            setMessage(response.message || 'If this email is registered, instructions have been sent.');
-        } catch (err: any) {
-            setError(err?.response?.data?.message || 'Unable to send password reset link.');
+            await forgotPassword({ email });
+            setSubmitted(true);
+        } catch {
+            setError('Failed to send reset instructions. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className={`flex min-h-screen items-center justify-center px-4 py-10 ${isDark ? 'bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.16),_transparent_60%),linear-gradient(135deg,_#020617,_#0f172a)] text-slate-100' : 'bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.2),_transparent_55%),linear-gradient(135deg,_#f8fafc,_#eef2ff)] text-slate-700'}`}>
-            <div className={`w-full max-w-md rounded-3xl border p-8 shadow-2xl ${isDark ? 'border-slate-800 bg-slate-900/95 shadow-slate-950/60' : 'border-slate-200 bg-white/95 shadow-slate-200/80'}`}>
-                <div className="mb-6">
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-500">Digital Safaris</p>
-                    <h1 className={`mt-2 text-3xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Reset your password</h1>
-                    <p className={`mt-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Enter the email address associated with your account and we'll send reset instructions.</p>
+        <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8 flex items-center justify-center">
+            <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-10 shadow-2xl shadow-slate-900/40">
+                <div className="text-center mb-8">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-white font-bold mx-auto">A</div>
+                    <h1 className="mt-4 text-2xl font-bold text-white">Forgot Password</h1>
+                    <p className="mt-2 text-sm text-slate-400">Enter your email and we'll send reset instructions.</p>
                 </div>
 
-                {error ? <div className={`mb-4 rounded-2xl border p-3 text-sm ${isDark ? 'border-rose-500/30 bg-rose-500/10 text-rose-300' : 'border-rose-500/30 bg-rose-500/10 text-rose-600'}`}>{error}</div> : null}
-                {message ? <div className={`mb-4 rounded-2xl border p-3 text-sm ${isDark ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600'}`}>{message}</div> : null}
+                {error && <div className="mb-4 rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">{error}</div>}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className={`mb-2 block text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Email</label>
-                        <input
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            type="email"
-                            required
-                            className={`w-full rounded-2xl border px-4 py-3 text-sm outline-none ring-0 ${isDark ? 'border-slate-700 bg-slate-950/80 text-slate-100 placeholder:text-slate-500' : 'border-slate-300 bg-white text-slate-900'}`}
-                        />
+                {submitted ? (
+                    <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-6 text-center">
+                        <p className="text-emerald-400 text-sm">Instructions sent to <strong>{email}</strong>. Check your inbox.</p>
+                        <Link to="/accommodation/login" className="mt-4 inline-block text-sm text-sky-400 hover:text-sky-300">← Back to Login</Link>
                     </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <label className="block text-sm text-slate-300">
+                            Email address
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="partner@property.com"
+                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20" />
+                        </label>
+                        <button type="submit" disabled={loading}
+                            className="w-full rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:opacity-50">
+                            {loading ? 'Sending...' : 'Send Reset Instructions'}
+                        </button>
+                    </form>
+                )}
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60"
-                    >
-                        {loading ? 'Sending...' : 'Send reset link'}
-                    </button>
-                </form>
-
-                <div className={`mt-6 text-center text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    Remembered your password? <Link to="/accommodation/login" className="text-emerald-500 hover:text-emerald-400">Sign in</Link>
+                <div className="mt-6 text-center text-sm text-slate-500">
+                    Remember your password? <Link to="/accommodation/login" className="font-semibold text-emerald-400 hover:text-emerald-300">Sign in</Link>
                 </div>
             </div>
         </div>

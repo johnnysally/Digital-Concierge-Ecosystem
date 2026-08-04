@@ -9,10 +9,10 @@ import StatusErrorPage from './pages/StatusErrorPage';
 const App = () => (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
-            <Route path="/AccommodationPartner/*" element={<AccommodationApp />} />
             <Route path="/accommodation/*" element={<AccommodationApp />} />
+            <Route path="/accommodation-admin/*" element={<AccommodationApp />} />
             <Route path="/restaurant-admin/*" element={<RestaurantApp />} />
-            <Route path="/TransportPartner/*" element={<TransportApp />} />
+            <Route path="/transport-admin/*" element={<TransportApp />} />
             <Route path="/404" element={<StatusErrorPage statusCode={404} />} />
             <Route path="/304" element={<Error304Page />} />
             <Route path="/500" element={<StatusErrorPage statusCode={500} />} />

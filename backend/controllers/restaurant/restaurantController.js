@@ -81,7 +81,8 @@ const forgotPassword = async (req, res, next) => {
         partner.resetPasswordToken = token;
         partner.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
         await partner.save();
-        partnerEmails.sendPasswordReset(partner, `${process.env.PARTNER_URL}/reset-password/${token}`).catch(e => logger.error(`Password reset email failed: ${e.message}`));
+        const resetLink = `${process.env.PARTNER_URL || 'http://localhost:3000'}/restaurant-admin/reset-password/${token}`;
+        partnerEmails.sendPasswordReset(partner, resetLink).catch(e => logger.error(`Password reset email failed: ${e.message}`));
         res.json({ success: true, message: 'Reset link sent to email' });
     } catch (error) { next(error); }
 };

@@ -1,4 +1,4 @@
-const TRANSPORT_PORTAL_BASE = '/TransportPartner';
+const TRANSPORT_PORTAL_BASE = '/transport-admin';
 
 export const getTransportPath = (path = '') => {
     if (!path) return TRANSPORT_PORTAL_BASE;

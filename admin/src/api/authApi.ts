@@ -19,3 +19,13 @@ export const changePassword = async (data: { currentPassword: string; newPasswor
     const res = await api.put('/admin/auth/change-password', data);
     return res.data;
 };
+
+export const forgotPassword = async (data: { email: string }) => {
+    const res = await api.post('/admin/auth/forgot-password', data);
+    return res.data;
+};
+
+export const resetPassword = async (data: { token: string; newPassword: string }) => {
+    const res = await api.post('/admin/auth/reset-password', data);
+    return res.data;
+};

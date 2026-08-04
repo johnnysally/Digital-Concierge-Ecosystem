@@ -1,63 +1,59 @@
-import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../../api/accommodation/authApi';
-import { useAccommodationTheme } from '../../context/accommodation/ThemeContext';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const { isDark } = useAccommodationTheme();
-    const [form, setForm] = useState({ email: '', password: '' });
-    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (event: FormEvent) => {
-        event.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         setLoading(true);
         setError('');
-
         try {
-            const response = await login(form);
-            localStorage.setItem('digitalsafaris_accommodation', JSON.stringify({ token: response.token, user: response.user }));
-            navigate('/accommodation/dashboard', { replace: true });
+            const response = await login({ email, password });
+            localStorage.setItem('digitalsafaris_accommodation', JSON.stringify({ user: response.user, token: response.token }));
+            navigate('/accommodation/dashboard');
         } catch (err: any) {
-            setError(err?.response?.data?.message || 'Login failed');
+            setError(err?.response?.data?.message || 'Invalid credentials');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className={`flex min-h-screen items-center justify-center px-4 py-10 ${isDark ? 'bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.16),_transparent_60%),linear-gradient(135deg,_#020617,_#0f172a)] text-slate-100' : 'bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.2),_transparent_55%),linear-gradient(135deg,_#f8fafc,_#eef2ff)] text-slate-700'}`}>
-            <div className={`w-full max-w-md rounded-3xl border p-8 shadow-2xl ${isDark ? 'border-slate-800 bg-slate-900/95 shadow-slate-950/60' : 'border-slate-200 bg-white/95 shadow-slate-200/80'}`}>
-                <div className="mb-6">
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-500">Digital Safaris</p>
-                    <h1 className={`mt-2 text-3xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Sign in to your workspace</h1>
-                    <p className={`mt-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Use your accommodation partner credentials to manage properties and reservations.</p>
+        <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8 flex items-center justify-center">
+            <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-10 shadow-2xl">
+                <div className="text-center mb-8">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-white font-bold mx-auto">A</div>
+                    <h1 className="mt-4 text-2xl font-bold text-white">Accommodation Partner</h1>
+                    <p className="mt-2 text-sm text-slate-400">Sign in to manage your properties</p>
                 </div>
-
-                {error ? <div className={`mb-4 rounded-2xl border p-3 text-sm ${isDark ? 'border-rose-500/30 bg-rose-500/10 text-rose-300' : 'border-rose-500/30 bg-rose-500/10 text-rose-600'}`}>{error}</div> : null}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
+                {error && <div className="mb-4 rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">{error}</div>}
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className={`mb-2 block text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Email</label>
-                        <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" required className={`w-full rounded-2xl border px-4 py-3 text-sm outline-none ring-0 ${isDark ? 'border-slate-700 bg-slate-950/80 text-slate-100 placeholder:text-slate-500' : 'border-slate-300 bg-white text-slate-900'}`} />
+                        <label className="block text-sm text-slate-300 mb-2">Email</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500" />
                     </div>
                     <div>
-                        <label className={`mb-2 block text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Password</label>
-                        <input value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} type="password" required className={`w-full rounded-2xl border px-4 py-3 text-sm outline-none ring-0 ${isDark ? 'border-slate-700 bg-slate-950/80 text-slate-100 placeholder:text-slate-500' : 'border-slate-300 bg-white text-slate-900'}`} />
+                        <label className="block text-sm text-slate-300 mb-2">Password</label>
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500" />
                     </div>
-                    <button type="submit" disabled={loading} className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60">
-                        {loading ? 'Signing in...' : 'Sign in'}
+                    <button type="submit" disabled={loading}
+                        className="w-full rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">
+                        {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
-
-                <div className={`mt-6 grid gap-3 text-center text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    <Link to="/accommodation/forgot-password" className="text-emerald-500 hover:text-emerald-400">
-                        Forgot your password?
-                    </Link>
-                    <div>
-                        Need an account? <Link to="/accommodation/register" className="text-emerald-500 hover:text-emerald-400">Create one</Link>
-                    </div>
+                <div className="mt-6 text-center text-sm space-y-2">
+                    <Link to="/accommodation/forgot-password" className="block text-sky-400 hover:text-sky-300">Forgot password?</Link>
+                    <p className="text-slate-500">
+                        Don't have an account? <Link to="/accommodation/register" className="text-emerald-400 hover:text-emerald-300">Register</Link>
+                    </p>
                 </div>
             </div>
         </div>

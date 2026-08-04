@@ -24,3 +24,13 @@ export const changePassword = async (data: { currentPassword: string; newPasswor
     const res = await api.put('/transport/auth/change-password', data);
     return res.data;
 };
+
+export const forgotPassword = async (data: { email: string }) => {
+    const res = await api.post('/transport/auth/forgot-password', data);
+    return res.data;
+};
+
+export const resetPassword = async (data: { token: string; newPassword: string }) => {
+    const res = await api.post('/transport/auth/reset-password', data);
+    return res.data;
+};

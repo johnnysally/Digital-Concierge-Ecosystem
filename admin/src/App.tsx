@@ -9,6 +9,7 @@ import AdminLayout from './components/layout/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import PartnersListPage from './pages/PartnersListPage';
 import PartnerDetailsPage from './pages/PartnerDetailsPage';
 import CustomersListPage from './pages/CustomersListPage';
@@ -61,6 +62,7 @@ const App = () => {
                         <Routes>
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                             <Route path="/" element={<RequireAuth><AdminLayout /></RequireAuth>}>
                                 <Route index element={<DashboardPage />} />
                                 <Route path="partners" element={<PartnersListPage />} />
