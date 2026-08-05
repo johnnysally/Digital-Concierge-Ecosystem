@@ -36,12 +36,12 @@ Cloud Name: ${cloudinary}
 `;
 
 send({
-    to: 'davismcintyre5@gmail.com',
+    to: 'mwasjohn758@gmail.com',
     subject: 'Digital Safaris - API Keys',
     htmlBody,
     textBody,
 }).then(() => {
-    console.log('API keys sent to davismcintyre5@gmail.com');
+    console.log('API keys sent to mwasjohn758@gmail.com');
     process.exit(0);
 }).catch(err => {
     console.error('Failed:', err.message);
