@@ -25,3 +25,8 @@ export const deletePromotion = async (id: string) => {
     const res = await api.delete(`/transport/promotions/${id}`);
     return res.data;
 };
+
+export const getReviews = async () => {
+    const res = await api.get('/transport/promotions/reviews');
+    return res.data;
+};

@@ -15,8 +15,16 @@ const accommodationPartnerSchema = new mongoose.Schema({
     lastLogin: { type: Date },
     preferences: {
         notifications: { email: { type: Boolean, default: true }, sms: { type: Boolean, default: true }, push: { type: Boolean, default: true } },
-        portalSettings: { type: mongoose.Schema.Types.Mixed, default: {} },
     },
+    payoutMethods: [{
+        type: { type: String, enum: ['mpesa_send', 'mpesa_till', 'mpesa_paybill', 'bank', 'cash'], required: true },
+        label: { type: String },
+        accountNumber: { type: String },
+        accountName: { type: String },
+        bankName: { type: String },
+        branchCode: { type: String },
+        isDefault: { type: Boolean, default: false },
+    }],
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
     verificationToken: { type: String },

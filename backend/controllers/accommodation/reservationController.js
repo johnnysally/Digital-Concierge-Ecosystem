@@ -12,22 +12,20 @@ const createReservation = async (req, res, next) => {
         const reservation = await Reservation.create({ ...req.body, partner: req.user._id });
         const property = await Property.findById(reservation.property);
         const room = await Room.findById(reservation.room);
+
         partnerEmails.sendNewReservation(req.user, {
-            id: reservation._id,
-            propertyName: property?.name || 'Property',
-            roomNumber: room?.roomNumber || 'N/A',
-            guestName: reservation.guestName,
-            checkIn: reservation.checkIn,
-            checkOut: reservation.checkOut,
-            totalAmount: reservation.totalAmount,
-        }).catch(e => logger.error(`New reservation email failed: ${e.message}`));
+            id: reservation._id, propertyName: property?.name || 'Property',
+            roomNumber: room?.roomNumber || 'N/A', guestName: reservation.guestName,
+            checkIn: reservation.checkIn, checkOut: reservation.checkOut, totalAmount: reservation.totalAmount,
+        }).catch(e => logger.error('New reservation email failed: ' + e.message));
+
         createNotification({
-            customerId: req.user._id,
-            type: 'booking',
-            title: 'New Reservation',
-            message: `New reservation at ${property?.name}`,
-            link: `/reservations/${reservation._id}`,
-        }).catch(e => logger.error(`Notification failed: ${e.message}`));
+            partnerId: req.user._id.toString(),
+            type: 'booking', title: 'New Reservation',
+            message: 'New reservation at ' + (property?.name || 'Property'),
+            link: '/reservations/' + reservation._id,
+        }).catch(e => logger.error('Notification failed: ' + e.message));
+
         res.status(201).json({ success: true, reservation });
     } catch (error) { next(error); }
 };
@@ -46,48 +44,24 @@ const getReservations = async (req, res, next) => {
         if (status) bookingQuery.status = status;
 
         const [directReservations, customerBookings] = await Promise.all([
-            Reservation.find(directQuery)
-                .populate('property', 'name')
-                .populate('room', 'roomNumber type')
-                .populate('customer', 'firstName lastName email')
-                .sort({ createdAt: -1 })
-                .lean(),
-            Booking.find(bookingQuery)
-                .populate('property', 'name')
-                .populate('room', 'roomNumber type')
-                .populate('customer', 'firstName lastName email')
-                .sort({ createdAt: -1 })
-                .lean(),
+            Reservation.find(directQuery).populate('property', 'name').populate('room', 'roomNumber type')
+                .populate('customer', 'firstName lastName email').sort({ createdAt: -1 }).lean(),
+            Booking.find(bookingQuery).populate('property', 'name').populate('room', 'roomNumber type')
+                .populate('customer', 'firstName lastName email').sort({ createdAt: -1 }).lean(),
         ]);
 
         const allReservations = [
             ...directReservations.map(r => ({
-                _id: r._id,
-                guestName: r.guestName || `${r.customer?.firstName || ''} ${r.customer?.lastName || ''}`.trim() || 'Guest',
-                status: r.status,
-                paymentStatus: r.paymentStatus || 'pending',
-                totalAmount: r.totalAmount,
-                checkIn: r.checkIn,
-                checkOut: r.checkOut,
-                property: r.property,
-                room: r.room,
-                customer: r.customer,
-                source: 'direct',
-                createdAt: r.createdAt,
+                _id: r._id, guestName: r.guestName || (r.customer?.firstName + ' ' + r.customer?.lastName).trim() || 'Guest',
+                status: r.status, paymentStatus: r.paymentStatus || 'pending', totalAmount: r.totalAmount,
+                checkIn: r.checkIn, checkOut: r.checkOut, property: r.property, room: r.room,
+                customer: r.customer, source: 'direct', createdAt: r.createdAt,
             })),
             ...customerBookings.map(b => ({
-                _id: b._id,
-                guestName: `${b.customer?.firstName || ''} ${b.customer?.lastName || ''}`.trim() || 'Guest',
-                status: b.status,
-                paymentStatus: b.paymentStatus || 'pending',
-                totalAmount: b.totalAmount,
-                checkIn: b.checkIn,
-                checkOut: b.checkOut,
-                property: b.property,
-                room: b.room,
-                customer: b.customer,
-                source: 'booking',
-                createdAt: b.createdAt,
+                _id: b._id, guestName: (b.customer?.firstName + ' ' + b.customer?.lastName).trim() || 'Guest',
+                status: b.status, paymentStatus: b.paymentStatus || 'pending', totalAmount: b.totalAmount,
+                checkIn: b.checkIn, checkOut: b.checkOut, property: b.property, room: b.room,
+                customer: b.customer, source: 'booking', createdAt: b.createdAt,
             })),
         ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -102,17 +76,14 @@ const getReservation = async (req, res, next) => {
     try {
         let reservation = await Reservation.findOne({ _id: req.params.id, partner: req.user._id })
             .populate('property').populate('room').populate('customer');
-
         if (!reservation) {
-            const booking = await Booking.findOne({ _id: req.params.id })
-                .populate('property').populate('room').populate('customer');
+            const booking = await Booking.findOne({ _id: req.params.id }).populate('property').populate('room').populate('customer');
             if (booking) {
                 const property = await Property.findOne({ _id: booking.property, partner: req.user._id });
                 if (!property) return res.status(404).json({ success: false, message: 'Reservation not found' });
                 reservation = booking;
             }
         }
-
         if (!reservation) return res.status(404).json({ success: false, message: 'Reservation not found' });
         res.json({ success: true, reservation });
     } catch (error) { next(error); }
@@ -121,17 +92,14 @@ const getReservation = async (req, res, next) => {
 const updateReservationStatus = async (req, res, next) => {
     try {
         const { status } = req.body;
-
         let reservation = await Reservation.findOne({ _id: req.params.id, partner: req.user._id });
         let isBooking = false;
 
         if (!reservation) {
             const booking = await Booking.findById(req.params.id);
             if (!booking) return res.status(404).json({ success: false, message: 'Reservation not found' });
-
-            const property = await Property.findOne({ _id: booking.property, partner: req.user._id });
-            if (!property) return res.status(404).json({ success: false, message: 'Reservation not found' });
-
+            const propertyCheck = await Property.findOne({ _id: booking.property, partner: req.user._id });
+            if (!propertyCheck) return res.status(404).json({ success: false, message: 'Reservation not found' });
             reservation = booking;
             isBooking = true;
         }
@@ -139,90 +107,85 @@ const updateReservationStatus = async (req, res, next) => {
         const oldStatus = reservation.status;
         reservation.status = status;
 
-        // Auto-update payment status
-        const paymentMap = {
-            confirmed: 'paid',
-            checked_in: 'paid',
-            checked_out: 'paid',
-            completed: 'paid',
-            cancelled: 'refunded',
-            no_show: 'refunded',
-        };
-        if (paymentMap[status]) {
-            reservation.paymentStatus = paymentMap[status];
-        }
+        const paymentMap = { confirmed: 'paid', checked_in: 'paid', checked_out: 'paid', completed: 'paid', cancelled: 'refunded', no_show: 'refunded' };
+        if (paymentMap[status]) reservation.paymentStatus = paymentMap[status];
 
         await reservation.save();
 
-        // Auto-update room status
         const room = await Room.findById(reservation.room);
         if (room) {
-            const roomMap = {
-                confirmed: 'occupied',
-                checked_in: 'occupied',
-                checked_out: 'available',
-                completed: 'available',
-                cancelled: 'available',
-                no_show: 'available',
-            };
-            if (roomMap[status]) {
-                room.status = roomMap[status];
-                await room.save();
-            }
+            const roomMap = { confirmed: 'occupied', checked_in: 'occupied', checked_out: 'available', completed: 'available', cancelled: 'available', no_show: 'available' };
+            if (roomMap[status]) { room.status = roomMap[status]; await room.save(); }
         }
 
-        // Notify customer of status change
+        const property = await Property.findById(reservation.property);
         const customer = await Customer.findById(reservation.customer);
-        if (customer) {
-            const statusMessages = {
-                confirmed: 'Your booking has been confirmed!',
-                checked_in: 'Check-in confirmed. Enjoy your stay!',
-                checked_out: 'Thank you for staying with us!',
-                cancelled: 'Your booking has been cancelled.',
-            };
 
-            customerEmails.sendBookingConfirmed(customer, {
-                id: reservation._id,
-                propertyName: reservation.property?.name || 'Property',
-                checkIn: reservation.checkIn,
-                checkOut: reservation.checkOut,
-                guests: reservation.guests || 1,
-                totalAmount: reservation.totalAmount,
-            }).catch(e => logger.error(`Status update email failed: ${e.message}`));
+        if (customer && status !== oldStatus) {
+            if (status === 'confirmed') {
+                customerEmails.sendBookingConfirmed(customer, {
+                    id: reservation._id,
+                    propertyName: property?.name || 'Property',
+                    checkIn: reservation.checkIn,
+                    checkOut: reservation.checkOut,
+                    guests: reservation.guests || 1,
+                    totalAmount: reservation.totalAmount,
+                }).catch(e => logger.error('Confirmation email failed: ' + e.message));
 
-            createNotification({
-                customerId: customer._id,
-                type: 'booking',
-                title: `Booking ${status.replace('_', ' ')}`,
-                message: statusMessages[status] || `Your booking status has been updated to ${status}.`,
-                link: `/bookings/${reservation._id}`,
-            }).catch(e => logger.error(`Notification failed: ${e.message}`));
+                createNotification({
+                    customerId: customer._id.toString(),
+                    type: 'booking',
+                    title: 'Booking Confirmed',
+                    message: 'Your stay at ' + (property?.name || 'Property') + ' has been confirmed.',
+                    link: '/bookings/' + reservation._id,
+                }).catch(e => logger.error('Notification failed: ' + e.message));
+            }
+
+            if (status === 'cancelled') {
+                customerEmails.sendBookingCancelled(customer, {
+                    id: reservation._id,
+                    propertyName: property?.name || 'Property',
+                    refundAmount: reservation.totalAmount,
+                    refundStatus: 'Processing',
+                }).catch(e => logger.error('Cancellation email failed: ' + e.message));
+
+                createNotification({
+                    customerId: customer._id.toString(),
+                    type: 'booking',
+                    title: 'Booking Cancelled',
+                    message: 'Your booking at ' + (property?.name || 'Property') + ' has been cancelled.',
+                    link: '/bookings',
+                }).catch(e => logger.error('Notification failed: ' + e.message));
+            }
+
+            if (status === 'checked_in' || status === 'checked_out') {
+                createNotification({
+                    customerId: customer._id.toString(),
+                    type: 'booking',
+                    title: 'Booking ' + status.replace('_', ' '),
+                    message: 'Your booking at ' + (property?.name || 'Property') + ' has been updated to ' + status.replace('_', ' ') + '.',
+                    link: '/bookings/' + reservation._id,
+                }).catch(e => logger.error('Notification failed: ' + e.message));
+            }
         }
 
         res.json({
             success: true,
             reservation,
-            message: `Status: ${status} | Payment: ${reservation.paymentStatus || 'N/A'} | Room: ${room?.status || 'N/A'}`,
+            message: 'Status: ' + status + ' | Payment: ' + (reservation.paymentStatus || 'N/A') + ' | Room: ' + (room?.status || 'N/A'),
         });
     } catch (error) { next(error); }
 };
-
 const deleteReservation = async (req, res, next) => {
     try {
         const reservation = await Reservation.findOneAndDelete({ _id: req.params.id, partner: req.user._id });
         if (!reservation) return res.status(404).json({ success: false, message: 'Reservation not found' });
-
         const property = await Property.findById(reservation.property);
         partnerEmails.sendReservationCancelled(req.user, {
-            propertyName: property?.name || 'Property',
-            guestName: reservation.guestName,
-            checkIn: reservation.checkIn,
-            checkOut: reservation.checkOut,
-        }).catch(e => logger.error(`Cancellation email failed: ${e.message}`));
-
-        // Free up the room
+            propertyName: property?.name || 'Property', guestName: reservation.guestName,
+            checkIn: reservation.checkIn, checkOut: reservation.checkOut,
+        }).catch(e => logger.error('Cancellation email failed: ' + e.message));
         await Room.findByIdAndUpdate(reservation.room, { status: 'available' });
-
         res.json({ success: true, message: 'Reservation deleted and room freed' });
     } catch (error) { next(error); }
 };

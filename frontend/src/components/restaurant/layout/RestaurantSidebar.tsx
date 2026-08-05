@@ -26,8 +26,10 @@ const groups = [
     {
         title: 'Account',
         items: [
-            { label: 'Profile', path: '/restaurant-admin/profile', icon: '👤' },
-            { label: 'Settings', path: '/restaurant-admin/settings', icon: '⚙️' },
+            
+{ label: 'Wallet', path: '/restaurant-admin/wallet', icon: '💰' },
+{ label: 'Profile', path: '/restaurant-admin/profile', icon: '👤' },
+{ label: 'Settings', path: '/restaurant-admin/settings', icon: '⚙️' },
         ],
     },
 ];

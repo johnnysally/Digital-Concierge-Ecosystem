@@ -28,7 +28,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     const cancelBooking = (bookingId: string) => {
         setBookings((current) =>
             current.map((booking) =>
-                booking.id === bookingId ? { ...booking, status: 'cancelled' } : booking
+                (booking._id || booking.id) === bookingId ? { ...booking, status: 'cancelled' } : booking
             )
         );
     };

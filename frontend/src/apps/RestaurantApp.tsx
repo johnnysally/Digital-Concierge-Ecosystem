@@ -19,6 +19,7 @@ import ReviewsPage from '../pages/restaurant/ReviewsPage';
 import SettingsPage from '../pages/restaurant/SettingsPage';
 import StaffFormPage from '../pages/restaurant/StaffFormPage';
 import StaffListPage from '../pages/restaurant/StaffListPage';
+import WalletPage from '../pages/restaurant/WalletPage';
 
 const getStoredRestaurantSession = () => {
     try {
@@ -69,6 +70,7 @@ const RestaurantApp = () => (
             <Route path="payments" element={<PaymentsPage />} />
             <Route path="reviews" element={<ReviewsPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="wallet" element={<WalletPage />} />
             <Route path="settings" element={<SettingsPage />} />
         </Route>
 

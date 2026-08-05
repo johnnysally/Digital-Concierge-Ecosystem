@@ -42,4 +42,25 @@ const deletePromotion = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-module.exports = { createPromotion, getPromotions, getPromotion, updatePromotion, deletePromotion };
+const getReviews = async (req, res, next) => {
+    try {
+        const Review = require('../../models/customer/Review');
+        const Vehicle = require('../../models/transport/Vehicle');
+        
+        const vehicles = await Vehicle.find({ partner: req.user._id }).select('_id');
+        const vehicleIds = vehicles.map(v => v._id);
+        
+        const reviews = await Review.find({
+            $or: [
+                { property: { $in: vehicleIds } },
+                { property: req.user._id },
+            ],
+        })
+        .populate('customer', 'firstName lastName')
+        .sort({ createdAt: -1 }).limit(20);
+        
+        res.json({ success: true, reviews });
+    } catch (error) { next(error); }
+};
+
+module.exports = { createPromotion, getPromotions, getPromotion, updatePromotion, deletePromotion, getReviews };
