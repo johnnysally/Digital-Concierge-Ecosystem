@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const walletSchema = new mongoose.Schema({
-    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true, unique: true },
+    customer: { type: String, required: true, unique: true },
     balance: { type: Number, default: 0 },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'KES' },
     rewardsPoints: { type: Number, default: 0 },
     savedMethods: [
         {

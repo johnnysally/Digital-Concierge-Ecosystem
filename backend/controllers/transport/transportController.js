@@ -51,7 +51,7 @@ const getProfile = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
     try {
-        const allowed = ['firstName', 'lastName', 'phone', 'businessName', 'preferences'];
+        const allowed = ['firstName', 'lastName', 'phone', 'businessName', 'preferences','payoutMethods'];
         const updates = {};
         Object.keys(req.body).forEach((key) => { if (allowed.includes(key)) updates[key] = req.body[key]; });
         const partner = await TransportPartner.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true });

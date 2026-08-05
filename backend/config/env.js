@@ -15,6 +15,11 @@ module.exports = {
         API_KEY: process.env.BREVO_API_KEY,
         SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL,
     },
+
+    REDIS: {
+    ENABLED: process.env.REDIS_ENABLED === 'true',
+    URL: process.env.REDIS_URL,
+},
     
     HDM: {
         API_KEY: process.env.HDM_API_KEY,

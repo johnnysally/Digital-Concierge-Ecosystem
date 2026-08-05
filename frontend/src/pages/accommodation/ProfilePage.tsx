@@ -1,25 +1,24 @@
 import { useEffect, useState } from 'react';
-import { getProfile } from '../../api/accommodation/authApi';
+import { getProfile, updateProfile } from '../../api/accommodation/authApi';
+import PayoutMethodsForm from '../../components/partner/PayoutMethodsForm';
 
 const ProfilePage = () => {
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const user = await getProfile();
-                setProfile(user);
-            } catch (err: any) {
-                setError(err?.response?.data?.message || 'Unable to load profile');
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchProfile = async () => {
+        try {
+            const user = await getProfile();
+            setProfile(user);
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Unable to load profile');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchProfile();
-    }, []);
+    useEffect(() => { fetchProfile(); }, []);
 
     return (
         <div className="space-y-6">
@@ -28,7 +27,7 @@ const ProfilePage = () => {
                 <h2 className="mt-2 text-2xl font-semibold text-white">Accommodation partner profile</h2>
             </div>
 
-            {error ? <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">{error}</div> : null}
+            {error && <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">{error}</div>}
 
             <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
                 {loading ? (
@@ -48,6 +47,16 @@ const ProfilePage = () => {
                 ) : (
                     <p className="text-sm text-slate-400">No profile available.</p>
                 )}
+            </div>
+
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
+                <PayoutMethodsForm
+                    methods={profile?.payoutMethods || []}
+                    onSave={async (methods) => {
+                        await updateProfile({ payoutMethods: methods });
+                        await fetchProfile();
+                    }}
+                />
             </div>
         </div>
     );

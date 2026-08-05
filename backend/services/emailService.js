@@ -194,6 +194,16 @@ const sendPartnerNewRide = async (partner, ride) => {
     await send({ to: partner.email, subject, htmlBody, textBody });
 };
 
+const sendCustomerRestaurantReviewRequest = async (user, data) => {
+    const { subject, htmlBody, textBody } = templates.customer.restaurantReviewRequest(user, data);
+    await send({ to: user.email, subject, htmlBody, textBody });
+};
+
+const sendCustomerTransportReviewRequest = async (user, data) => {
+    const { subject, htmlBody, textBody } = templates.customer.transportReviewRequest(user, data);
+    await send({ to: user.email, subject, htmlBody, textBody });
+};
+
 module.exports = {
     customer: {
         sendWelcome: sendCustomerWelcome,
@@ -212,6 +222,8 @@ module.exports = {
         sendAccountDeleted: sendCustomerAccountDeleted,
         sendOrderConfirmed: sendCustomerOrderConfirmed,
         sendRideConfirmed: sendCustomerRideConfirmed,
+        sendRestaurantReviewRequest: sendCustomerRestaurantReviewRequest,
+        sendTransportReviewRequest: sendCustomerTransportReviewRequest,
     },
     partner: {
         sendWelcome: sendPartnerWelcome,

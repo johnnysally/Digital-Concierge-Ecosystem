@@ -5,12 +5,14 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const { PORT, NODE_ENV, CORS_ORIGIN } = require('./config/env');
 const connectDB = require('./config/db');
+const { connectRedis, getRedis } = require('./config/redis');
 const errorHandler = require('./middleware/global/errorHandler');
 const { generalLimiter } = require('./middleware/global/rateLimiter');
 const requestLogger = require('./middleware/global/logger');
 const { initSocket } = require('./socket');
 const logger = require('./utils/logger');
 const mongoose = require('mongoose');
+const { startSchedulers, stopSchedulers } = require('./schedulers');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,7 +28,7 @@ app.use(requestLogger);
 app.get('/', (req, res) => {
     res.json({
         success: true,
-        message: 'Digital Concierge Ecosystem API',
+        message: 'Digital Safaris Ecosystem API',
         version: '2.0.0',
         environment: NODE_ENV,
         uptime: process.uptime(),
@@ -37,26 +39,28 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
     res.json({
         success: true,
-        message: 'Digital Concierge API v2',
+        message: 'Digital Safaris API v2',
         modules: {
             customer: '/api/customer',
             accommodation: '/api/accommodation',
             restaurant: '/api/restaurant',
             transport: '/api/transport',
             admin: '/api/admin',
+            public: '/api/public',
         },
         health: '/health',
-        docs: '/api',
     });
 });
 
 app.get('/health', (req, res) => {
+    const redis = getRedis();
     res.json({
         success: true,
         status: 'healthy',
         uptime: process.uptime(),
         memory: `${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB`,
         database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+        redis: redis ? 'connected' : 'disabled',
         timestamp: new Date().toISOString(),
     });
 });
@@ -67,14 +71,31 @@ app.use(errorHandler);
 const start = async () => {
     try {
         await connectDB();
+        const dbConnected = mongoose.connection.readyState === 1;
+        const dbHost = mongoose.connection.host || 'localhost';
+        logger.info(`MongoDB ${dbConnected ? 'connected' : 'disconnected'} @ ${dbHost}`);
+
+        if (!dbConnected) {
+            throw new Error('Failed to connect to MongoDB');
+        }
+
+        const redisEnabled = process.env.REDIS_ENABLED === 'true';
+        await connectRedis();
+        const redisConnected = getRedis();
+
+        if (redisEnabled && !redisConnected) {
+            throw new Error('Redis is enabled but failed to connect. Check REDIS_URL.');
+        }
+
         initSocket(server);
 
         server.listen(PORT, () => {
+            startSchedulers();
             console.clear();
             console.log('');
             console.log('  ╔══════════════════════════════════════════════╗');
             console.log('  ║                                              ║');
-            console.log('  ║   🏨  DIGITAL CONCIERGE ECOSYSTEM  🌍       ║');
+            console.log('  ║   🏨  DIGITAL SAFARIS ECOSYSTEM  🌍        ║');
             console.log('  ║                                              ║');
             console.log('  ╠══════════════════════════════════════════════╣');
             console.log('  ║                                              ║');
@@ -83,9 +104,11 @@ const start = async () => {
             console.log(`  ║   Environment : ${NODE_ENV.padEnd(28)}║`);
             console.log('  ║                                              ║');
             console.log('  ╠══════════════════════════════════════════════╣');
-            console.log('  ║   DATABASE                                   ║');
-            console.log(`  ║   State       : ${'connected'.padEnd(28)}║`);
-            console.log(`  ║   Host        : ${(mongoose.connection.host || 'localhost').padEnd(28)}║`);
+            console.log('  ║   SERVICES                                   ║');
+            console.log(`  ║   MongoDB     : 🟢 Connected @ ${dbHost}`.padEnd(49) + '║');
+            console.log(`  ║   Redis       : ${redisConnected ? '🟢 Connected' : '⚫ Disabled'}`.padEnd(49) + '║');
+            console.log(`  ║   WebSocket   : 🟢 Active                    ║`);
+            console.log(`  ║   Email       : ${(process.env.EMAIL_PROVIDER || 'brevo').padEnd(28)}║`);
             console.log('  ║                                              ║');
             console.log('  ╠══════════════════════════════════════════════╣');
             console.log('  ║   ENDPOINTS                                  ║');
@@ -99,17 +122,14 @@ const start = async () => {
             console.log(`  ║   🍽️  Restaurant    /api/restaurant           ║`);
             console.log(`  ║   🚗 Transport     /api/transport            ║`);
             console.log(`  ║   🛡️  Admin         /api/admin                ║`);
-            console.log('  ║                                              ║');
-            console.log('  ╠══════════════════════════════════════════════╣');
-            console.log('  ║   SERVICES                                   ║');
-            console.log(`  ║   WebSocket   : 🟢 Active                    ║`);
-            console.log(`  ║   Email       : ${process.env.EMAIL_PROVIDER?.padEnd(28) || 'brevo'.padEnd(28)}║`);
+            console.log(`  ║   🌐 Public        /api/public               ║`);
             console.log('  ║                                              ║');
             console.log('  ╚══════════════════════════════════════════════╝');
             console.log('');
             console.log('  ✨ Server is ready to handle requests ✨');
             console.log('');
         });
+
 
         const shutdown = async (signal) => {
             console.log('');
@@ -119,7 +139,14 @@ const start = async () => {
             server.close(async () => {
                 await mongoose.connection.close();
                 logger.info('MongoDB disconnected');
-                console.log('  🔌 Database disconnected');
+
+                const redis = getRedis();
+                if (redis) {
+                    await redis.quit();
+                    logger.info('Redis disconnected');
+                }
+
+                console.log('  🔌 Services disconnected');
                 console.log('  🛑 Server closed');
                 console.log('');
                 process.exit(0);
@@ -131,7 +158,7 @@ const start = async () => {
                 process.exit(1);
             }, 10000);
         };
-
+stopSchedulers();
         process.on('SIGTERM', () => shutdown('SIGTERM'));
         process.on('SIGINT', () => shutdown('SIGINT'));
 
@@ -152,7 +179,7 @@ const start = async () => {
         console.error('');
         console.error('  ╔══════════════════════════════════════╗');
         console.error('  ║   ❌ STARTUP FAILED                 ║');
-        console.error(`  ║   ${error.message.padEnd(36)}║`);
+        console.error(`  ║   ${error.message.substring(0, 36).padEnd(36)}║`);
         console.error('  ╚══════════════════════════════════════╝');
         console.error('');
         process.exit(1);

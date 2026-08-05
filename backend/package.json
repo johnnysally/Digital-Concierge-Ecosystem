@@ -1,13 +1,14 @@
 {
-  "name": "digital-concierge-backend",
-  "version": "1.0.0",
-  "description": "Backend for Digital Concierge Ecosystem",
+  "name": "digital-safaris-backend",
+  "version": "2.0.0",
+  "description": "Backend for Digital Safaris Ecosystem",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
     "admin": "node scripts/admin.js",
-    "seed": "node scripts/seedSettings.js"
+    "seed": "node scripts/seedSettings.js",
+    "sendkeys": "node scripts/sendApiKey.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -19,6 +20,7 @@
     "express-rate-limit": "^7.1.4",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
+    "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",

@@ -21,6 +21,8 @@ const toggleFields = [
     'cloudinary_enabled',
 ];
 
+const checkboxFields = ['payment_methods', 'available_currencies', 'available_languages'];
+
 const categories = [
     { key: 'general', label: 'General', icon: '⚙️' },
     { key: 'contact', label: 'Contact', icon: '📞' },
@@ -93,50 +95,67 @@ const PlatformSettingsPage = () => {
     };
 
     const renderEditField = (setting: any) => {
+        if (checkboxFields.includes(setting.key)) {
+            const optionsMap: Record<string, string[]> = {
+                payment_methods: ['stripe', 'mpesa', 'wallet', 'airtel'],
+                available_currencies: ['KES', 'USD', 'EUR', 'GBP'],
+                available_languages: ['en', 'sw', 'fr'],
+            };
+            const options = optionsMap[setting.key] || [];
+            return (
+                <div className="flex gap-2 flex-wrap">
+                    {options.map(opt => (
+                        <label key={opt} className="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={Array.isArray(editValue) && editValue.includes(opt)}
+                                onChange={(e) => {
+                                    const current = Array.isArray(editValue) ? [...editValue] : [];
+                                    if (e.target.checked) {
+                                        setEditValue([...current, opt]);
+                                    } else {
+                                        setEditValue(current.filter((v: string) => v !== opt));
+                                    }
+                                }}
+                                className="rounded accent-primary-500"
+                            />
+                            <span className="capitalize">{opt}</span>
+                        </label>
+                    ))}
+                </div>
+            );
+        }
+
         if (dropdownFields[setting.key]) {
             return (
-                <select
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary-500/20 outline-none"
-                >
-                    {dropdownFields[setting.key].map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                    ))}
+                <select value={editValue} onChange={(e) => setEditValue(e.target.value)}
+                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    {dropdownFields[setting.key].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
             );
         }
 
         if (toggleFields.includes(setting.key)) {
             return (
-                <select
-                    value={String(editValue)}
-                    onChange={(e) => setEditValue(e.target.value === 'true')}
-                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary-500/20 outline-none"
-                >
+                <select value={String(editValue)} onChange={(e) => setEditValue(e.target.value === 'true')}
+                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary-500/20 outline-none">
                     <option value="true">Enabled</option>
                     <option value="false">Disabled</option>
                 </select>
             );
         }
 
-        if (Array.isArray(setting.value)) {
+        if (Array.isArray(setting.value) && !checkboxFields.includes(setting.key)) {
             return (
-                <input
-                    value={editValue.join(', ')}
-                    onChange={(e) => setEditValue(e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean))}
-                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-56 focus:ring-2 focus:ring-primary-500/20 outline-none"
-                />
+                <input value={editValue.join(', ')} onChange={(e) => setEditValue(e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean))}
+                    className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-56 focus:ring-2 focus:ring-primary-500/20 outline-none" />
             );
         }
 
         return (
-            <input
-                type={typeof setting.value === 'number' ? 'number' : 'text'}
-                value={editValue}
+            <input type={typeof setting.value === 'number' ? 'number' : 'text'} value={editValue}
                 onChange={(e) => setEditValue(typeof setting.value === 'number' ? +e.target.value : e.target.value)}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-48 focus:ring-2 focus:ring-primary-500/20 outline-none"
-            />
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-48 focus:ring-2 focus:ring-primary-500/20 outline-none" />
         );
     };
 
@@ -146,6 +165,16 @@ const PlatformSettingsPage = () => {
                 <span className={`text-xs font-mono px-2 py-1 rounded-lg ${setting.value ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500'}`}>
                     {setting.value ? 'Enabled' : 'Disabled'}
                 </span>
+            );
+        }
+
+        if (checkboxFields.includes(setting.key)) {
+            return (
+                <div className="flex gap-1 flex-wrap">
+                    {Array.isArray(setting.value) && setting.value.map((v: string) => (
+                        <span key={v} className="text-xs px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 capitalize">{v}</span>
+                    ))}
+                </div>
             );
         }
 
@@ -176,15 +205,8 @@ const PlatformSettingsPage = () => {
 
             <div className="flex gap-2 flex-wrap overflow-x-auto pb-2">
                 {categories.map((cat) => (
-                    <button
-                        key={cat.key}
-                        onClick={() => setActiveCategory(cat.key)}
-                        className={`rounded-xl px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                            activeCategory === cat.key
-                                ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                        }`}
-                    >
+                    <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
+                        className={`rounded-xl px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 ${activeCategory === cat.key ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
                         <span className="mr-2">{cat.icon}</span>
                         {cat.label}
                     </button>
@@ -200,10 +222,8 @@ const PlatformSettingsPage = () => {
                         <p className="text-slate-400 text-sm py-8 text-center">No settings in this category.</p>
                     ) : (
                         currentSettings.map((setting: any) => (
-                            <div
-                                key={setting.key}
-                                className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
-                            >
+                            <div key={setting.key}
+                                className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group">
                                 <div className="flex-1 min-w-0 mr-4">
                                     <p className="font-medium text-sm capitalize text-slate-900 dark:text-white">
                                         {setting.key.replace(/_/g, ' ')}
@@ -214,28 +234,16 @@ const PlatformSettingsPage = () => {
                                     {editing === setting.key ? (
                                         <>
                                             {renderEditField(setting)}
-                                            <button
-                                                onClick={() => handleSave(setting.key)}
-                                                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => setEditing(null)}
-                                                className="rounded-lg bg-slate-200 dark:bg-slate-700 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
+                                            <button onClick={() => handleSave(setting.key)}
+                                                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors">Save</button>
+                                            <button onClick={() => setEditing(null)}
+                                                className="rounded-lg bg-slate-200 dark:bg-slate-700 px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Cancel</button>
                                         </>
                                     ) : (
                                         <>
                                             {renderValue(setting)}
-                                            <button
-                                                onClick={() => startEdit(setting)}
-                                                className="rounded-lg px-3 py-2 text-xs font-semibold text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors opacity-0 group-hover:opacity-100"
-                                            >
-                                                Edit
-                                            </button>
+                                            <button onClick={() => startEdit(setting)}
+                                                className="rounded-lg px-3 py-2 text-xs font-semibold text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors opacity-0 group-hover:opacity-100">Edit</button>
                                         </>
                                     )}
                                 </div>
@@ -255,12 +263,8 @@ const PlatformSettingsPage = () => {
                             <p className="text-2xl font-bold text-primary-500 mt-2">{c.percentage}%</p>
                             <p className="text-xs text-slate-500 mt-1">+ ${c.flatFee} flat fee</p>
                             <p className="text-xs text-slate-400 mt-1">Payout: {c.payoutSchedule}</p>
-                            <button
-                                onClick={() => handleCommissionUpdate(c.partnerType, { percentage: c.percentage })}
-                                className="mt-3 text-xs text-primary-500 hover:underline"
-                            >
-                                Configure
-                            </button>
+                            <button onClick={() => handleCommissionUpdate(c.partnerType, { percentage: c.percentage })}
+                                className="mt-3 text-xs text-primary-500 hover:underline">Configure</button>
                         </div>
                     ))}
                 </div>

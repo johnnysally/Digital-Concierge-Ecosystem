@@ -19,7 +19,7 @@ const navGroups = [
         items: [
             { to: '/partners', label: 'Partners', icon: '🏨' },
             { to: '/customers', label: 'Customers', icon: '👥' },
-            { to: '/transactions', label: 'Transactions', icon: '💳' },
+            { to: '/payments', label: 'Payments', icon: '💳' },
             { to: '/disputes', label: 'Disputes', icon: '⚖️' },
             { to: '/backups', label: 'Backups', icon: '💾' },
         ],
