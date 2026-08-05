@@ -142,73 +142,67 @@ const getPayouts = async (req, res, next) => {
             transport: transCommission?.value || 12,
         };
 
-        // Only get unpaid payments
         const payments = await Payment.find({
             status: 'completed',
             type: 'payment',
             $or: [{ 'metadata.paidOut': { $ne: true } }, { 'metadata.paidOut': { $exists: false } }],
-        }).lean();
+        }).populate('customer', 'firstName lastName').lean();
 
         const releasedPayouts = await Payment.find({ type: 'payout' }).lean();
-        const releasedPartnerIds = new Set(releasedPayouts.map(p => p.customer?.toString()).filter(Boolean));
 
-        const partnerPayments = {};
-        const partnerTypes = {};
-        const paymentDetails = {};
+        const payouts = [];
 
         for (const p of payments) {
-            let pid = null;
-            let ptype = 'accommodation';
+            let partnerId = null;
+            let partnerType = 'accommodation';
 
             if (p.booking) {
                 const booking = await Booking.findById(p.booking).select('property').populate({ path: 'property', select: 'partner' }).lean();
-                if (booking?.property?.partner) { pid = booking.property.partner.toString(); ptype = 'accommodation'; }
+                if (booking?.property?.partner) { partnerId = booking.property.partner.toString(); partnerType = 'accommodation'; }
             }
-            if (!pid && p.metadata?.orderData?.items?.length > 0) {
+            if (!partnerId && p.metadata?.orderData?.items?.length > 0) {
                 const MenuItem = require('../../models/restaurant/MenuItem');
                 const firstItem = await MenuItem.findById(p.metadata.orderData.items[0]?.menuItem).select('partner').lean();
-                if (firstItem?.partner) { pid = firstItem.partner.toString(); ptype = 'restaurant'; }
+                if (firstItem?.partner) { partnerId = firstItem.partner.toString(); partnerType = 'restaurant'; }
             }
-            if (!pid && p.metadata?.rideData?.vehicleId) {
+            if (!partnerId && p.metadata?.rideData?.vehicleId) {
                 const Vehicle = require('../../models/transport/Vehicle');
                 const vehicle = await Vehicle.findById(p.metadata.rideData.vehicleId).select('partner').lean();
-                if (vehicle?.partner) { pid = vehicle.partner.toString(); ptype = 'transport'; }
+                if (vehicle?.partner) { partnerId = vehicle.partner.toString(); partnerType = 'transport'; }
             }
 
-            if (!pid) continue;
+            if (!partnerId) continue;
 
-            partnerTypes[pid] = ptype;
-
-            if (!partnerPayments[pid]) {
-                partnerPayments[pid] = { totalCollected: 0, commission: 0, netPayable: 0, released: releasedPartnerIds.has(pid) };
-                paymentDetails[pid] = [];
-            }
-
-            const rate = commissionRates[ptype] || 10;
+            const rate = commissionRates[partnerType] || 10;
             const commission = (p.amount * rate) / 100;
-            partnerPayments[pid].totalCollected += p.amount;
-            partnerPayments[pid].commission += commission;
-            partnerPayments[pid].netPayable += p.amount - commission;
-            paymentDetails[pid].push(p._id);
+            const alreadyReleased = releasedPayouts.some(rp => rp.metadata?.paymentIds?.includes(p._id.toString()));
+
+          payouts.push({
+    _id: p._id,
+    partnerId,
+    partnerType,
+    totalCollected: p.amount,    
+        commission,
+    netPayable: p.amount - commission,
+    released: alreadyReleased,
+    customerName: (p.customer?.firstName || '') + ' ' + (p.customer?.lastName || ''),
+    reference: p.reference,
+    createdAt: p.createdAt,
+    paymentId: p._id,
+});
         }
 
-        let payouts = Object.entries(partnerPayments).map(([partnerId, data]) => ({
-            partnerId,
-            partnerType: partnerTypes[partnerId] || 'accommodation',
-            paymentIds: paymentDetails[partnerId] || [],
-            ...data,
-        }));
-
+        // Enrich with partner names
         for (const payout of payouts) {
-            const acc = await AccommodationPartner.findById(payout.partnerId).select('businessName email firstName payoutMethods').lean();
-            if (acc) { payout.partnerName = acc.businessName; payout.partnerEmail = acc.email; payout.partnerFirstName = acc.firstName; payout.payoutMethods = acc.payoutMethods || []; payout.partnerType = 'accommodation'; continue; }
-            const rest = await RestaurantPartner.findById(payout.partnerId).select('businessName email firstName payoutMethods').lean();
-            if (rest) { payout.partnerName = rest.businessName; payout.partnerEmail = rest.email; payout.partnerFirstName = rest.firstName; payout.payoutMethods = rest.payoutMethods || []; payout.partnerType = 'restaurant'; continue; }
-            const trans = await TransportPartner.findById(payout.partnerId).select('businessName email firstName payoutMethods').lean();
-            if (trans) { payout.partnerName = trans.businessName; payout.partnerEmail = trans.email; payout.partnerFirstName = trans.firstName; payout.payoutMethods = trans.payoutMethods || []; payout.partnerType = 'transport'; }
+            const acc = await AccommodationPartner.findById(payout.partnerId).select('businessName payoutMethods').lean();
+            if (acc) { payout.partnerName = acc.businessName; payout.payoutMethods = acc.payoutMethods || []; continue; }
+            const rest = await RestaurantPartner.findById(payout.partnerId).select('businessName payoutMethods').lean();
+            if (rest) { payout.partnerName = rest.businessName; payout.payoutMethods = rest.payoutMethods || []; continue; }
+            const trans = await TransportPartner.findById(payout.partnerId).select('businessName payoutMethods').lean();
+            if (trans) { payout.partnerName = trans.businessName; payout.payoutMethods = trans.payoutMethods || []; }
         }
 
-        payouts.sort((a, b) => (a.partnerName || '').localeCompare(b.partnerName || ''));
+        payouts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         const total = payouts.length;
         const paginated = payouts.slice((page - 1) * limit, page * limit);
 
