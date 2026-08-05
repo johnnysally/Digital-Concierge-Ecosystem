@@ -83,7 +83,7 @@ const WalletPage = () => {
     const strongText = isDark ? 'text-white' : 'text-slate-900';
 
     return (
-        <div className="mx-auto max-w-6xl space-y-4 px-1 sm:space-y-6 sm:px-0">
+        <div className="mx-auto w-full max-w-full space-y-4 px-1 sm:space-y-6 sm:px-0">
             <SectionHeader title="Digital wallet" subtitle="Top up, manage payment methods, and track transactions." />
             {message && (
                 <div className={`rounded-2xl border p-3 text-sm ${message.includes('Failed') ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600'}`}>
@@ -136,7 +136,7 @@ const WalletPage = () => {
                 </div>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[1.2fr_1fr]">
                 <div className={surfaceClass}>
                     <h3 className={`mb-4 text-lg font-semibold ${strongText}`}>Saved Payment Methods</h3>
                     <div className="mb-4 flex flex-col gap-2 sm:flex-row">
