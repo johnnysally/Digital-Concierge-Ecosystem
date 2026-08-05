@@ -26,6 +26,7 @@ import TransactionsPage from '../pages/transport/TransactionsPage';
 import SupportPage from '../pages/transport/SupportPage';
 import ProfilePage from '../pages/transport/ProfilePage';
 import SettingsPage from '../pages/transport/SettingsPage';
+import DestinationPricesPage from '../pages/transport/DestinationPricesPage';
 
 const getStoredTransportSession = () => {
     try {
@@ -84,6 +85,7 @@ const TransportApp = () => (
             <Route path="support" element={<SupportPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="destination-prices" element={<DestinationPricesPage />} />
         </Route>
 
             <Route path="*" element={<StatusErrorPage statusCode={404} />} />

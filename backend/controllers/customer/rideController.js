@@ -28,39 +28,36 @@ const createRide = async (req, res, next) => {
 
         const vehicle = await Vehicle.findById(vehicleId);
         if (!vehicle) return res.status(404).json({ success: false, message: 'Vehicle not found.' });
-        if (vehicle.status !== 'available') return res.status(400).json({ success: false, message: 'Vehicle not available.' });
+        if (vehicle.availability !== 'online' || vehicle.status !== 'idle') return res.status(400).json({ success: false, message: 'Vehicle not available.' });
 
         const distance = calculateDistance(pickup, dropoff);
         const distanceFare = vehicle.pricePerKm * distance;
         const timeFare = (vehicle.pricePerMin || 0) * Math.round(distance * 2);
-        const total = Math.round((vehicle.baseFare || 0 + distanceFare + timeFare) * 100) / 100;
+        const total = Math.round(((vehicle.baseFare || 0) + distanceFare + timeFare) * 100) / 100;
 
         const ride = await Ride.create({
             partner: vehicle.partner, vehicle: vehicleId, customer: req.user._id,
             pickup, dropoff, rideType: rideType || 'immediate', scheduledTime: scheduledTime || null,
-            status: 'confirmed', paymentStatus: 'paid', distance,
+            status: 'requested', paymentStatus: 'pending', distance,
             fare: { base: vehicle.baseFare || 0, distance: distanceFare, time: timeFare, total, currency: 'KES' },
         });
 
-        await Vehicle.findByIdAndUpdate(vehicleId, { status: 'on_trip', dispatchStatus: 'dispatched' });
-
-        const customerName = `${req.user.firstName} ${req.user.lastName}`;
-        const vehicleName = `${vehicle.make} ${vehicle.model} (${vehicle.plateNumber})`;
-
-     createNotification({
-    partnerId: partner._id.toString(),
-    type: 'transport',
-    title: 'New Ride Request',
-    message: customerName + ' requested a ride. ' + pickup.address + ' to ' + dropoff.address + '.',
-}).catch(e => logger.error('Partner notification failed: ' + e.message));
-
         const partner = await TransportPartner.findById(vehicle.partner);
+        const customerName = `${req.user.firstName} ${req.user.lastName}`;
+
         if (partner) {
+            createNotification({
+                partnerId: partner._id.toString(),
+                type: 'transport',
+                title: 'New Ride Request',
+                message: customerName + ' requested a ride. ' + pickup.address + ' to ' + dropoff.address + '.',
+            }).catch(e => logger.error('Partner notification failed: ' + e.message));
+
             partnerEmails.sendNewRide(partner, {
-                id: ride._id, customerName, vehicleName, rideType: rideType || 'immediate',
-                pickup: pickup.address, dropoff: dropoff.address, distance, total,
-                phone: customerPhone || req.user.phone || '', scheduledTime,
-            }).catch(e => logger.error(`Partner notification failed: ${e.message}`));
+                id: ride._id, customerName, vehicleName: `${vehicle.make} ${vehicle.model} (${vehicle.plateNumber})`,
+                rideType: rideType || 'immediate', pickup: pickup.address, dropoff: dropoff.address,
+                distance, total, phone: customerPhone || req.user.phone || '', scheduledTime,
+            }).catch(e => logger.error(`Partner email failed: ${e.message}`));
         }
 
         res.status(201).json({ success: true, ride });

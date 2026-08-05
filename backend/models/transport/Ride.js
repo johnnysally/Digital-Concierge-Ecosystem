@@ -7,11 +7,11 @@ const rideSchema = new mongoose.Schema({
     customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
     pickup: {
         address: { type: String, required: true },
-        coordinates: { type: [Number], required: true },
+        coordinates: { type: [Number], default: [0, 0] },
     },
     dropoff: {
         address: { type: String, required: true },
-        coordinates: { type: [Number], required: true },
+        coordinates: { type: [Number], default: [0, 0] },
     },
     status: { type: String, enum: ['requested', 'accepted', 'arrived', 'in_progress', 'completed', 'cancelled'], default: 'requested' },
     rideType: { type: String, enum: ['immediate', 'scheduled'], default: 'immediate' },
@@ -20,6 +20,8 @@ const rideSchema = new mongoose.Schema({
     completedAt: { type: Date },
     distance: { type: Number },
     duration: { type: Number },
+    seats: { type: Number, default: 1 },
+    seatNumbers: [{ type: Number }],
     fare: {
         base: { type: Number, default: 0 },
         distance: { type: Number, default: 0 },

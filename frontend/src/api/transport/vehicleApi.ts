@@ -39,3 +39,8 @@ export const updateDispatchStatus = async (id: string, dispatchStatus: string) =
     const res = await api.put(`/transport/vehicles/${id}/dispatch`, { dispatchStatus });
     return res.data;
 };
+
+export const toggleAvailability = async (id: string) => {
+    const res = await api.put(`/transport/vehicles/${id}/toggle-availability`);
+    return res.data;
+};

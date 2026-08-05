@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createDriver, getDriver, updateDriver } from '../../api/transport/driverApi';
+import { getVehicles } from '../../api/transport/vehicleApi';
 import { getTransportPath } from '../../utils/transportRoutes';
 
 const DriverFormPage = () => {
@@ -13,11 +14,19 @@ const DriverFormPage = () => {
         phone: '',
         licenseNumber: '',
         licenseExpiry: '',
-        status: 'available',
+        status: 'offline',
+        assignedVehicle: '',
     });
+    const [vehicles, setVehicles] = useState<any[]>([]);
     const [loading, setLoading] = useState(Boolean(id));
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        getVehicles({ availability: 'online' })
+            .then((res) => setVehicles(res.vehicles || []))
+            .catch(() => setVehicles([]));
+    }, []);
 
     useEffect(() => {
         if (!id) return;
@@ -33,7 +42,8 @@ const DriverFormPage = () => {
                     phone: driver.phone || '',
                     licenseNumber: driver.licenseNumber || '',
                     licenseExpiry: driver.licenseExpiry ? driver.licenseExpiry.split('T')[0] : '',
-                    status: driver.status || 'available',
+                    status: driver.status || 'offline',
+                    assignedVehicle: driver.assignedVehicle?._id || driver.assignedVehicle || '',
                 });
             })
             .catch(() => setError('Unable to load driver details.'))
@@ -49,6 +59,7 @@ const DriverFormPage = () => {
             const payload = {
                 ...form,
                 licenseExpiry: form.licenseExpiry || undefined,
+                assignedVehicle: form.assignedVehicle || undefined,
             };
 
             if (id) {
@@ -81,88 +92,59 @@ const DriverFormPage = () => {
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="block text-sm text-slate-400">
                             First name
-                            <input
-                                value={form.firstName}
-                                onChange={(event) => setForm({ ...form, firstName: event.target.value })}
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                         <label className="block text-sm text-slate-400">
                             Last name
-                            <input
-                                value={form.lastName}
-                                onChange={(event) => setForm({ ...form, lastName: event.target.value })}
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="block text-sm text-slate-400">
                             Email
-                            <input
-                                value={form.email}
-                                onChange={(event) => setForm({ ...form, email: event.target.value })}
-                                type="email"
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                         <label className="block text-sm text-slate-400">
                             Phone
-                            <input
-                                value={form.phone}
-                                onChange={(event) => setForm({ ...form, phone: event.target.value })}
-                                type="tel"
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} type="tel" required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="block text-sm text-slate-400">
                             License number
-                            <input
-                                value={form.licenseNumber}
-                                onChange={(event) => setForm({ ...form, licenseNumber: event.target.value })}
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.licenseNumber} onChange={(e) => setForm({ ...form, licenseNumber: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                         <label className="block text-sm text-slate-400">
                             License expiry
-                            <input
-                                value={form.licenseExpiry}
-                                onChange={(event) => setForm({ ...form, licenseExpiry: event.target.value })}
-                                type="date"
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.licenseExpiry} onChange={(e) => setForm({ ...form, licenseExpiry: e.target.value })} type="date" className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                     </div>
 
-                    <label className="block text-sm text-slate-400">
-                        Status
-                        <select
-                            value={form.status}
-                            onChange={(event) => setForm({ ...form, status: event.target.value })}
-                            className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                        >
-                            <option value="available">Available</option>
-                            <option value="on_trip">On trip</option>
-                            <option value="offline">Offline</option>
-                            <option value="suspended">Suspended</option>
-                        </select>
-                    </label>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <label className="block text-sm text-slate-400">
+                            Assign vehicle
+                            <select value={form.assignedVehicle} onChange={(e) => setForm({ ...form, assignedVehicle: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500">
+                                <option value="">None</option>
+                                {vehicles.map((v) => (
+                                    <option key={v._id} value={v._id}>{v.make} {v.model} - {v.plateNumber}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="block text-sm text-slate-400">
+                            Status
+                            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500">
+                                <option value="available">Available</option>
+                                <option value="on_trip">On trip</option>
+                                <option value="offline">Offline</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </label>
+                    </div>
 
                     <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
+                        <button type="submit" disabled={saving} className="rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50">
                             {saving ? 'Saving...' : id ? 'Update driver' : 'Create driver'}
                         </button>
                     </div>

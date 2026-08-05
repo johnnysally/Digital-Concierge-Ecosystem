@@ -31,6 +31,7 @@ const PaymentsPage = () => {
     const [releaseAccountNumber, setReleaseAccountNumber] = useState('');
     const [releaseAccountName, setReleaseAccountName] = useState('');
     const [releaseBankName, setReleaseBankName] = useState('');
+    const [releasing, setReleasing] = useState(false);
 
     const fetchData = () => {
         if (activeTab === 'transactions') {
@@ -62,7 +63,7 @@ const PaymentsPage = () => {
         try {
             await api.put(`/admin/payments/${id}/refund`);
             setMessage('Payment refunded.');
-            setPayments(payments.map(p => p._id === id ? { ...p, status: 'refunded' } : p));
+            fetchData();
             setTimeout(() => setMessage(''), 3000);
         } catch { setMessage('Failed to refund.'); }
     };
@@ -85,6 +86,7 @@ const PaymentsPage = () => {
 
     const handleReleasePayout = async () => {
         if (!releaseModal) return;
+        setReleasing(true);
         try {
             await api.post('/admin/payments/payouts/release', {
                 partnerId: releaseModal.partnerId,
@@ -96,11 +98,11 @@ const PaymentsPage = () => {
                 paymentIds: releaseModal.paymentId ? [releaseModal.paymentId] : [],
             });
             setMessage('Payout released to ' + releaseModal.partnerName + '.');
-            setPayouts(payouts.map(p => p.paymentId === releaseModal.paymentId ? { ...p, released: true } : p));
             setReleaseModal(null);
-            setTimeout(() => setMessage(''), 3000);
             fetchData();
+            setTimeout(() => setMessage(''), 3000);
         } catch { setMessage('Failed to release payout.'); }
+        finally { setReleasing(false); }
     };
 
     const handleCommissionUpdate = async (type: string, percentage: number) => {
@@ -117,14 +119,21 @@ const PaymentsPage = () => {
         { key: 'partnerName', label: 'Partner', render: (val: string) => val || 'N/A' },
         { key: 'method', label: 'Method', render: (val: string) => <span className="uppercase text-xs font-medium">{val}</span> },
         { key: 'amount', label: 'Amount', render: (val: number) => <span className="font-semibold">{formatCurrency(val)}</span> },
-        { key: 'status', label: 'Status', render: (val: string) => <StatusBadge status={val} type={val === 'completed' ? 'success' : val === 'pending' ? 'warning' : val === 'refunded' ? 'info' : 'danger'} /> },
+        {
+            key: 'status', label: 'Status',
+            render: (val: string) => <StatusBadge status={val} type={val === 'completed' ? 'success' : val === 'pending' ? 'warning' : val === 'refunded' ? 'info' : 'danger'} />,
+        },
         { key: 'createdAt', label: 'Date', render: (val: string) => formatDateTime(val) },
         {
             key: '_id', label: 'Actions',
             render: (val: string, row: any) => (
                 <div className="flex gap-2">
                     <button onClick={() => setSelectedPayment(row)} className="text-xs text-primary-500 hover:underline font-semibold">View</button>
-                    {row.status === 'completed' && <button onClick={() => handleRefund(val)} className="text-xs text-rose-500 hover:underline font-semibold">Refund</button>}
+                    {row.paidOut ? (
+                        <span className="text-xs text-emerald-400 font-medium">✓ Paid Out</span>
+                    ) : row.status === 'completed' ? (
+                        <button onClick={() => handleRefund(val)} className="text-xs text-rose-500 hover:underline font-semibold">Refund</button>
+                    ) : null}
                 </div>
             ),
         },
@@ -155,8 +164,15 @@ const PaymentsPage = () => {
             {message && <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 text-sm text-emerald-400">{message}</div>}
 
             <div className="flex gap-2">
-                {[{ key: 'transactions', label: '💳 Transactions' }, { key: 'payouts', label: '💰 Payouts' }, { key: 'commissions', label: '📊 Commissions' }].map((tab) => (
-                    <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeTab === tab.key ? 'bg-primary-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>{tab.label}</button>
+                {[
+                    { key: 'transactions', label: '💳 Transactions' },
+                    { key: 'payouts', label: '💰 Payouts' },
+                    { key: 'commissions', label: '📊 Commissions' },
+                ].map((tab) => (
+                    <button key={tab.key} onClick={() => setActiveTab(tab.key as any)}
+                        className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeTab === tab.key ? 'bg-primary-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
+                        {tab.label}
+                    </button>
                 ))}
             </div>
 
@@ -166,10 +182,13 @@ const PaymentsPage = () => {
                         <MetricCard label="Total Transactions" value={total} icon="💳" />
                         <MetricCard label="Total Revenue" value={formatCurrency(totalRevenue)} icon="💰" />
                         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
-                            <p className="text-sm text-slate-500 mb-2">Filter</p>
+                            <p className="text-sm text-slate-500 mb-2">Filter by Status</p>
                             <div className="flex gap-1 flex-wrap">
                                 {['', 'completed', 'pending', 'failed', 'refunded'].map((s) => (
-                                    <button key={s} onClick={() => setFilter(s)} className={`text-xs px-2 py-1 rounded-lg ${filter === s ? 'bg-primary-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'}`}>{s || 'All'}</button>
+                                    <button key={s} onClick={() => setFilter(s)}
+                                        className={`text-xs px-2 py-1 rounded-lg transition-colors ${filter === s ? 'bg-primary-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>
+                                        {s || 'All'}
+                                    </button>
                                 ))}
                             </div>
                         </div>
@@ -183,8 +202,16 @@ const PaymentsPage = () => {
             {activeTab === 'payouts' && (
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
                     <h2 className="text-lg font-semibold mb-1">Pending Payouts</h2>
-                    <p className="text-sm text-slate-500 mb-6">Individual payments awaiting release to partners</p>
-                    <DataTable columns={payoutColumns} data={payouts} loading={loading} />
+                    <p className="text-sm text-slate-500 mb-6">Only completed orders/rides/bookings are shown. Release payments to partners.</p>
+                    {payouts.length === 0 && !loading ? (
+                        <div className="text-center py-12 text-slate-400">
+                            <div className="text-4xl mb-3">💰</div>
+                            <p className="font-medium">No pending payouts</p>
+                            <p className="text-sm mt-1">Completed transactions will appear here for release.</p>
+                        </div>
+                    ) : (
+                        <DataTable columns={payoutColumns} data={payouts} loading={loading} />
+                    )}
                 </div>
             )}
 
@@ -199,7 +226,10 @@ const PaymentsPage = () => {
                                 <p className="text-4xl font-bold text-primary-500 mt-3">{rate}%</p>
                                 <div className="flex gap-2 mt-4 justify-center">
                                     {[5, 10, 15, 20, 25].map((p) => (
-                                        <button key={p} onClick={() => handleCommissionUpdate(type, p)} className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${rate === p ? 'bg-primary-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>{p}%</button>
+                                        <button key={p} onClick={() => handleCommissionUpdate(type, p)}
+                                            className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${rate === p ? 'bg-primary-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600'}`}>
+                                            {p}%
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -221,11 +251,14 @@ const PaymentsPage = () => {
                             <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800"><span className="text-slate-500">Partner</span><span className="font-medium">{selectedPayment.partnerName || 'N/A'}</span></div>
                             <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800"><span className="text-slate-500">Method</span><span className="font-medium uppercase">{selectedPayment.method}</span></div>
                             <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800"><span className="text-slate-500">Amount</span><span className="font-bold text-lg">{formatCurrency(selectedPayment.amount)}</span></div>
-                            <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800"><span className="text-slate-500">Status</span><StatusBadge status={selectedPayment.status} type={selectedPayment.status === 'completed' ? 'success' : 'warning'} /></div>
+                            <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800"><span className="text-slate-500">Status</span><StatusBadge status={selectedPayment.status} type={selectedPayment.status === 'completed' ? 'success' : selectedPayment.status === 'pending' ? 'warning' : 'danger'} /></div>
                             <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800"><span className="text-slate-500">Date</span><span>{formatDateTime(selectedPayment.createdAt)}</span></div>
+                            {selectedPayment.paidOut && <div className="flex justify-between py-2"><span className="text-slate-500">Payout</span><span className="text-emerald-400 font-medium">✓ Paid Out</span></div>}
                         </div>
                         <div className="flex gap-2 mt-6">
-                            {selectedPayment.status === 'completed' && <button onClick={() => { handleRefund(selectedPayment._id); setSelectedPayment(null); }} className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500">Refund Payment</button>}
+                            {!selectedPayment.paidOut && selectedPayment.status === 'completed' && (
+                                <button onClick={() => { handleRefund(selectedPayment._id); setSelectedPayment(null); }} className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500">Refund Payment</button>
+                            )}
                             <button onClick={() => setSelectedPayment(null)} className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-semibold">Close</button>
                         </div>
                     </div>
@@ -279,7 +312,10 @@ const PaymentsPage = () => {
                             )}
                         </div>
                         <div className="flex gap-2 mt-6">
-                            <button onClick={handleReleasePayout} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">Confirm Release</button>
+                            <button onClick={handleReleasePayout} disabled={releasing}
+                                className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">
+                                {releasing ? 'Releasing...' : 'Confirm Release'}
+                            </button>
                             <button onClick={() => setReleaseModal(null)} className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-semibold">Cancel</button>
                         </div>
                     </div>
