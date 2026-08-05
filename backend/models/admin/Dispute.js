@@ -13,6 +13,7 @@ const disputeSchema = new mongoose.Schema({
     resolution: { type: String },
     resolvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
     resolvedAt: { type: Date },
+    metadata: { type: mongoose.Schema.Types.Mixed },
 }, { timestamps: true });
 
 disputeSchema.index({ status: 1, priority: 1 });

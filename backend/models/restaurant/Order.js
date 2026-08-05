@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
         quantity: { type: Number, required: true, default: 1 },
         price: { type: Number, required: true },
     }],
-    status: { type: String, enum: ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'], default: 'pending' },
+    status: { type: String, enum: ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'completed', 'cancelled'], default: 'pending' },
     orderType: { type: String, enum: ['delivery', 'pickup', 'dine_in'], default: 'delivery' },
     deliveryAddress: {
         street: { type: String },

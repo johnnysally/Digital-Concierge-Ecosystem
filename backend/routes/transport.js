@@ -12,6 +12,7 @@ router.use('/settings', require('./transport/settingsRoutes'));
 router.use('/support', require('./transport/supportRoutes'));
 router.use('/notifications', require('./transport/notificationRoutes'));
 router.get('/reviews', transportAuth, promotionController.getReviews);
+router.use('/destination-prices', require('./transport/destinationPriceRoutes'));
 router.get('/wallet/payouts', transportAuth, async (req, res, next) => {
     try {
         const Payment = require('../models/customer/Payment');

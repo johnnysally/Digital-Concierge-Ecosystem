@@ -149,50 +149,66 @@ const getPayouts = async (req, res, next) => {
         }).populate('customer', 'firstName lastName').lean();
 
         const releasedPayouts = await Payment.find({ type: 'payout' }).lean();
-
         const payouts = [];
 
         for (const p of payments) {
             let partnerId = null;
             let partnerType = 'accommodation';
+            let isCompleted = false;
 
             if (p.booking) {
-                const booking = await Booking.findById(p.booking).select('property').populate({ path: 'property', select: 'partner' }).lean();
-                if (booking?.property?.partner) { partnerId = booking.property.partner.toString(); partnerType = 'accommodation'; }
+                const booking = await Booking.findById(p.booking).select('property status').populate({ path: 'property', select: 'partner' }).lean();
+                if (booking?.property?.partner) {
+                    partnerId = booking.property.partner.toString();
+                    partnerType = 'accommodation';
+                    isCompleted = booking.status === 'completed';
+                }
             }
+
             if (!partnerId && p.metadata?.orderData?.items?.length > 0) {
                 const MenuItem = require('../../models/restaurant/MenuItem');
                 const firstItem = await MenuItem.findById(p.metadata.orderData.items[0]?.menuItem).select('partner').lean();
-                if (firstItem?.partner) { partnerId = firstItem.partner.toString(); partnerType = 'restaurant'; }
+                if (firstItem?.partner) {
+                    partnerId = firstItem.partner.toString();
+                    partnerType = 'restaurant';
+                    if (p.metadata?.orderId) {
+                        const Order = require('../../models/restaurant/Order');
+                        const order = await Order.findById(p.metadata.orderId).select('status').lean();
+                        isCompleted = order?.status === 'completed';
+                    }
+                }
             }
+
             if (!partnerId && p.metadata?.rideData?.vehicleId) {
                 const Vehicle = require('../../models/transport/Vehicle');
                 const vehicle = await Vehicle.findById(p.metadata.rideData.vehicleId).select('partner').lean();
-                if (vehicle?.partner) { partnerId = vehicle.partner.toString(); partnerType = 'transport'; }
+                if (vehicle?.partner) {
+                    partnerId = vehicle.partner.toString();
+                    partnerType = 'transport';
+                    if (p.metadata?.rideId) {
+                        const Ride = require('../../models/transport/Ride');
+                        const ride = await Ride.findById(p.metadata.rideId).select('status').lean();
+                        isCompleted = ride?.status === 'completed';
+                    }
+                }
             }
 
-            if (!partnerId) continue;
+            if (!partnerId || !isCompleted) continue;
 
             const rate = commissionRates[partnerType] || 10;
             const commission = (p.amount * rate) / 100;
             const alreadyReleased = releasedPayouts.some(rp => rp.metadata?.paymentIds?.includes(p._id.toString()));
 
-          payouts.push({
-    _id: p._id,
-    partnerId,
-    partnerType,
-    totalCollected: p.amount,    
-        commission,
-    netPayable: p.amount - commission,
-    released: alreadyReleased,
-    customerName: (p.customer?.firstName || '') + ' ' + (p.customer?.lastName || ''),
-    reference: p.reference,
-    createdAt: p.createdAt,
-    paymentId: p._id,
-});
+            payouts.push({
+                _id: p._id, partnerId, partnerType,
+                totalCollected: p.amount, commission,
+                netPayable: p.amount - commission,
+                released: alreadyReleased,
+                customerName: (p.customer?.firstName || '') + ' ' + (p.customer?.lastName || ''),
+                reference: p.reference, createdAt: p.createdAt, paymentId: p._id,
+            });
         }
 
-        // Enrich with partner names
         for (const payout of payouts) {
             const acc = await AccommodationPartner.findById(payout.partnerId).select('businessName payoutMethods').lean();
             if (acc) { payout.partnerName = acc.businessName; payout.payoutMethods = acc.payoutMethods || []; continue; }
@@ -233,12 +249,8 @@ const releasePayout = async (req, res, next) => {
             metadata: { accountNumber: accountNumber || '', accountName: accountName || '', bankName: bankName || '' },
         });
 
-        // Mark all included payments as paid out
         if (paymentIds && paymentIds.length > 0) {
-            await Payment.updateMany(
-                { _id: { $in: paymentIds } },
-                { $set: { 'metadata.paidOut': true } }
-            );
+            await Payment.updateMany({ _id: { $in: paymentIds } }, { $set: { 'metadata.paidOut': true } });
         }
 
         const methodLabels = {

@@ -8,11 +8,14 @@ const vehicleSchema = new mongoose.Schema({
     year: { type: Number },
     plateNumber: { type: String, required: true, unique: true },
     capacity: { type: Number, default: 4 },
+    totalSeats: { type: Number, default: 4 },
+    availableSeats: { type: Number, default: 4 },
     pricePerKm: { type: Number, required: true },
     pricePerMin: { type: Number, default: 0 },
     baseFare: { type: Number, default: 0 },
     currency: { type: String, default: 'KES' },
-    status: { type: String, enum: ['available', 'on_trip', 'maintenance', 'offline'], default: 'available' },
+    availability: { type: String, enum: ['online', 'offline'], default: 'online' },
+    status: { type: String, enum: ['idle', 'dispatched', 'on_trip', 'maintenance'], default: 'idle' },
     dispatchStatus: { type: String, enum: ['available', 'dispatched', 'en_route', 'arrived', 'in_service', 'completed'], default: 'available' },
     image: { type: String },
     location: {
@@ -20,6 +23,7 @@ const vehicleSchema = new mongoose.Schema({
         coordinates: { type: [Number], default: [0, 0] },
     },
     currentTrip: { type: mongoose.Schema.Types.ObjectId, ref: 'Ride', default: null },
+    activeRides: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ride' }],
     driver: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver', default: null },
     maintenance: {
         lastService: { type: Date },
@@ -34,18 +38,26 @@ const vehicleSchema = new mongoose.Schema({
             notes: { type: String },
         }],
     },
-    insurance: {
-        provider: { type: String },
-        policyNumber: { type: String },
-        expiryDate: { type: Date },
-    },
-    registration: {
-        expiryDate: { type: Date },
-    },
+    insurance: { provider: { type: String }, policyNumber: { type: String }, expiryDate: { type: Date } },
+    registration: { expiryDate: { type: Date } },
 }, { timestamps: true });
 
-vehicleSchema.index({ partner: 1, status: 1 });
+vehicleSchema.index({ partner: 1, availability: 1, status: 1 });
 vehicleSchema.index({ location: '2dsphere' });
 vehicleSchema.index({ dispatchStatus: 1 });
+
+vehicleSchema.pre('save', function (next) {
+    if (this.isNew && (this.type === 'van' || this.type === 'bus')) {
+        if (!this.totalSeats || this.totalSeats === 4) {
+            this.totalSeats = this.type === 'van' ? 14 : 30;
+        }
+        this.availableSeats = this.totalSeats;
+    }
+    if (this.isNew && !['van', 'bus'].includes(this.type)) {
+        this.totalSeats = 1;
+        this.availableSeats = 1;
+    }
+    next();
+});
 
 module.exports = mongoose.model('Vehicle', vehicleSchema);

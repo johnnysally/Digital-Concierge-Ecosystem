@@ -14,8 +14,10 @@ const VehicleFormPage = () => {
         plateNumber: '',
         capacity: '4',
         pricePerKm: '',
+        baseFare: '0',
         currency: 'KES',
-        status: 'available',
+        availability: 'online',
+        status: 'idle',
     });
     const [loading, setLoading] = useState(Boolean(id));
     const [saving, setSaving] = useState(false);
@@ -36,8 +38,10 @@ const VehicleFormPage = () => {
                     plateNumber: vehicle.plateNumber || '',
                     capacity: vehicle.capacity ? String(vehicle.capacity) : '4',
                     pricePerKm: vehicle.pricePerKm ? String(vehicle.pricePerKm) : '',
+                    baseFare: vehicle.baseFare ? String(vehicle.baseFare) : '0',
                     currency: vehicle.currency || 'KES',
-                    status: vehicle.status || 'available',
+                    availability: vehicle.availability || 'online',
+                    status: vehicle.status || 'idle',
                 });
             })
             .catch(() => setError('Unable to load vehicle details.'))
@@ -55,6 +59,7 @@ const VehicleFormPage = () => {
                 year: form.year ? Number(form.year) : undefined,
                 capacity: form.capacity ? Number(form.capacity) : undefined,
                 pricePerKm: Number(form.pricePerKm),
+                baseFare: Number(form.baseFare),
             };
 
             if (id) {
@@ -87,32 +92,18 @@ const VehicleFormPage = () => {
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="block text-sm text-slate-400">
                             Make
-                            <input
-                                value={form.make}
-                                onChange={(event) => setForm({ ...form, make: event.target.value })}
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.make} onChange={(e) => setForm({ ...form, make: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                         <label className="block text-sm text-slate-400">
                             Model
-                            <input
-                                value={form.model}
-                                onChange={(event) => setForm({ ...form, model: event.target.value })}
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="block text-sm text-slate-400">
                             Type
-                            <select
-                                value={form.type}
-                                onChange={(event) => setForm({ ...form, type: event.target.value })}
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            >
+                            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500">
                                 <option value="sedan">Sedan</option>
                                 <option value="suv">SUV</option>
                                 <option value="van">Van</option>
@@ -123,78 +114,57 @@ const VehicleFormPage = () => {
                         </label>
                         <label className="block text-sm text-slate-400">
                             Plate number
-                            <input
-                                value={form.plateNumber}
-                                onChange={(event) => setForm({ ...form, plateNumber: event.target.value })}
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.plateNumber} onChange={(e) => setForm({ ...form, plateNumber: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-3">
                         <label className="block text-sm text-slate-400">
                             Year
-                            <input
-                                value={form.year}
-                                onChange={(event) => setForm({ ...form, year: event.target.value })}
-                                type="number"
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} type="number" className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                         <label className="block text-sm text-slate-400">
                             Capacity
-                            <input
-                                value={form.capacity}
-                                onChange={(event) => setForm({ ...form, capacity: event.target.value })}
-                                type="number"
-                                min={1}
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} type="number" min={1} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
                         </label>
                         <label className="block text-sm text-slate-400">
                             Currency
-                            <input
-                                value={form.currency}
-                                onChange={(event) => setForm({ ...form, currency: event.target.value })}
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
+                            <input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
+                        </label>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-3">
+                        <label className="block text-sm text-slate-400">
+                            Price / km
+                            <input value={form.pricePerKm} onChange={(e) => setForm({ ...form, pricePerKm: e.target.value })} type="number" step="0.01" required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
+                        </label>
+                        <label className="block text-sm text-slate-400">
+                            Base fare
+                            <input value={form.baseFare} onChange={(e) => setForm({ ...form, baseFare: e.target.value })} type="number" step="0.01" className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500" />
+                        </label>
+                        <label className="block text-sm text-slate-400">
+                            Status
+                            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500">
+                                <option value="idle">Idle</option>
+                                <option value="dispatched">Dispatched</option>
+                                <option value="on_trip">On Trip</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
                         </label>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="block text-sm text-slate-400">
-                            Price / km
-                            <input
-                                value={form.pricePerKm}
-                                onChange={(event) => setForm({ ...form, pricePerKm: event.target.value })}
-                                type="number"
-                                step="0.01"
-                                required
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            />
-                        </label>
-                        <label className="block text-sm text-slate-400">
-                            Status
-                            <select
-                                value={form.status}
-                                onChange={(event) => setForm({ ...form, status: event.target.value })}
-                                className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500"
-                            >
-                                <option value="available">Available</option>
-                                <option value="on_trip">On trip</option>
-                                <option value="maintenance">Maintenance</option>
+                            Availability
+                            <select value={form.availability} onChange={(e) => setForm({ ...form, availability: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500">
+                                <option value="online">Online</option>
                                 <option value="offline">Offline</option>
                             </select>
                         </label>
                     </div>
 
                     <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
+                        <button type="submit" disabled={saving} className="rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50">
                             {saving ? 'Saving...' : id ? 'Update vehicle' : 'Create vehicle'}
                         </button>
                     </div>

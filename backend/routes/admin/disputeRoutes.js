@@ -1,11 +1,12 @@
 const router = require('express').Router();
-const { getAllDisputes, getDispute, updateDispute } = require('../../controllers/admin/disputeController');
+const { getAll, getOne, update, reply, remove } = require('../../controllers/admin/disputeController');
 const adminAuth = require('../../middleware/admin/adminAuth');
-const { disputeRules } = require('../../middleware/admin/adminValidate');
 
 router.use(adminAuth);
-router.get('/', getAllDisputes);
-router.get('/:id', getDispute);
-router.put('/:id', disputeRules, updateDispute);
+router.get('/', getAll);
+router.get('/:id', getOne);
+router.put('/:id', update);
+router.post('/:id/reply', reply);
+router.delete('/:id', remove);
 
 module.exports = router;

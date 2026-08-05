@@ -128,9 +128,34 @@ const customerAccountDeleted = (customer) => ({
 });
 
 const customerOrderConfirmed = (user, order) => ({
-    subject: `Order Confirmed — ${order.restaurantName}`,
-    htmlBody: wrap(`<div style="${styles.body}"><span style="${styles.badge};${styles.badgeSuccess}">Confirmed</span><h1 style="${styles.title};margin-top:16px">Order Confirmed!</h1><p style="${styles.text}">Your order from <strong>${order.restaurantName}</strong> is being prepared.</p><div style="${styles.card}"><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Items</span><span style="${styles.detailValue}">${order.itemsCount}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${(order.total || 0).toLocaleString()}</span></div></div></div>`, 'Order Confirmed'),
-    textBody: `Order confirmed: ${order.restaurantName}, KES ${(order.total || 0).toLocaleString()}`,
+    subject: `Order Confirmed — ${order.restaurantName} — KES ${(order.total || 0).toLocaleString()}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeSuccess}">Confirmed</span>
+            <h1 style="${styles.title};margin-top:16px">Order Confirmed!</h1>
+            <p style="${styles.text}">Great news, ${user.firstName}! Your order from <strong>${order.restaurantName}</strong> has been placed and is being prepared.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Restaurant</span><span style="${styles.detailValue}">${order.restaurantName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Items</span><span style="${styles.detailValue}">${order.itemsCount} items</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Order Type</span><span style="${styles.detailValue}">${order.orderType || 'delivery'}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${(order.total || 0).toLocaleString()}</span></div>
+                ${order.estimatedTime ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Est. Delivery</span><span style="${styles.detailValue}">${order.estimatedTime} minutes</span></div>` : ''}
+                ${order.deliveryAddress ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Delivery Address</span><span style="${styles.detailValue}">${order.deliveryAddress}</span></div>` : ''}
+                ${order.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${order.phone}</span></div>` : ''}
+            </div>
+            <h3 style="margin-top:20px;color:#0f172a;">Order Items</h3>
+            ${(order.items || []).map(item => `
+                <div style="${styles.card}">
+                    <div style="${styles.detailRow}">
+                        <span style="${styles.detailLabel}">${item.name} x${item.quantity}</span>
+                        <span style="${styles.detailValue}">KES ${(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('')}
+            ${order.notes ? `<p style="${styles.text};margin-top:16px;font-style:italic">Notes: ${order.notes}</p>` : ''}
+        </div>
+    `, 'Order Confirmed'),
+    textBody: `Order Confirmed! ${order.restaurantName} — ${order.itemsCount} items — KES ${(order.total || 0).toLocaleString()}. Est. delivery: ${order.estimatedTime || 'N/A'} min.`,
 });
 
 const customerRideConfirmed = (user, ride) => ({
@@ -237,14 +262,38 @@ const partnerAccountDeleted = (partner) => ({
 
 const partnerNewOrder = (partner, order) => ({
     subject: `New Order — ${order.customerName} — KES ${(order.total || 0).toLocaleString()}`,
-    htmlBody: wrap(`<div style="${styles.body}"><span style="${styles.badge};${styles.badgeInfo}">New Order</span><h1 style="${styles.title};margin-top:16px">New Order!</h1><p style="${styles.text}">From <strong>${order.customerName}</strong>.</p><div style="${styles.card}"><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Items</span><span style="${styles.detailValue}">${order.itemsCount}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${(order.total || 0).toLocaleString()}</span></div></div></div>`, 'New Order'),
-    textBody: `New order from ${order.customerName}: KES ${(order.total || 0).toLocaleString()}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeInfo}">New Order</span>
+            <h1 style="${styles.title};margin-top:16px">New Order Received!</h1>
+            <p style="${styles.text}">You have a new order from <strong>${order.customerName}</strong>.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Items</span><span style="${styles.detailValue}">${order.itemsCount} items</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Order Type</span><span style="${styles.detailValue}">${order.orderType || 'delivery'}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${(order.total || 0).toLocaleString()}</span></div>
+                ${order.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${order.phone}</span></div>` : ''}
+                ${order.deliveryAddress ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Delivery</span><span style="${styles.detailValue}">${order.deliveryAddress}</span></div>` : ''}
+                ${order.notes ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Notes</span><span style="${styles.detailValue}">${order.notes}</span></div>` : ''}
+            </div>
+            <h3 style="margin-top:20px;color:#0f172a;">Order Items</h3>
+            ${(order.items || []).map(item => `
+                <div style="${styles.card}">
+                    <div style="${styles.detailRow}">
+                        <span style="${styles.detailLabel}">${item.name} x${item.quantity}</span>
+                        <span style="${styles.detailValue}">KES ${(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('')}
+            <a href="${PARTNER_URL || 'http://localhost:3000'}/orders/${order.id}" style="${styles.button}">View Order</a>
+        </div>
+    `, 'New Order'),
+    textBody: `New order from ${order.customerName}: ${order.itemsCount} items — KES ${(order.total || 0).toLocaleString()}. ${order.deliveryAddress || ''}`,
 });
 
 const partnerNewRide = (partner, ride) => ({
     subject: `New Ride — ${ride.customerName} — ${ride.vehicleName}`,
-    htmlBody: wrap(`<div style="${styles.body}"><span style="${styles.badge};${styles.badgeInfo}">New Ride</span><h1 style="${styles.title};margin-top:16px">New Ride!</h1><p style="${styles.text}">From <strong>${ride.customerName}</strong>.</p><div style="${styles.card}"><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${ride.vehicleName}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Fare</span><span style="${styles.detailValue}">KES ${(ride.total || 0).toLocaleString()}</span></div></div></div>`, 'New Ride'),
-    textBody: `New ride from ${ride.customerName}: ${ride.vehicleName}, KES ${(ride.total || 0).toLocaleString()}`,
+    htmlBody: wrap(`<div style="${styles.body}"><span style="${styles.badge};${styles.badgeInfo}">New Ride</span><h1 style="${styles.title};margin-top:16px">New Ride!</h1><p style="${styles.text}">From <strong>${ride.customerName}</strong>.</p><div style="${styles.card}"><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${ride.vehicleName}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Pickup</span><span style="${styles.detailValue}">${ride.pickup || 'N/A'}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Dropoff</span><span style="${styles.detailValue}">${ride.dropoff || 'N/A'}</span></div>${ride.seats > 1 ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Seats</span><span style="${styles.detailValue}">${ride.seats}</span></div>` : ''}<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Fare</span><span style="${styles.detailValue}">KES ${(ride.total || 0).toLocaleString()}</span></div>${ride.distance ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Distance</span><span style="${styles.detailValue}">${ride.distance} km</span></div>` : ''}${ride.scheduledTime ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Scheduled</span><span style="${styles.detailValue}">${new Date(ride.scheduledTime).toLocaleString()}</span></div>` : ''}${ride.phone ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Phone</span><span style="${styles.detailValue}">${ride.phone}</span></div>` : ''}</div></div>`, 'New Ride'),
+    textBody: `New ride from ${ride.customerName}: ${ride.vehicleName}, ${ride.pickup || ''} → ${ride.dropoff || ''}, KES ${(ride.total || 0).toLocaleString()}. Seats: ${ride.seats || 1}.`,
 });
 
 const dailyDigest = (user, summary) => ({

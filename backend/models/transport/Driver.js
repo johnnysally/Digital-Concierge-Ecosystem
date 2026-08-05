@@ -12,6 +12,7 @@ const driverSchema = new mongoose.Schema({
     rating: { type: Number, default: 0 },
     totalTrips: { type: Number, default: 0 },
     active: { type: Boolean, default: true },
+    assignedVehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', default: null },
     currentLocation: {
         type: { type: String, enum: ['Point'], default: 'Point' },
         coordinates: { type: [Number], default: [0, 0] },
@@ -19,5 +20,6 @@ const driverSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 driverSchema.index({ partner: 1, status: 1 });
+driverSchema.index({ assignedVehicle: 1 });
 
 module.exports = mongoose.model('Driver', driverSchema);

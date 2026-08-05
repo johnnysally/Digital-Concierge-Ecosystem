@@ -130,19 +130,39 @@ const createRideFromPayment = async (customerId, data, paymentId) => {
     const Vehicle = require('../../models/transport/Vehicle');
     const TransportPartner = require('../../models/transport/TransportPartner');
 
-    const { vehicleId, pickup, dropoff, rideType, scheduledTime, customerPhone } = data;
+    const { vehicleId, pickup, dropoff, rideType, scheduledTime, customerPhone, fare, seats, seatNumbers } = data;
     const vehicle = await Vehicle.findById(vehicleId);
-    const distance = 5;
-    const total = Math.round((vehicle.pricePerKm * distance + (vehicle.baseFare || 0)) * 100) / 100;
+    const seatCount = seats || 1;
+
+    const isFixedPrice = fare?.type === 'fixed';
+    const distance = fare?.distanceKm || 5;
+    const total = fare?.estimatedTotal || fare?.price || Math.round((vehicle.pricePerKm * distance + (vehicle.baseFare || 0)) * 100) / 100;
 
     const ride = await Ride.create({
         partner: vehicle.partner, vehicle: vehicleId, customer: customerId,
         pickup, dropoff, rideType: rideType || 'immediate', scheduledTime: scheduledTime || null,
-        status: 'confirmed', paymentStatus: 'paid', distance,
-        fare: { base: vehicle.baseFare || 0, distance: vehicle.pricePerKm * distance, time: 0, total, currency: 'KES' },
+        status: 'requested', paymentStatus: 'paid', distance: isFixedPrice ? null : distance,
+        seats: seatCount, seatNumbers: seatNumbers || [],
+        fare: {
+            base: isFixedPrice ? total : (fare?.baseFare || vehicle.baseFare || 0) * seatCount,
+            distance: isFixedPrice ? 0 : (fare?.pricePerKm || vehicle.pricePerKm) * distance * seatCount,
+            time: 0,
+            total,
+            currency: 'KES',
+        },
     });
 
-    await Vehicle.findByIdAndUpdate(vehicleId, { status: 'on_trip', dispatchStatus: 'dispatched' });
+    if (['van', 'bus'].includes(vehicle.type)) {
+        vehicle.availableSeats = Math.max(0, vehicle.availableSeats - seatCount);
+        vehicle.activeRides.push(ride._id);
+        if (vehicle.availableSeats === 0) {
+            vehicle.status = 'on_trip';
+        }
+    } else {
+        vehicle.status = 'on_trip';
+    }
+    vehicle.dispatchStatus = 'dispatched';
+    await vehicle.save();
 
     if (paymentId) {
         await Payment.findByIdAndUpdate(paymentId, { 'metadata.rideId': ride._id });
@@ -157,7 +177,7 @@ const createRideFromPayment = async (customerId, data, paymentId) => {
         partnerEmails.sendNewRide(partner, {
             id: ride._id, customerName, vehicleName, rideType: rideType || 'immediate',
             pickup: pickup.address, dropoff: dropoff.address, distance, total,
-            phone: customerPhone || '', scheduledTime,
+            phone: customerPhone || '', scheduledTime, seats: seatCount,
         }).catch(e => logger.error('Partner email failed: ' + e.message));
 
         createNotification({
@@ -294,7 +314,6 @@ const mpesaCallback = async (req, res, next) => {
         const { CheckoutRequestID, ResultCode } = Body.stkCallback;
         const status = ResultCode === 0 ? 'completed' : 'failed';
         const payment = await Payment.findOneAndUpdate({ transactionId: CheckoutRequestID }, { status }, { new: true });
-
         if (payment && status === 'completed' && payment.metadata) {
             if (payment.metadata.bookingData) await createBookingFromPayment(payment.customer, payment.metadata.bookingData, payment._id);
             if (payment.metadata.orderData) await createOrderFromPayment(payment.customer, payment.metadata.orderData, payment._id);

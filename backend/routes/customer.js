@@ -10,5 +10,6 @@ router.use('/orders', require('./customer/orderRoutes'));
 router.use('/rides', require('./customer/rideRoutes'));
 router.use('/support', require('./customer/supportRoutes'));
 router.use('/dashboard', require('./customer/dashboardRoutes'));
+router.use('/disputes', require('./customer/disputeRoutes'));
 
 module.exports = router;

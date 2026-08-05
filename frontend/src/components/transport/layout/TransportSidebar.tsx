@@ -12,14 +12,15 @@ const groups = [
             { label: 'Live Map', path: getTransportPath('/live'), icon: '🗺️' },
         ],
     },
-    {
-        title: 'Operations',
-        items: [
-            { label: 'Ride Requests', path: getTransportPath('/ride-requests'), icon: '📥' },
-            { label: 'Active Rides', path: getTransportPath('/rides'), icon: '🚗' },
-            { label: 'Dispatch', path: getTransportPath('/dispatch'), icon: '🎯' },
-        ],
-    },
+  {
+    title: 'Operations',
+    items: [
+        { label: 'Ride Requests', path: getTransportPath('/ride-requests'), icon: '📥' },
+        { label: 'Destination Prices', path: getTransportPath('/destination-prices'), icon: '💰' },
+        { label: 'Active Rides', path: getTransportPath('/rides'), icon: '🚗' },
+        { label: 'Dispatch', path: getTransportPath('/dispatch'), icon: '🎯' },
+    ],
+},
     {
         title: 'Fleet',
         items: [

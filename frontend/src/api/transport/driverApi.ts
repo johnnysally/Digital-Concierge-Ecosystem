@@ -25,3 +25,8 @@ export const deleteDriver = async (id: string) => {
     const res = await api.delete(`/transport/drivers/${id}`);
     return res.data;
 };
+
+export const toggleStatus = async (id: string) => {
+    const res = await api.put(`/transport/drivers/${id}/toggle-status`);
+    return res.data;
+};
