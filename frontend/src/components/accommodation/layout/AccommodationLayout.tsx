@@ -39,6 +39,7 @@ import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsA
                 { to: '/accommodation/promotions', label: 'Promotions', description: 'Offers & campaigns', icon: '🎁' },
                 { to: '/accommodation/documents', label: 'Documents', description: 'Files & policies', icon: '📄' },
                 { to: '/accommodation/wallet', label: 'Wallet', description: 'Revenue & transactions', icon: '👛' },
+                { to: '/accommodation/support', label: 'Support', description: 'Help & tickets', icon: '🛟' },
                 { to: '/accommodation/profile', label: 'Profile', description: 'Account details', icon: '👤' },
                 { to: '/accommodation/settings', label: 'Settings', description: 'Portal preferences', icon: '⚙️' },
             ],

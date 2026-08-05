@@ -27,6 +27,7 @@ import ReviewsPage from '../pages/accommodation/ReviewsPage';
 import SettingsPage from '../pages/accommodation/SettingsPage';
 import AnalyticsPage from '../pages/accommodation/AnalyticsPage';
 import NotificationsPage from '../pages/accommodation/NotificationsPage';
+import SupportPage from '../pages/accommodation/SupportPage';
 import Error304Page from '../pages/Error304Page';
 import StatusErrorPage from '../pages/StatusErrorPage';
 import { AccommodationThemeProvider } from '../context/accommodation/ThemeContext';
@@ -99,6 +100,7 @@ const AccommodationApp = () => {
                     <Route path="housekeeping" element={<HousekeepingListPage />} />
                     <Route path="payments" element={<PaymentsPage />} />
                     <Route path="wallet" element={<WalletPage />} />
+                    <Route path="support" element={<SupportPage />} />
                     <Route path="reviews" element={<ReviewsPage />} />
                     <Route path="404" element={<StatusErrorPage statusCode={404} />} />
                     <Route path="304" element={<Error304Page />} />

@@ -24,6 +24,7 @@ export interface User {
 
 export interface Booking {
   id: string;
+  _id: string;
   propertyName: string;
   location: string;
   checkIn: string;
