@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 export type RestaurantTheme = 'dark' | 'light';
 
 const THEME_STORAGE_KEY = 'digitalsafaris_restaurant_theme';
@@ -44,4 +46,16 @@ export const setStoredRestaurantTheme = (theme: RestaurantTheme) => {
     root.setAttribute('data-restaurant-theme', theme);
     root.style.colorScheme = theme;
     window.dispatchEvent(new Event('restaurant-theme-changed'));
+};
+
+export const useRestaurantTheme = (): RestaurantTheme => {
+    const [theme, setTheme] = useState<RestaurantTheme>(() => getStoredRestaurantTheme());
+
+    useEffect(() => {
+        const syncTheme = () => setTheme(getStoredRestaurantTheme());
+        window.addEventListener('restaurant-theme-changed', syncTheme);
+        return () => window.removeEventListener('restaurant-theme-changed', syncTheme);
+    }, []);
+
+    return theme;
 };

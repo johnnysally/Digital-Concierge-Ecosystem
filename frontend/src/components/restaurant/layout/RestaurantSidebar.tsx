@@ -19,17 +19,23 @@ const groups = [
     {
         title: 'Growth',
         items: [
+            { label: 'Reports', path: '/restaurant-admin/reports', icon: '📈' },
             { label: 'Promotions', path: '/restaurant-admin/promotions', icon: '🎁' },
             { label: 'Payments', path: '/restaurant-admin/payments', icon: '💳' },
         ],
     },
     {
+        title: 'Support',
+        items: [
+            { label: 'Help desk', path: '/restaurant-admin/help-desk', icon: '🛟' },
+        ],
+    },
+    {
         title: 'Account',
         items: [
-            
-{ label: 'Wallet', path: '/restaurant-admin/wallet', icon: '💰' },
-{ label: 'Profile', path: '/restaurant-admin/profile', icon: '👤' },
-{ label: 'Settings', path: '/restaurant-admin/settings', icon: '⚙️' },
+            { label: 'Wallet', path: '/restaurant-admin/wallet', icon: '💰' },
+            { label: 'Profile', path: '/restaurant-admin/profile', icon: '👤' },
+            { label: 'Settings', path: '/restaurant-admin/settings', icon: '⚙️' },
         ],
     },
 ];

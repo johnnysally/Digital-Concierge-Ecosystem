@@ -15,11 +15,13 @@ import ProfilePage from '../pages/restaurant/ProfilePage';
 import PromotionFormPage from '../pages/restaurant/PromotionFormPage';
 import PromotionsPage from '../pages/restaurant/PromotionsPage';
 import RegisterPage from '../pages/restaurant/RegisterPage';
+import ReportsPage from '../pages/restaurant/ReportsPage';
 import ReviewsPage from '../pages/restaurant/ReviewsPage';
 import SettingsPage from '../pages/restaurant/SettingsPage';
 import StaffFormPage from '../pages/restaurant/StaffFormPage';
 import StaffListPage from '../pages/restaurant/StaffListPage';
 import WalletPage from '../pages/restaurant/WalletPage';
+import HelpDeskPage from '../pages/restaurant/HelpDeskPage';
 
 const getStoredRestaurantSession = () => {
     try {
@@ -61,6 +63,8 @@ const RestaurantApp = () => (
             <Route path="menu/:id/edit" element={<MenuItemFormPage />} />
             <Route path="orders" element={<OrdersListPage />} />
             <Route path="orders/:id" element={<OrderDetailsPage />} />
+            <Route path="reports" element={<ReportsPage />} />
+            <Route path="help-desk" element={<HelpDeskPage />} />
             <Route path="staff" element={<StaffListPage />} />
             <Route path="staff/new" element={<StaffFormPage />} />
             <Route path="staff/:id/edit" element={<StaffFormPage />} />
