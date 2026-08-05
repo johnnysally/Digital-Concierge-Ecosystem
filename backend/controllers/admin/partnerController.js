@@ -65,18 +65,32 @@ const getPartner = async (req, res, next) => {
         if (!partner) return res.status(404).json({ success: false, message: 'Partner not found' });
 
         const partnerIdStr = partner._id.toString();
+        const partnerObjId = new ObjectId(partnerIdStr);
 
-        const [properties, bookings, payments, orders, rides, reviews, fullPartner] = await Promise.all([
-            partnerType === 'accommodation' ? Property.collection.find({ partner: partnerIdStr }).toArray() : Promise.resolve([]),
-            Booking.collection.find({ property: { $in: (await Property.collection.find({ partner: partnerIdStr }).toArray()).map(p => p._id.toString()) } }).sort({ createdAt: -1 }).limit(20).toArray(),
-            Payment.collection.find({ customer: partnerIdStr }).sort({ createdAt: -1 }).limit(20).toArray(),
-            Order.collection.find({ partner: partnerIdStr }).sort({ createdAt: -1 }).limit(20).toArray(),
-            Ride.collection.find({ partner: partnerIdStr }).sort({ createdAt: -1 }).limit(20).toArray(),
-            Review.collection.find({ property: { $in: [...(await Property.collection.find({ partner: partnerIdStr }).toArray()).map(p => p._id.toString()), id] } }).sort({ createdAt: -1 }).limit(20).toArray(),
+        const [properties, fullPartner] = await Promise.all([
+            partnerType === 'accommodation' ? Property.collection.find({ partner: partnerObjId }).toArray() : Promise.resolve([]),
             partnerModel.findById(id).select('+payoutMethods').lean(),
         ]);
 
-        const totalRevenue = payments.filter(p => p.type === 'payment' && p.status === 'completed').reduce((sum, p) => sum + (p.amount || 0), 0);
+        const propertyIds = properties.map(p => p._id);
+
+        const [bookings, orders, rides, payments, reviews] = await Promise.all([
+            partnerType === 'accommodation' ? Booking.collection.find({ property: { $in: propertyIds } }).sort({ createdAt: -1 }).limit(20).toArray() : Promise.resolve([]),
+            partnerType === 'restaurant' ? Order.collection.find({ partner: partnerObjId }).sort({ createdAt: -1 }).limit(20).toArray() : Promise.resolve([]),
+            partnerType === 'transport' ? Ride.collection.find({ partner: partnerObjId }).sort({ createdAt: -1 }).limit(20).toArray() : Promise.resolve([]),
+            Payment.collection.find({ customer: partnerObjId, type: { $ne: 'payout' } }).sort({ createdAt: -1 }).limit(20).toArray(),
+            Review.collection.find({ $or: [{ property: { $in: propertyIds } }, { property: partnerObjId }] }).sort({ createdAt: -1 }).limit(20).toArray(),
+        ]);
+
+        let totalRevenue = 0;
+        if (partnerType === 'accommodation') {
+            totalRevenue = bookings.filter(b => b.paymentStatus === 'paid').reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+        } else if (partnerType === 'restaurant') {
+            totalRevenue = orders.filter(o => o.paymentStatus === 'paid').reduce((sum, o) => sum + (o.total || 0), 0);
+        } else if (partnerType === 'transport') {
+            totalRevenue = rides.filter(r => r.paymentStatus === 'paid').reduce((sum, r) => sum + (r.fare?.total || r.totalAmount || 0), 0);
+        }
+
         const totalPayouts = payments.filter(p => p.type === 'payout' && p.status === 'completed').reduce((sum, p) => sum + (p.amount || 0), 0);
 
         res.json({
@@ -84,9 +98,9 @@ const getPartner = async (req, res, next) => {
             partner: { ...partner, partnerType, payoutMethods: fullPartner?.payoutMethods || partner.payoutMethods || [] },
             properties,
             bookings,
-            payments,
             orders,
             rides,
+            payments,
             reviews,
             stats: {
                 totalProperties: properties.length,

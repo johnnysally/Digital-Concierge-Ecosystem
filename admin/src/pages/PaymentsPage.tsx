@@ -32,7 +32,7 @@ const PaymentsPage = () => {
     const [releaseAccountName, setReleaseAccountName] = useState('');
     const [releaseBankName, setReleaseBankName] = useState('');
 
-    useEffect(() => {
+    const fetchData = () => {
         if (activeTab === 'transactions') {
             setLoading(true);
             api.get('/admin/payments', { params: filter ? { status: filter } : {} })
@@ -53,7 +53,9 @@ const PaymentsPage = () => {
                 .then((res) => setCommissions(res.data.rates || {}))
                 .finally(() => setLoading(false));
         }
-    }, [activeTab, filter]);
+    };
+
+    useEffect(() => { fetchData(); }, [activeTab, filter]);
 
     const handleRefund = async (id: string) => {
         if (!confirm('Refund this payment?')) return;
@@ -91,11 +93,13 @@ const PaymentsPage = () => {
                 accountNumber: releaseAccountNumber,
                 accountName: releaseAccountName,
                 bankName: releaseBankName,
+                paymentIds: releaseModal.paymentId ? [releaseModal.paymentId] : [],
             });
             setMessage('Payout released to ' + releaseModal.partnerName + '.');
-            setPayouts(payouts.map(p => p.partnerId === releaseModal.partnerId ? { ...p, released: true } : p));
+            setPayouts(payouts.map(p => p.paymentId === releaseModal.paymentId ? { ...p, released: true } : p));
             setReleaseModal(null);
             setTimeout(() => setMessage(''), 3000);
+            fetchData();
         } catch { setMessage('Failed to release payout.'); }
     };
 
@@ -127,13 +131,14 @@ const PaymentsPage = () => {
     ];
 
     const payoutColumns = [
-        { key: 'partnerName', label: 'Partner', render: (val: string) => <span className="font-semibold">{val || 'N/A'}</span> },
+        { key: 'partnerName', label: 'Partner', render: (val: string) => <span className="font-semibold text-xs">{val || 'N/A'}</span> },
         { key: 'partnerType', label: 'Type', render: (val: string) => <span className="capitalize text-xs">{val}</span> },
-        { key: 'totalCollected', label: 'Collected', render: (val: number) => <span className="font-semibold">{formatCurrency(val)}</span> },
-        { key: 'commission', label: 'Commission', render: (val: number) => <span className="text-rose-500">{formatCurrency(val)}</span> },
-        { key: 'netPayable', label: 'Net Payable', render: (val: number) => <span className="text-emerald-500 font-bold">{formatCurrency(val)}</span> },
+        { key: 'customerName', label: 'Customer', render: (val: string) => <span className="text-xs">{val || 'N/A'}</span> },
+        { key: 'totalCollected', label: 'Collected', render: (val: number) => <span className="font-semibold text-xs">{formatCurrency(val)}</span> },
+        { key: 'commission', label: 'Commission', render: (val: number) => <span className="text-xs text-rose-500">{formatCurrency(val)}</span> },
+        { key: 'netPayable', label: 'Net Payable', render: (val: number) => <span className="text-xs text-emerald-500 font-bold">{formatCurrency(val)}</span> },
         {
-            key: 'partnerId', label: 'Actions',
+            key: 'paymentId', label: 'Actions',
             render: (val: string, row: any) => (
                 row.released ? (
                     <span className="text-xs text-slate-400">✓ Released</span>
@@ -177,8 +182,8 @@ const PaymentsPage = () => {
 
             {activeTab === 'payouts' && (
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-                    <h2 className="text-lg font-semibold mb-1">Partner Payouts</h2>
-                    <p className="text-sm text-slate-500 mb-6">Amounts owed to partners after commission deduction</p>
+                    <h2 className="text-lg font-semibold mb-1">Pending Payouts</h2>
+                    <p className="text-sm text-slate-500 mb-6">Individual payments awaiting release to partners</p>
                     <DataTable columns={payoutColumns} data={payouts} loading={loading} />
                 </div>
             )}
@@ -236,6 +241,7 @@ const PaymentsPage = () => {
                         </div>
                         <div className="space-y-4 text-sm">
                             <div className="flex justify-between"><span className="text-slate-500">Partner</span><span className="font-medium">{releaseModal.partnerName}</span></div>
+                            <div className="flex justify-between"><span className="text-slate-500">Customer</span><span className="font-medium">{releaseModal.customerName || 'N/A'}</span></div>
                             <div className="flex justify-between"><span className="text-slate-500">Amount</span><span className="font-bold text-emerald-500">{formatCurrency(releaseModal.netPayable)}</span></div>
 
                             <div>
@@ -243,7 +249,7 @@ const PaymentsPage = () => {
                                 {releaseModal.payoutMethods?.length > 0 ? (
                                     <select value={releaseMethod} onChange={(e) => {
                                         setReleaseMethod(e.target.value);
-                                                        const m = releaseModal.payoutMethods.find((pm: any) => pm.type === e.target.value);
+                                        const m = releaseModal.payoutMethods.find((pm: any) => pm.type === e.target.value);
                                         if (m) { setReleaseAccountNumber(m.accountNumber || ''); setReleaseAccountName(m.accountName || ''); setReleaseBankName(m.bankName || ''); }
                                     }} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">
                                         {releaseModal.payoutMethods.map((pm: any, i: number) => (
