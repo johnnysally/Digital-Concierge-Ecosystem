@@ -3,6 +3,11 @@ const AccommodationPartner = require('../../models/accommodation/AccommodationPa
 const RestaurantPartner = require('../../models/restaurant/RestaurantPartner');
 const TransportPartner = require('../../models/transport/TransportPartner');
 const Property = require('../../models/accommodation/Property');
+const Booking = require('../../models/customer/Booking');
+const Payment = require('../../models/customer/Payment');
+const Order = require('../../models/restaurant/Order');
+const Ride = require('../../models/transport/Ride');
+const Review = require('../../models/customer/Review');
 const { partner: partnerEmails } = require('../../services/emailService');
 const logger = require('../../utils/logger');
 
@@ -43,121 +48,97 @@ const getAllPartners = async (req, res, next) => {
 const getPartner = async (req, res, next) => {
     try {
         const id = resolveId(req.params.id);
-        let partner = await AccommodationPartner.collection.findOne({ _id: id }); let partnerType = 'accommodation';
-        if (!partner) { partner = await RestaurantPartner.collection.findOne({ _id: id }); partnerType = 'restaurant'; }
-        if (!partner) { partner = await TransportPartner.collection.findOne({ _id: id }); partnerType = 'transport'; }
+        let partner = await AccommodationPartner.collection.findOne({ _id: id });
+        let partnerType = 'accommodation';
+        let partnerModel = AccommodationPartner;
+
+        if (!partner) {
+            partner = await RestaurantPartner.collection.findOne({ _id: id });
+            partnerType = 'restaurant';
+            partnerModel = RestaurantPartner;
+        }
+        if (!partner) {
+            partner = await TransportPartner.collection.findOne({ _id: id });
+            partnerType = 'transport';
+            partnerModel = TransportPartner;
+        }
         if (!partner) return res.status(404).json({ success: false, message: 'Partner not found' });
 
-        const properties = partnerType === 'accommodation'
-            ? await Property.collection.find({ partner: req.params.id }).toArray()
-            : [];
+        const partnerIdStr = partner._id.toString();
 
-        res.json({ success: true, partner: { ...partner, partnerType }, properties });
+        const [properties, bookings, payments, orders, rides, reviews, fullPartner] = await Promise.all([
+            partnerType === 'accommodation' ? Property.collection.find({ partner: partnerIdStr }).toArray() : Promise.resolve([]),
+            Booking.collection.find({ property: { $in: (await Property.collection.find({ partner: partnerIdStr }).toArray()).map(p => p._id.toString()) } }).sort({ createdAt: -1 }).limit(20).toArray(),
+            Payment.collection.find({ customer: partnerIdStr }).sort({ createdAt: -1 }).limit(20).toArray(),
+            Order.collection.find({ partner: partnerIdStr }).sort({ createdAt: -1 }).limit(20).toArray(),
+            Ride.collection.find({ partner: partnerIdStr }).sort({ createdAt: -1 }).limit(20).toArray(),
+            Review.collection.find({ property: { $in: [...(await Property.collection.find({ partner: partnerIdStr }).toArray()).map(p => p._id.toString()), id] } }).sort({ createdAt: -1 }).limit(20).toArray(),
+            partnerModel.findById(id).select('+payoutMethods').lean(),
+        ]);
+
+        const totalRevenue = payments.filter(p => p.type === 'payment' && p.status === 'completed').reduce((sum, p) => sum + (p.amount || 0), 0);
+        const totalPayouts = payments.filter(p => p.type === 'payout' && p.status === 'completed').reduce((sum, p) => sum + (p.amount || 0), 0);
+
+        res.json({
+            success: true,
+            partner: { ...partner, partnerType, payoutMethods: fullPartner?.payoutMethods || partner.payoutMethods || [] },
+            properties,
+            bookings,
+            payments,
+            orders,
+            rides,
+            reviews,
+            stats: {
+                totalProperties: properties.length,
+                totalBookings: bookings.length,
+                totalOrders: orders.length,
+                totalRides: rides.length,
+                totalReviews: reviews.length,
+                totalRevenue,
+                totalPayouts,
+                netEarnings: totalRevenue - totalPayouts,
+            },
+        });
     } catch (error) { next(error); }
 };
 
 const approvePartner = async (req, res, next) => {
     try {
         const id = resolveId(req.params.id);
-        let result = await AccommodationPartner.collection.findOneAndUpdate(
-            { _id: id },
-            { $set: { isVerified: true, isActive: true } },
-            { returnDocument: 'after' }
-        );
+        let result = await AccommodationPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isVerified: true, isActive: true } }, { returnDocument: 'after' });
         let partnerType = 'accommodation';
-
-        if (!result) {
-            result = await RestaurantPartner.collection.findOneAndUpdate(
-                { _id: id },
-                { $set: { isVerified: true, isActive: true } },
-                { returnDocument: 'after' }
-            );
-            partnerType = 'restaurant';
-        }
-        if (!result) {
-            result = await TransportPartner.collection.findOneAndUpdate(
-                { _id: id },
-                { $set: { isVerified: true, isActive: true } },
-                { returnDocument: 'after' }
-            );
-            partnerType = 'transport';
-        }
-
+        if (!result) { result = await RestaurantPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isVerified: true, isActive: true } }, { returnDocument: 'after' }); partnerType = 'restaurant'; }
+        if (!result) { result = await TransportPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isVerified: true, isActive: true } }, { returnDocument: 'after' }); partnerType = 'transport'; }
         if (!result) return res.status(404).json({ success: false, message: 'Partner not found' });
 
-        partnerEmails.sendApproved(result).catch(e => logger.error(`Approval email failed: ${e.message}`));
-
-        res.json({ success: true, partner: result, message: 'Partner approved successfully. Confirmation email sent.' });
+        partnerEmails.sendApproved(result).catch(e => logger.error('Approval email failed: ' + e.message));
+        res.json({ success: true, partner: result, message: 'Partner approved and notified.' });
     } catch (error) { next(error); }
 };
 
 const suspendPartner = async (req, res, next) => {
     try {
         const id = resolveId(req.params.id);
-        let result = await AccommodationPartner.collection.findOneAndUpdate(
-            { _id: id },
-            { $set: { isActive: false } },
-            { returnDocument: 'after' }
-        );
-        let partnerType = 'accommodation';
-
-        if (!result) {
-            result = await RestaurantPartner.collection.findOneAndUpdate(
-                { _id: id },
-                { $set: { isActive: false } },
-                { returnDocument: 'after' }
-            );
-            partnerType = 'restaurant';
-        }
-        if (!result) {
-            result = await TransportPartner.collection.findOneAndUpdate(
-                { _id: id },
-                { $set: { isActive: false } },
-                { returnDocument: 'after' }
-            );
-            partnerType = 'transport';
-        }
-
+        let result = await AccommodationPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isActive: false } }, { returnDocument: 'after' });
+        if (!result) result = await RestaurantPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isActive: false } }, { returnDocument: 'after' });
+        if (!result) result = await TransportPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isActive: false } }, { returnDocument: 'after' });
         if (!result) return res.status(404).json({ success: false, message: 'Partner not found' });
 
-        partnerEmails.sendAccountChanged(result, 'suspended').catch(e => logger.error(`Suspension email failed: ${e.message}`));
-
-        res.json({ success: true, partner: result, message: 'Partner suspended. Notification email sent.' });
+        partnerEmails.sendAccountChanged(result, 'suspended').catch(e => logger.error('Suspension email failed: ' + e.message));
+        res.json({ success: true, partner: result, message: 'Partner suspended and notified.' });
     } catch (error) { next(error); }
 };
 
 const activatePartner = async (req, res, next) => {
     try {
         const id = resolveId(req.params.id);
-        let result = await AccommodationPartner.collection.findOneAndUpdate(
-            { _id: id },
-            { $set: { isActive: true } },
-            { returnDocument: 'after' }
-        );
-        let partnerType = 'accommodation';
-
-        if (!result) {
-            result = await RestaurantPartner.collection.findOneAndUpdate(
-                { _id: id },
-                { $set: { isActive: true } },
-                { returnDocument: 'after' }
-            );
-            partnerType = 'restaurant';
-        }
-        if (!result) {
-            result = await TransportPartner.collection.findOneAndUpdate(
-                { _id: id },
-                { $set: { isActive: true } },
-                { returnDocument: 'after' }
-            );
-            partnerType = 'transport';
-        }
-
+        let result = await AccommodationPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isActive: true } }, { returnDocument: 'after' });
+        if (!result) result = await RestaurantPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isActive: true } }, { returnDocument: 'after' });
+        if (!result) result = await TransportPartner.collection.findOneAndUpdate({ _id: id }, { $set: { isActive: true } }, { returnDocument: 'after' });
         if (!result) return res.status(404).json({ success: false, message: 'Partner not found' });
 
-        partnerEmails.sendAccountChanged(result, 'reactivated').catch(e => logger.error(`Reactivation email failed: ${e.message}`));
-
-        res.json({ success: true, partner: result, message: 'Partner reactivated. Notification email sent.' });
+        partnerEmails.sendAccountChanged(result, 'reactivated').catch(e => logger.error('Reactivation email failed: ' + e.message));
+        res.json({ success: true, partner: result, message: 'Partner reactivated and notified.' });
     } catch (error) { next(error); }
 };
 
@@ -165,14 +146,13 @@ const deletePartner = async (req, res, next) => {
     try {
         const id = resolveId(req.params.id);
         let result = await AccommodationPartner.collection.findOneAndDelete({ _id: id });
-        let partnerType = 'accommodation';
-        if (!result) { result = await RestaurantPartner.collection.findOneAndDelete({ _id: id }); partnerType = 'restaurant'; }
-        if (!result) { result = await TransportPartner.collection.findOneAndDelete({ _id: id }); partnerType = 'transport'; }
+        if (!result) result = await RestaurantPartner.collection.findOneAndDelete({ _id: id });
+        if (!result) result = await TransportPartner.collection.findOneAndDelete({ _id: id });
         if (!result) return res.status(404).json({ success: false, message: 'Partner not found' });
 
-        partnerEmails.sendAccountDeleted(result).catch(e => logger.error(`Delete notification failed: ${e.message}`));
-
+        partnerEmails.sendAccountDeleted(result).catch(e => logger.error('Delete notification failed: ' + e.message));
         res.json({ success: true, message: 'Partner permanently deleted and notified' });
     } catch (error) { next(error); }
 };
+
 module.exports = { getAllPartners, getPartner, approvePartner, suspendPartner, activatePartner, deletePartner };
