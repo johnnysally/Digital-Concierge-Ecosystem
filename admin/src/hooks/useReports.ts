@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { getDashboardStats, getRevenueReport } from '../api/reportApi';
+import type { DashboardStats } from '../types';
 
 export const useDashboardStats = () => {
-    const [stats, setStats] = useState(null);
+    const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,7 +17,7 @@ export const useDashboardStats = () => {
 };
 
 export const useRevenueReport = (params?: any) => {
-    const [revenue, setRevenue] = useState([]);
+    const [revenue, setRevenue] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

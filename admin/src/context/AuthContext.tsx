@@ -1,14 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { login as loginApi } from '../api/authApi';
-
-interface Admin {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-    permissions: Record<string, boolean>;
-}
+import type { Admin } from '../types';
 
 interface AuthContextState {
     user: Admin | null;
