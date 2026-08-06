@@ -1,6 +1,7 @@
 const SupportTicket = require('../../models/customer/SupportTicket');
 const { createNotification } = require('../../services/notificationService');
 const logger = require('../../utils/logger');
+const mongoose = require('mongoose');
 
 const createTicket = async (req, res, next) => {
     try {
@@ -29,6 +30,9 @@ const getMyTickets = async (req, res, next) => {
 
 const getTicket = async (req, res, next) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ticket ID' });
+        }
         const ticket = await SupportTicket.findOne({ _id: req.params.id, customer: req.user._id });
         if (!ticket) return res.status(404).json({ success: false, message: 'Ticket not found' });
         res.json({ success: true, ticket });
