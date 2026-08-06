@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const { PORT, NODE_ENV, CORS_ORIGIN } = require('./config/env');
+const { PORT, NODE_ENV, CORS_ORIGIN, API_URL } = require('./config/env');
 const connectDB = require('./config/db');
 const { connectRedis, getRedis } = require('./config/redis');
 const errorHandler = require('./middleware/global/errorHandler');
@@ -13,6 +13,7 @@ const { initSocket } = require('./socket');
 const logger = require('./utils/logger');
 const mongoose = require('mongoose');
 const { startSchedulers, stopSchedulers } = require('./schedulers');
+const { startKeepAlive } = require('./config/keepAlive');
 
 const app = express();
 const server = http.createServer(app);
@@ -91,45 +92,45 @@ const start = async () => {
 
         server.listen(PORT, () => {
             startSchedulers();
+            startKeepAlive();
             console.clear();
             console.log('');
-            console.log('  ╔══════════════════════════════════════════════╗');
-            console.log('  ║                                              ║');
-            console.log('  ║   🏨  DIGITAL SAFARIS ECOSYSTEM  🌍        ║');
-            console.log('  ║                                              ║');
-            console.log('  ╠══════════════════════════════════════════════╣');
-            console.log('  ║                                              ║');
-            console.log(`  ║   Status      : 🟢 Online                    ║`);
+            console.log('  ╔═══════════════════════════════════════════════╗');
+            console.log('  ║                                               ║');
+            console.log('  ║   🏨  DIGITAL SAFARIS ECOSYSTEM  🌍         ║');
+            console.log('  ║                                               ║');
+            console.log('  ╠═══════════════════════════════════════════════╣');
+            console.log('  ║                                               ║');
+            console.log('  ║   Status      : 🟢 Online                    ║');
             console.log(`  ║   Port        : ${String(PORT).padEnd(28)}║`);
             console.log(`  ║   Environment : ${NODE_ENV.padEnd(28)}║`);
-            console.log('  ║                                              ║');
-            console.log('  ╠══════════════════════════════════════════════╣');
-            console.log('  ║   SERVICES                                   ║');
-            console.log(`  ║   MongoDB     : 🟢 Connected @ ${dbHost}`.padEnd(49) + '║');
+            console.log('  ║                                               ║');
+            console.log('  ╠═══════════════════════════════════════════════╣');
+            console.log('  ║   SERVICES                                    ║');
+            console.log(`  ║   MongoDB     : ${dbConnected ? '🟢 Connected' : '🔴 Disconnected'} @ ${dbHost}`.padEnd(49) + '║');
             console.log(`  ║   Redis       : ${redisConnected ? '🟢 Connected' : '⚫ Disabled'}`.padEnd(49) + '║');
-            console.log(`  ║   WebSocket   : 🟢 Active                    ║`);
+            console.log('  ║   WebSocket   : 🟢 Active                    ║');
             console.log(`  ║   Email       : ${(process.env.EMAIL_PROVIDER || 'brevo').padEnd(28)}║`);
-            console.log('  ║                                              ║');
-            console.log('  ╠══════════════════════════════════════════════╣');
-            console.log('  ║   ENDPOINTS                                  ║');
-            console.log(`  ║   Health      : http://localhost:${PORT}/health`.padEnd(49) + '║');
-            console.log(`  ║   API         : http://localhost:${PORT}/api   `.padEnd(49) + '║');
-            console.log('  ║                                              ║');
-            console.log('  ╠══════════════════════════════════════════════╣');
-            console.log('  ║   MODULES                                    ║');
-            console.log(`  ║   👤 Customer      /api/customer             ║`);
-            console.log(`  ║   🏨 Accommodation /api/accommodation        ║`);
-            console.log(`  ║   🍽️  Restaurant    /api/restaurant           ║`);
-            console.log(`  ║   🚗 Transport     /api/transport            ║`);
-            console.log(`  ║   🛡️  Admin         /api/admin                ║`);
-            console.log(`  ║   🌐 Public        /api/public               ║`);
-            console.log('  ║                                              ║');
-            console.log('  ╚══════════════════════════════════════════════╝');
+            console.log('  ║                                               ║');
+            console.log('  ╠═══════════════════════════════════════════════╣');
+            console.log('  ║   ENDPOINTS                                   ║');
+            console.log(`  ║   Health      : ${API_URL}/health`.padEnd(49) + '║');
+            console.log(`  ║   API         : ${API_URL}/api   `.padEnd(49) + '║');
+            console.log('  ║                                               ║');
+            console.log('  ╠═══════════════════════════════════════════════╣');
+            console.log('  ║   MODULES                                     ║');
+            console.log('  ║   👤 Customer      /api/customer             ║');
+            console.log('  ║   🏨 Accommodation /api/accommodation        ║');
+            console.log('  ║   🍽️  Restaurant    /api/restaurant           ║');
+            console.log('  ║   🚗 Transport     /api/transport            ║');
+            console.log('  ║   🛡️  Admin         /api/admin                ║');
+            console.log('  ║   🌐 Public        /api/public               ║');
+            console.log('  ║                                               ║');
+            console.log('  ╚═══════════════════════════════════════════════╝');
             console.log('');
             console.log('  ✨ Server is ready to handle requests ✨');
             console.log('');
         });
-
 
         const shutdown = async (signal) => {
             console.log('');
@@ -137,6 +138,7 @@ const start = async () => {
             logger.info(`${signal} received`);
 
             server.close(async () => {
+                stopSchedulers();
                 await mongoose.connection.close();
                 logger.info('MongoDB disconnected');
 
@@ -158,7 +160,7 @@ const start = async () => {
                 process.exit(1);
             }, 10000);
         };
-stopSchedulers();
+
         process.on('SIGTERM', () => shutdown('SIGTERM'));
         process.on('SIGINT', () => shutdown('SIGINT'));
 
@@ -177,10 +179,10 @@ stopSchedulers();
     } catch (error) {
         logger.error(`Startup failed: ${error.message}`);
         console.error('');
-        console.error('  ╔══════════════════════════════════════╗');
-        console.error('  ║   ❌ STARTUP FAILED                 ║');
+        console.error('  ╔════════════════════════════════════════╗');
+        console.error('  ║   ❌ STARTUP FAILED                   ║');
         console.error(`  ║   ${error.message.substring(0, 36).padEnd(36)}║`);
-        console.error('  ╚══════════════════════════════════════╝');
+        console.error('  ╚════════════════════════════════════════╝');
         console.error('');
         process.exit(1);
     }

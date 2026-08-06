@@ -52,4 +52,5 @@ module.exports = {
     CUSTOMER_URL: process.env.CUSTOMER_URL || 'http://localhost:5173',
     PARTNER_URL: process.env.PARTNER_URL || 'http://localhost:5174',
     CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174',
+    KEEP_ALIVE_ENABLED: process.env.KEEP_ALIVE_ENABLED || 'false',
 };
