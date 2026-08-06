@@ -65,8 +65,8 @@ const ChatbotPage = () => {
                         </div>
                     )}
 
-                    {messages.map((msg, index) => (
-                        <div key={msg.id} className={`flex gap-3 ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'}`}>
+                    {messages.map((msg) => (
+                        <div key={msg._id} className={`flex gap-3 ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'}`}>
                             {msg.sender === 'ai' && (
                                 <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-violet-500 flex items-center justify-center text-sm font-bold text-white shadow-lg">
                                     AI
@@ -78,13 +78,13 @@ const ChatbotPage = () => {
                                     ? 'bg-sky-600 text-white rounded-br-md'
                                     : isDark ? 'bg-slate-800 text-slate-200 rounded-bl-md' : 'bg-slate-100 text-slate-700 rounded-bl-md'
                             }`}>
-                                <p className="whitespace-pre-wrap">{msg.body}</p>
+                                <p className="whitespace-pre-wrap">{msg.message}</p>
                                 <div className="mt-2 flex items-center justify-between gap-4">
                                     <span className={`text-xs ${msg.sender === 'customer' ? 'text-sky-200' : isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-                                        {msg.sender === 'customer' ? 'You' : 'AI Concierge'} · {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        {msg.sender === 'customer' ? 'You' : 'AI Concierge'} · {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
                                     </span>
                                     <button
-                                        onClick={() => handleDelete(msg.id)}
+                                        onClick={() => handleDelete(msg._id)}
                                         className="text-xs text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-300"
                                     >
                                         Delete

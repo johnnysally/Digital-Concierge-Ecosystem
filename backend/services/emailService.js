@@ -39,6 +39,16 @@ const sendCustomerBookingConfirmed = async (user, booking) => {
     await send({ to: user.email, subject, htmlBody, textBody });
 };
 
+const sendCustomerShuttleBooked = async (user, booking) => {
+    const { subject, htmlBody, textBody } = templates.customer.shuttleBooked(user, booking);
+    await send({ to: user.email, subject, htmlBody, textBody });
+};
+
+const sendCustomerShuttleReminder = async (user, booking) => {
+    const { subject, htmlBody, textBody } = templates.customer.shuttleReminder(user, booking);
+    await send({ to: user.email, subject, htmlBody, textBody });
+};
+
 const sendCustomerBookingCancelled = async (user, booking) => {
     const { subject, htmlBody, textBody } = templates.customer.bookingCancelled(user, booking);
     await send({ to: user.email, subject, htmlBody, textBody });
@@ -220,6 +230,8 @@ module.exports = {
         sendWalletTopup: sendCustomerWalletTopup,
         sendAccountChanged: sendCustomerAccountChanged,
         sendAccountDeleted: sendCustomerAccountDeleted,
+        sendShuttleBooked: sendCustomerShuttleBooked,
+        sendShuttleReminder: sendCustomerShuttleReminder,
         sendOrderConfirmed: sendCustomerOrderConfirmed,
         sendRideConfirmed: sendCustomerRideConfirmed,
         sendRestaurantReviewRequest: sendCustomerRestaurantReviewRequest,

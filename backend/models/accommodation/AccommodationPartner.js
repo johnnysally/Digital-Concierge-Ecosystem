@@ -11,6 +11,7 @@ const accommodationPartnerSchema = new mongoose.Schema({
     businessName: { type: String, required: true, trim: true },
     businessType: { type: String, enum: ['hotel', 'bnb', 'apartment', 'villa', 'hostel'], default: 'hotel' },
     isVerified: { type: Boolean, default: false },
+    towns: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Town' }],
     isActive: { type: Boolean, default: false },
     lastLogin: { type: Date },
     preferences: {

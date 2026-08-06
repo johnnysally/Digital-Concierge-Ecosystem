@@ -14,13 +14,13 @@ const logger = require('../../utils/logger');
 
 const register = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, password, phone } = req.body;
+        const { firstName, lastName, email, password, phone, town } = req.body;
         const exists = await Customer.findOne({ email });
         if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
         const defaultCurrency = await getDefaultCurrency();
         const verificationToken = generateToken();
         const customer = await Customer.create({
-            firstName, lastName, email, password, phone,
+            firstName, lastName, email, password, phone, town,
             currency: defaultCurrency,
             verificationToken,
             verificationExpire: Date.now() + 24 * 60 * 60 * 1000,
@@ -47,17 +47,17 @@ const login = async (req, res, next) => {
 
 const getProfile = async (req, res, next) => {
     try {
-        const customer = await Customer.findById(req.user._id);
+        const customer = await Customer.findById(req.user._id).populate('town', 'name');
         res.json({ success: true, user: customer });
     } catch (error) { next(error); }
 };
 
 const updateProfile = async (req, res, next) => {
     try {
-        const allowed = ['firstName', 'lastName', 'phone', 'language', 'currency', 'preferences'];
+        const allowed = ['firstName', 'lastName', 'phone', 'language', 'currency', 'preferences', 'town'];
         const updates = {};
         Object.keys(req.body).forEach((key) => { if (allowed.includes(key)) updates[key] = req.body[key]; });
-        const customer = await Customer.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true });
+        const customer = await Customer.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true }).populate('town', 'name');
         customerEmails.sendAccountChanged(customer, 'profile').catch(e => logger.error(`Account change email failed: ${e.message}`));
         res.json({ success: true, user: customer });
     } catch (error) { next(error); }

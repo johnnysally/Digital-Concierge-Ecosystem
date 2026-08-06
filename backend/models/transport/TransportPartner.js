@@ -10,6 +10,7 @@ const transportPartnerSchema = new mongoose.Schema({
     avatar: { type: String, default: null },
     businessName: { type: String, required: true, trim: true },
     businessType: { type: String, enum: ['taxi', 'ride_hailing', 'shuttle', 'bus', 'car_rental'], default: 'ride_hailing' },
+    towns: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Town' }],
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: false },
     lastLogin: { type: Date },

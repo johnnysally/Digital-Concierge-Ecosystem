@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/customer/AuthContext';
+import { getTowns } from '../../api/customer/locationApi';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -9,6 +10,8 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [fullName, setFullName] = useState('');
+    const [town, setTown] = useState('');
+    const [towns, setTowns] = useState<any[]>([]);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
@@ -17,6 +20,10 @@ const RegisterPage = () => {
             navigate('/', { replace: true });
         }
     }, [authLoading, isAuthenticated, navigate]);
+
+    useEffect(() => {
+        getTowns().then((res) => setTowns(res.towns || [])).catch(() => {});
+    }, []);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -36,7 +43,7 @@ const RegisterPage = () => {
             const nameParts = fullName.trim().split(' ');
             const firstName = nameParts[0] || '';
             const lastName = nameParts.slice(1).join(' ') || '';
-            await register({ firstName, lastName, email: email.trim(), password });
+            await register({ firstName, lastName, email: email.trim(), password, town: town || undefined });
             navigate('/', { replace: true });
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Registration failed. Please try again.');
@@ -64,18 +71,9 @@ const RegisterPage = () => {
                     </div>
 
                     <div className="mt-6 space-y-3 rounded-2xl border border-amber-200 bg-white/80 p-4 text-sm text-slate-700 sm:mt-8">
-                        <div className="flex items-center gap-2">
-                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                            Personalized recommendations
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                            Seamless booking management
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
-                            Reward points and premium offers
-                        </div>
+                        <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />Personalized recommendations</div>
+                        <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" />Seamless booking management</div>
+                        <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-rose-500" />Reward points and premium offers</div>
                     </div>
                 </div>
 
@@ -84,55 +82,32 @@ const RegisterPage = () => {
                         <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">Create account</h2>
                         <p className="mt-2 text-sm text-slate-600">Set up your account and start planning smarter travel.</p>
 
-                        {error ? (
-                            <div className="mt-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-600">{error}</div>
-                        ) : null}
+                        {error ? <div className="mt-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-600">{error}</div> : null}
 
                         <form onSubmit={handleSubmit} className="mt-6 space-y-5 sm:mt-8">
                             <div className="space-y-4">
                                 <label className="block text-sm text-slate-700">
                                     Full name
-                                    <input
-                                        type="text"
-                                        value={fullName}
-                                        onChange={(event) => setFullName(event.target.value)}
-                                        autoComplete="name"
-                                        required
-                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
-                                    />
+                                    <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" required className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                                 </label>
                                 <label className="block text-sm text-slate-700">
                                     Email address
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(event) => setEmail(event.target.value)}
-                                        autoComplete="email"
-                                        required
-                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
-                                    />
+                                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                                 </label>
                                 <label className="block text-sm text-slate-700">
                                     Password
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(event) => setPassword(event.target.value)}
-                                        autoComplete="new-password"
-                                        required
-                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
-                                    />
+                                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                                 </label>
                                 <label className="block text-sm text-slate-700">
                                     Confirm password
-                                    <input
-                                        type="password"
-                                        value={confirmPassword}
-                                        onChange={(event) => setConfirmPassword(event.target.value)}
-                                        autoComplete="new-password"
-                                        required
-                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
-                                    />
+                                    <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" required className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
+                                </label>
+                                <label className="block text-sm text-slate-700">
+                                    Your town
+                                    <select value={town} onChange={(e) => setTown(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200">
+                                        <option value="">Select town (optional)</option>
+                                        {towns.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
+                                    </select>
                                 </label>
                             </div>
                             <button type="submit" disabled={submitting} className="w-full rounded-2xl bg-amber-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70">

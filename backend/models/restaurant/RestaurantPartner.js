@@ -12,6 +12,7 @@ const restaurantPartnerSchema = new mongoose.Schema({
     cuisine: { type: String, enum: ['african', 'italian', 'chinese', 'indian', 'fast_food', 'seafood', 'other'], default: 'other' },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: false },
+    towns: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Town' }],
     isOpen: { type: Boolean, default: false },
     openingHours: { open: { type: String, default: '08:00' }, close: { type: String, default: '22:00' } },
     deliveryEnabled: { type: Boolean, default: true },

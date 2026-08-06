@@ -1,14 +1,13 @@
 const router = require('express').Router();
-const { createPromotion, getPromotions, getPromotion, updatePromotion, deletePromotion,getReviews } = require('../../controllers/transport/promotionController');
+const ctrl = require('../../controllers/transport/promotionController');
 const transportAuth = require('../../middleware/transport/transportAuth');
-const { promotionRules } = require('../../middleware/transport/transportValidate');
 
 router.use(transportAuth);
-router.post('/', promotionRules, createPromotion);
-router.get('/', getPromotions);
-router.get('/:id', getPromotion);
-router.put('/:id', updatePromotion);
-router.delete('/:id', deletePromotion);
-router.get('/reviews', getReviews);
+router.get('/', ctrl.getPromotions);
+router.post('/', ctrl.createPromotion);
+router.get('/reviews', ctrl.getReviews);
+router.get('/:id', ctrl.getPromotion);
+router.put('/:id', ctrl.updatePromotion);
+router.delete('/:id', ctrl.deletePromotion);
 
 module.exports = router;

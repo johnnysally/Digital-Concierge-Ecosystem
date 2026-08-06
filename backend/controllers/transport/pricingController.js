@@ -12,18 +12,17 @@ const create = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
     try {
-        const prices = await DestinationPrice.find({ partner: req.user._id }).sort({ createdAt: -1 });
+        const { isLongDistance } = req.query;
+        const query = { partner: req.user._id };
+        if (isLongDistance !== undefined) query.isLongDistance = isLongDistance === 'true';
+        const prices = await DestinationPrice.find(query).sort({ createdAt: -1 });
         res.json({ success: true, destinationPrices: prices });
     } catch (error) { next(error); }
 };
 
 const update = async (req, res, next) => {
     try {
-        const dp = await DestinationPrice.findOneAndUpdate(
-            { _id: req.params.id, partner: req.user._id },
-            req.body,
-            { new: true }
-        );
+        const dp = await DestinationPrice.findOneAndUpdate({ _id: req.params.id, partner: req.user._id }, req.body, { new: true });
         if (!dp) return res.status(404).json({ success: false, message: 'Not found' });
         res.json({ success: true, destinationPrice: dp });
     } catch (error) { next(error); }
@@ -39,11 +38,12 @@ const remove = async (req, res, next) => {
 
 const calculateFare = async (req, res, next) => {
     try {
-        const { from, to, vehicleType, pickupCoords, dropoffCoords, manualDistance } = req.body;
+        const { from, to, vehicleType, pickupCoords, dropoffCoords, manualDistance, seats } = req.body;
 
-        if (!from || !to) {
-            return res.status(400).json({ success: false, message: 'From and To locations are required' });
-        }
+        if (!from || !to) return res.status(400).json({ success: false, message: 'From and To locations are required' });
+
+        const isLongDistance = vehicleType && ['van', 'bus'].includes(vehicleType);
+        const seatMultiplier = isLongDistance && seats ? seats : 1;
 
         const fixedPrice = await DestinationPrice.findOne({
             $or: [
@@ -55,17 +55,18 @@ const calculateFare = async (req, res, next) => {
         }).sort({ price: 1 });
 
         if (fixedPrice) {
-            logger.info(`Fixed price: ${from} → ${to} = ${fixedPrice.price}`);
             return res.json({
                 success: true,
                 fare: {
                     type: 'fixed',
-                    price: fixedPrice.price,
+                    price: fixedPrice.price * seatMultiplier,
                     from: fixedPrice.from,
                     to: fixedPrice.to,
                     distanceKm: fixedPrice.estimatedDistance || null,
                     durationMinutes: fixedPrice.estimatedDuration || null,
                     departureTimes: fixedPrice.departureTimes || [],
+                    seats: seatMultiplier,
+                    isLongDistance: fixedPrice.isLongDistance,
                     method: 'destination_price',
                 },
             });
@@ -74,35 +75,26 @@ const calculateFare = async (req, res, next) => {
         const vehicleQuery = {
             availability: 'online',
             status: { $ne: 'maintenance' },
-            $or: [
-                { type: { $nin: ['van', 'bus'] }, status: 'idle' },
-                { type: { $in: ['van', 'bus'] }, availableSeats: { $gt: 0 } },
-            ],
         };
+        if (isLongDistance) {
+            vehicleQuery.isLongDistance = true;
+            vehicleQuery.availableSeats = { $gt: 0 };
+        } else {
+            vehicleQuery.isLongDistance = false;
+            vehicleQuery.status = 'idle';
+        }
         if (vehicleType) vehicleQuery.type = vehicleType;
 
         const vehicle = await Vehicle.findOne(vehicleQuery).sort({ pricePerKm: 1 });
 
-        if (!vehicle) {
-            return res.json({ success: false, message: 'No available vehicles found' });
-        }
+        if (!vehicle) return res.json({ success: false, message: 'No available vehicles found' });
 
         const pricePerKm = vehicle.pricePerKm || 0;
         const baseFare = vehicle.baseFare || 0;
 
-        const distanceResult = await calculateDistance({
-            from,
-            to,
-            pickupCoords,
-            dropoffCoords,
-            manualDistance,
-            pricePerKm,
-            baseFare,
-        });
+        const distanceResult = await calculateDistance({ from, to, pickupCoords, dropoffCoords, manualDistance, pricePerKm, baseFare });
 
-        if (distanceResult.method === 'failed') {
-            return res.json({ success: false, message: distanceResult.error });
-        }
+        if (distanceResult.method === 'failed') return res.json({ success: false, message: distanceResult.error });
 
         res.json({
             success: true,
@@ -112,7 +104,9 @@ const calculateFare = async (req, res, next) => {
                 durationMinutes: distanceResult.durationMinutes || null,
                 pricePerKm,
                 baseFare,
-                estimatedTotal: distanceResult.estimatedTotal,
+                estimatedTotal: distanceResult.estimatedTotal * seatMultiplier,
+                seats: seatMultiplier,
+                isLongDistance,
                 method: distanceResult.method,
                 vehicleId: vehicle._id,
             },

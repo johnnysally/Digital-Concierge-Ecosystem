@@ -3,58 +3,60 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useTransportTheme } from '../../../context/transport/ThemeContext';
 import { getTransportPath } from '../../../utils/transportRoutes';
 
-const groups = [
-    {
-        title: 'General',
-        items: [
-            { label: 'Dashboard', path: getTransportPath(''), icon: '📊' },
-            { label: 'Notifications', path: getTransportPath('/notifications'), icon: '🔔' },
-            { label: 'Live Map', path: getTransportPath('/live'), icon: '🗺️' },
-        ],
-    },
-  {
-    title: 'Operations',
-    items: [
-        { label: 'Ride Requests', path: getTransportPath('/ride-requests'), icon: '📥' },
-        { label: 'Destination Prices', path: getTransportPath('/destination-prices'), icon: '💰' },
-        { label: 'Active Rides', path: getTransportPath('/rides'), icon: '🚗' },
-        { label: 'Dispatch', path: getTransportPath('/dispatch'), icon: '🎯' },
-    ],
-},
-    {
-        title: 'Fleet',
-        items: [
-            { label: 'Drivers', path: getTransportPath('/drivers'), icon: '👥' },
-            { label: 'Vehicles', path: getTransportPath('/vehicles'), icon: '🚘' },
-            { label: 'Maintenance', path: getTransportPath('/maintenance'), icon: '🛠️' },
-        ],
-    },
-    {
-        title: 'Payments',
-        items: [
-            { label: 'Wallet', path: getTransportPath('/wallet'), icon: '👛' },
-            { label: 'Transactions', path: getTransportPath('/transactions'), icon: '💳' },
-            { label: 'Promotions', path: getTransportPath('/promotions'), icon: '🎁' },
-        ],
-    },
-    {
-        title: 'Account',
-        items: [
-            { label: 'Profile', path: getTransportPath('/profile'), icon: '👤' },
-            { label: 'Settings', path: getTransportPath('/settings'), icon: '⚙️' },
-            { label: 'Support', path: getTransportPath('/support'), icon: '🆘' },
-        ],
-    },
-];
-
-type TransportSidebarProps = {
-    onNavigate?: () => void;
-    className?: string;
+const getStoredTransportSession = () => {
+    try {
+        const stored = localStorage.getItem('digitalsafaris_transport');
+        return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
 };
 
-const TransportSidebar = ({ onNavigate, className = '' }: TransportSidebarProps) => {
+const TransportSidebar = ({ onNavigate, className = '' }: { onNavigate?: () => void; className?: string }) => {
     const { isDark, toggleTheme } = useTransportTheme();
     const navigate = useNavigate();
+    const session = getStoredTransportSession();
+    const isShuttle = ['shuttle', 'bus'].includes(session?.user?.businessType || '');
+
+    const groups = [
+        {
+            title: 'General',
+            items: [
+                { label: 'Dashboard', path: getTransportPath(''), icon: '📊' },
+                { label: 'Notifications', path: getTransportPath('/notifications'), icon: '🔔' },
+                { label: 'Live Map', path: getTransportPath('/live'), icon: '🗺️' },
+            ],
+        },
+        {
+            title: 'Operations',
+            items: [
+                { label: isShuttle ? 'Bus/Shuttle Trips' : 'Ride Requests', path: getTransportPath('/rides'), icon: '📥' },
+                { label: isShuttle ? 'Bus/Shuttle Prices' : 'Destination Prices', path: getTransportPath('/pricing'), icon: '💰' },
+            ],
+        },
+        {
+            title: 'Fleet',
+            items: [
+                { label: 'Drivers', path: getTransportPath('/drivers'), icon: '👥' },
+                { label: isShuttle ? 'Bus/Shuttle' : 'Vehicles', path: getTransportPath('/vehicles'), icon: isShuttle ? '🚌' : '🚘' },
+                { label: 'Maintenance', path: getTransportPath('/maintenance'), icon: '🛠️' },
+            ],
+        },
+        {
+            title: 'Payments',
+            items: [
+                { label: 'Wallet', path: getTransportPath('/wallet'), icon: '👛' },
+                { label: 'Transactions', path: getTransportPath('/transactions'), icon: '💳' },
+                { label: 'Promotions', path: getTransportPath('/promotions'), icon: '🎁' },
+            ],
+        },
+        {
+            title: 'Account',
+            items: [
+                { label: 'Profile', path: getTransportPath('/profile'), icon: '👤' },
+                { label: 'Settings', path: getTransportPath('/settings'), icon: '⚙️' },
+                { label: 'Support', path: getTransportPath('/support'), icon: '🆘' },
+            ],
+        },
+    ];
 
     const handleLogout = () => {
         localStorage.removeItem('digitalsafaris_transport');
@@ -71,11 +73,13 @@ const TransportSidebar = ({ onNavigate, className = '' }: TransportSidebarProps)
                         </div>
                         <div>
                             <p className={`text-sm font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>DigitalSafaris</p>
-                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Transport command center</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                {isShuttle ? 'Bus/Shuttle command center' : 'Transport command center'}
+                            </p>
                         </div>
                     </div>
                     <div className={`rounded-2xl border p-3 text-sm ${isDark ? 'border-slate-800 bg-slate-800/70 text-slate-300' : 'border-gray-100 bg-gray-50 text-slate-700'}`}>
-                        Manage rides, drivers, and fleet operations seamlessly.
+                        {isShuttle ? 'Manage shuttle routes, seats, and departures.' : 'Manage rides, drivers, and fleet operations seamlessly.'}
                     </div>
                 </div>
 

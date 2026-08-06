@@ -5,14 +5,15 @@ const logger = require('../../utils/logger');
 const createPromotion = async (req, res, next) => {
     try {
         const promotion = await Promotion.create({ ...req.body, partner: req.user._id });
-        partnerEmails.sendPromotionCreated(req.user, { code: promotion.code, discount: `${promotion.discountType === 'percentage' ? promotion.discountValue + '%' : '$' + promotion.discountValue}`, expiry: promotion.expiryDate }).catch(e => logger.error(`Promotion email failed: ${e.message}`));
+        partnerEmails.sendPromotionCreated(req.user, { code: promotion.code, discount: `${promotion.discountType === 'percentage' ? promotion.discountValue + '%' : 'KES ' + promotion.discountValue}`, expiry: promotion.expiryDate }).catch(e => logger.error(`Promotion email failed: ${e.message}`));
         res.status(201).json({ success: true, promotion });
     } catch (error) { next(error); }
 };
 
 const getPromotions = async (req, res, next) => {
     try {
-        const { active } = req.query; const query = { partner: req.user._id };
+        const { active } = req.query;
+        const query = { partner: req.user._id };
         if (active !== undefined) query.isActive = active === 'true';
         res.json({ success: true, promotions: await Promotion.find(query).sort({ createdAt: -1 }) });
     } catch (error) { next(error); }
@@ -45,20 +46,10 @@ const deletePromotion = async (req, res, next) => {
 const getReviews = async (req, res, next) => {
     try {
         const Review = require('../../models/customer/Review');
-        const Vehicle = require('../../models/transport/Vehicle');
-        
         const vehicles = await Vehicle.find({ partner: req.user._id }).select('_id');
         const vehicleIds = vehicles.map(v => v._id);
-        
-        const reviews = await Review.find({
-            $or: [
-                { property: { $in: vehicleIds } },
-                { property: req.user._id },
-            ],
-        })
-        .populate('customer', 'firstName lastName')
-        .sort({ createdAt: -1 }).limit(20);
-        
+        const reviews = await Review.find({ $or: [{ property: { $in: vehicleIds } }, { property: req.user._id }] })
+            .populate('customer', 'firstName lastName').sort({ createdAt: -1 }).limit(20);
         res.json({ success: true, reviews });
     } catch (error) { next(error); }
 };

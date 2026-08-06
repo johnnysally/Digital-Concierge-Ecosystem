@@ -8,22 +8,22 @@ const Admin = require('../../models/admin/Admin');
 
 const register = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, password, phone, businessName, businessType } = req.body;
+        const { firstName, lastName, email, password, phone, businessName, businessType, towns } = req.body;
         const exists = await AccommodationPartner.findOne({ email });
         if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
         const verificationToken = generateToken();
         const partner = await AccommodationPartner.create({
-            firstName, lastName, email, password, phone, businessName, businessType,
+            firstName, lastName, email, password, phone, businessName, businessType, towns,
             verificationToken, verificationExpire: Date.now() + 24 * 60 * 60 * 1000,
         });
         const token = jwt.sign({ id: partner._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
         partnerEmails.sendRegistrationReceived(partner).catch(e => logger.error(`Registration email failed: ${e.message}`));
-        
+
         const admins = await Admin.find({ isActive: true, 'permissions.partners': true });
         for (const admin of admins) {
             partnerEmails.sendNewPartnerNotification(admin, partner).catch(e => logger.error(`Admin notification failed: ${e.message}`));
         }
-        
+
         res.status(201).json({ success: true, token, user: partner, message: 'Registration submitted. Awaiting admin approval.' });
     } catch (error) { next(error); }
 };
@@ -31,7 +31,7 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        const partner = await AccommodationPartner.findOne({ email }).select('+password');
+        const partner = await AccommodationPartner.findOne({ email }).select('+password').populate('towns', 'name');
         if (!partner) return res.status(401).json({ success: false, message: 'Invalid email or password.' });
         const isMatch = await partner.comparePassword(password);
         if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid email or password.' });
@@ -45,16 +45,18 @@ const login = async (req, res, next) => {
 };
 
 const getProfile = async (req, res, next) => {
-    try { const partner = await AccommodationPartner.findById(req.user._id); res.json({ success: true, user: partner }); }
-    catch (error) { next(error); }
+    try {
+        const partner = await AccommodationPartner.findById(req.user._id).populate('towns', 'name');
+        res.json({ success: true, user: partner });
+    } catch (error) { next(error); }
 };
 
 const updateProfile = async (req, res, next) => {
     try {
-        const allowed = ['firstName', 'lastName', 'phone', 'businessName', 'preferences','payoutMethods'];
+        const allowed = ['firstName', 'lastName', 'phone', 'businessName', 'preferences', 'payoutMethods', 'towns'];
         const updates = {};
         Object.keys(req.body).forEach((key) => { if (allowed.includes(key)) updates[key] = req.body[key]; });
-        const partner = await AccommodationPartner.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true });
+        const partner = await AccommodationPartner.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true }).populate('towns', 'name');
         res.json({ success: true, user: partner });
     } catch (error) { next(error); }
 };

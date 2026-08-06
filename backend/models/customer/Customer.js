@@ -10,6 +10,7 @@ const customerSchema = new mongoose.Schema({
     avatar: { type: String, default: null },
     language: { type: String, default: 'en' },
     currency: { type: String, default: 'USD' },
+    town: { type: mongoose.Schema.Types.ObjectId, ref: 'Town', default: null },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     twoFactorEnabled: { type: Boolean, default: false },

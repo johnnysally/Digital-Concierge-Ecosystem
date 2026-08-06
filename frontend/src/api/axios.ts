@@ -25,30 +25,14 @@ axiosClient.interceptors.request.use((config) => {
         const transportSession = getStoredSession('digitalsafaris_transport');
         const restaurantSession = getStoredSession('digitalsafaris_restaurant');
 
-        if (config.url?.includes('/restaurant') && restaurantSession?.token) {
-            return restaurantSession.token;
-        }
-        if (config.url?.includes('/accommodation') && accommodationSession?.token) {
-            return accommodationSession.token;
-        }
-        if (config.url?.includes('/customer') && customerSession?.token) {
-            return customerSession.token;
-        }
-        if (config.url?.includes('/transport') && transportSession?.token) {
-            return transportSession.token;
-        }
-        if (restaurantSession?.token) {
-            return restaurantSession.token;
-        }
-        if (accommodationSession?.token) {
-            return accommodationSession.token;
-        }
-        if (customerSession?.token) {
-            return customerSession.token;
-        }
-        if (transportSession?.token) {
-            return transportSession.token;
-        }
+        if (config.url?.includes('/restaurant') && restaurantSession?.token) return restaurantSession.token;
+        if (config.url?.includes('/accommodation') && accommodationSession?.token) return accommodationSession.token;
+        if (config.url?.includes('/customer') && customerSession?.token) return customerSession.token;
+        if (config.url?.includes('/transport') && transportSession?.token) return transportSession.token;
+        if (restaurantSession?.token) return restaurantSession.token;
+        if (accommodationSession?.token) return accommodationSession.token;
+        if (customerSession?.token) return customerSession.token;
+        if (transportSession?.token) return transportSession.token;
         return null;
     };
 
@@ -66,7 +50,11 @@ axiosClient.interceptors.response.use(
         if (error.response?.status === 401) {
             const requestUrl = error.config?.url || '';
             const hasAuthHeader = Boolean(error.config?.headers?.Authorization);
-            const isAuthRoute = requestUrl.includes('/accommodation/auth/') || requestUrl.includes('/customer/auth/') || requestUrl.includes('/transport/auth/') || requestUrl.includes('/restaurant/auth/');
+            const isAuthRoute =
+                requestUrl.includes('/accommodation/auth/') ||
+                requestUrl.includes('/customer/auth/') ||
+                requestUrl.includes('/transport/auth/') ||
+                requestUrl.includes('/restaurant/auth/');
 
             if (!hasAuthHeader || isAuthRoute) {
                 return Promise.reject(error);
@@ -77,10 +65,10 @@ axiosClient.interceptors.response.use(
                 window.location.href = '/restaurant-admin/login';
             } else if (requestUrl.includes('/transport')) {
                 localStorage.removeItem('digitalsafaris_transport');
-                window.location.href = '/TransportPartner/login';
+                window.location.href = '/transport-admin/login';
             } else if (requestUrl.includes('/accommodation')) {
                 localStorage.removeItem('digitalsafaris_accommodation');
-                window.location.href = '/accommodation/login';
+                window.location.href = '/accommodation-admin/login';
             } else {
                 localStorage.removeItem('digitalsafaris_customer');
                 window.location.href = '/login';

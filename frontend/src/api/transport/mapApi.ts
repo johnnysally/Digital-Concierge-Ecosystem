@@ -11,12 +11,12 @@ export const getVehicleLocation = async (id: string) => {
 };
 
 export const updateVehicleLocation = async (id: string, coordinates: [number, number]) => {
-    const res = await api.put(`/transport/map/vehicles/${id}/location`, { coordinates });
+    const res = await api.put(`/transport/map/vehicles/${id}`, { coordinates });
     return res.data;
 };
 
 export const getActiveTrips = async () => {
-    const res = await api.get('/transport/map/active-trips');
+    const res = await api.get('/transport/map/trips');
     return res.data;
 };
 

@@ -81,8 +81,8 @@ const customerBookingReminder = (user, booking) => ({
 
 const customerPaymentReceived = (user, payment) => ({
     subject: `Payment Received — KES ${(payment.amount || 0).toLocaleString()}`,
-    htmlBody: wrap(`<div style="${styles.body}"><span style="${styles.badge};${styles.badgeSuccess}">Paid</span><h1 style="${styles.title};margin-top:16px">Payment Received</h1><p style="${styles.text}">Thanks, ${user.firstName}! Your payment has been processed.</p><div style="${styles.card}"><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Amount</span><span style="${styles.detailValue}">KES ${(payment.amount || 0).toLocaleString()}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Method</span><span style="${styles.detailValue}">${payment.method}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Reference</span><span style="${styles.detailValue}">${payment.reference}</span></div></div></div>`, 'Payment Received'),
-    textBody: `Payment of KES ${(payment.amount || 0).toLocaleString()} received via ${payment.method}. Ref: ${payment.reference}`,
+    htmlBody: wrap(`<div style="${styles.body}"><span style="${styles.badge};${styles.badgeSuccess}">Paid</span><h1 style="${styles.title};margin-top:16px">Payment Received</h1><p style="${styles.text}">Thanks, ${user.firstName}! Your payment has been processed.</p><div style="${styles.card}"><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Amount</span><span style="${styles.detailValue}">KES ${(payment.amount || 0).toLocaleString()}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Method</span><span style="${styles.detailValue}">${payment.method}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Reference</span><span style="${styles.detailValue}">${payment.reference}</span></div>${payment.type === 'ride' && payment.details ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${payment.details.vehicle}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Pickup</span><span style="${styles.detailValue}">${payment.details.pickup}</span></div><div style="${styles.detailRow}"><span style="${styles.detailLabel}">Dropoff</span><span style="${styles.detailValue}">${payment.details.dropoff}</span></div>${payment.details.seats > 1 ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Seats</span><span style="${styles.detailValue}">${payment.details.seats}</span></div>` : ''}` : ''}</div></div>`, 'Payment Received'),
+    textBody: `Payment of KES ${(payment.amount || 0).toLocaleString()} received via ${payment.method}. Ref: ${payment.reference}.${payment.details ? ` ${payment.details.vehicle} — ${payment.details.pickup} → ${payment.details.dropoff}` : ''}`,
 });
 
 const customerPaymentFailed = (user, payment) => ({
@@ -156,6 +156,50 @@ const customerOrderConfirmed = (user, order) => ({
         </div>
     `, 'Order Confirmed'),
     textBody: `Order Confirmed! ${order.restaurantName} — ${order.itemsCount} items — KES ${(order.total || 0).toLocaleString()}. Est. delivery: ${order.estimatedTime || 'N/A'} min.`,
+});
+
+const customerShuttleBooked = (user, booking) => ({
+    subject: `Booking Confirmed — ${booking.from} → ${booking.to}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeSuccess}">Confirmed</span>
+            <h1 style="${styles.title};margin-top:16px">Booking Confirmed!</h1>
+            <p style="${styles.text}">Thanks, ${user.firstName}! Your shuttle trip has been booked.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Ticket #</span><span style="${styles.detailValue}">${booking.ticketNumber}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Route</span><span style="${styles.detailValue}">${booking.from} → ${booking.to}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Departure</span><span style="${styles.detailValue}">${booking.departureTime}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Est. Arrival</span><span style="${styles.detailValue}">${booking.arrivalTime || 'N/A'}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${booking.vehicleName}</span></div>
+                ${booking.driverName ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Driver</span><span style="${styles.detailValue}">${booking.driverName}</span></div>` : ''}
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Seats</span><span style="${styles.detailValue}">${booking.seats} (${booking.seatNumbers})</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Total</span><span style="${styles.detailValue}">KES ${(booking.total || 0).toLocaleString()}</span></div>
+                ${booking.pickupNote ? `<div style="${styles.detailRow}"><span style="${styles.detailLabel}">Pickup Note</span><span style="${styles.detailValue}">${booking.pickupNote}</span></div>` : ''}
+            </div>
+            <p style="${styles.text};margin-top:16px">Please arrive at the pickup point at least 15 minutes before departure.</p>
+        </div>
+    `, 'Booking Confirmed'),
+    textBody: `Booking #${booking.ticketNumber}: ${booking.from} → ${booking.to}, Departure: ${booking.departureTime}, Vehicle: ${booking.vehicleName}, Seats: ${booking.seatNumbers}, Total: KES ${(booking.total || 0).toLocaleString()}`,
+});
+
+const customerShuttleReminder = (user, booking) => ({
+    subject: `⏰ Departure in 30 minutes — ${booking.from} → ${booking.to}`,
+    htmlBody: wrap(`
+        <div style="${styles.body}">
+            <span style="${styles.badge};${styles.badgeWarning}">Reminder</span>
+            <h1 style="${styles.title};margin-top:16px">Departure in 30 Minutes!</h1>
+            <p style="${styles.text}">Hi ${user.firstName}, your shuttle departs soon.</p>
+            <div style="${styles.card}">
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Ticket #</span><span style="${styles.detailValue}">${booking.ticketNumber}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Route</span><span style="${styles.detailValue}">${booking.from} → ${booking.to}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Departure</span><span style="${styles.detailValue}">${booking.departureTime}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Vehicle</span><span style="${styles.detailValue}">${booking.vehicleName}</span></div>
+                <div style="${styles.detailRow}"><span style="${styles.detailLabel}">Seats</span><span style="${styles.detailValue}">${booking.seatNumbers}</span></div>
+            </div>
+            <p style="${styles.text};margin-top:16px">Please head to the pickup point. Safe travels!</p>
+        </div>
+    `, 'Departure Reminder'),
+    textBody: `Your shuttle ${booking.from} → ${booking.to} departs at ${booking.departureTime}. Vehicle: ${booking.vehicleName}, Seats: ${booking.seatNumbers}`,
 });
 
 const customerRideConfirmed = (user, ride) => ({
@@ -323,7 +367,8 @@ module.exports = {
         promotionApplied: customerPromotionApplied, reviewRequest: customerReviewRequest,
         walletTopup: customerWalletTopup, accountChanged: customerAccountChanged,
         accountDeleted: customerAccountDeleted, orderConfirmed: customerOrderConfirmed,
-        rideConfirmed: customerRideConfirmed,
+        rideConfirmed: customerRideConfirmed,shuttleBooked: customerShuttleBooked,
+        shuttleReminder: customerShuttleReminder,
         restaurantReviewRequest: customerRestaurantReviewRequest,
         transportReviewRequest: customerTransportReviewRequest,
     },

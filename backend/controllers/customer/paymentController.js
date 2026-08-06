@@ -42,9 +42,7 @@ const createBookingFromPayment = async (customerId, data, paymentId) => {
 
     await Room.findByIdAndUpdate(roomId, { status: 'occupied' });
 
-    if (paymentId) {
-        await Payment.findByIdAndUpdate(paymentId, { booking: booking._id });
-    }
+    if (paymentId) await Payment.findByIdAndUpdate(paymentId, { booking: booking._id });
 
     const customer = await Customer.findById(customerId);
     const customerName = customer ? customer.firstName + ' ' + customer.lastName : 'Guest';
@@ -56,6 +54,12 @@ const createBookingFromPayment = async (customerId, data, paymentId) => {
             checkOut: new Date(checkOut).toISOString().split('T')[0],
             guests: guests || 1, totalAmount,
         }).catch(e => logger.error('Booking email failed: ' + e.message));
+
+        createNotification({
+            customerId: customer._id.toString(),
+            type: 'booking', title: 'Booking Confirmed',
+            message: `Your stay at ${property.name} is confirmed.`,
+        }).catch(e => logger.error('Notification failed: ' + e.message));
     }
 
     const partner = await AccommodationPartner.findById(property.partner);
@@ -101,12 +105,18 @@ const createOrderFromPayment = async (customerId, data, paymentId) => {
         subtotal, deliveryFee, total, estimatedTime: 20, status: 'confirmed', paymentStatus: 'paid',
     });
 
-    if (paymentId) {
-        await Payment.findByIdAndUpdate(paymentId, { 'metadata.orderId': order._id });
-    }
+    if (paymentId) await Payment.findByIdAndUpdate(paymentId, { 'metadata.orderId': order._id });
 
     const customer = await Customer.findById(customerId);
     const customerName = customer ? customer.firstName + ' ' + customer.lastName : 'Guest';
+
+    if (customer) {
+        createNotification({
+            customerId: customer._id.toString(),
+            type: 'food', title: 'Order Confirmed',
+            message: `Your order from ${restaurant?.businessName || 'restaurant'} has been placed.`,
+        }).catch(e => logger.error('Notification failed: ' + e.message));
+    }
 
     if (restaurant) {
         partnerEmails.sendNewOrder(restaurant, {
@@ -135,17 +145,28 @@ const createRideFromPayment = async (customerId, data, paymentId) => {
     const seatCount = seats || 1;
 
     const isFixedPrice = fare?.type === 'fixed';
-    const distance = fare?.distanceKm || 5;
-    const total = fare?.estimatedTotal || fare?.price || Math.round((vehicle.pricePerKm * distance + (vehicle.baseFare || 0)) * 100) / 100;
+    const hasLegs = fare?.legs?.length > 0;
+    const distance = hasLegs ? null : (isFixedPrice ? (fare?.distanceKm || null) : (fare?.distanceKm || 5));
+    const total = fare?.estimatedTotal || fare?.price || Math.round((vehicle.pricePerKm * (distance || 5) + (vehicle.baseFare || 0)) * 100) / 100;
 
     const ride = await Ride.create({
         partner: vehicle.partner, vehicle: vehicleId, customer: customerId,
-        pickup, dropoff, rideType: rideType || 'immediate', scheduledTime: scheduledTime || null,
-        status: 'requested', paymentStatus: 'paid', distance: isFixedPrice ? null : distance,
-        seats: seatCount, seatNumbers: seatNumbers || [],
+        pickup: {
+            address: pickup?.address || pickup,
+            note: pickup?.note || '',
+            coordinates: pickup?.coordinates || [0, 0],
+        },
+        dropoff: {
+            address: dropoff?.address || dropoff,
+            note: dropoff?.note || '',
+            coordinates: dropoff?.coordinates || [0, 0],
+        },
+        rideType: rideType || 'immediate', scheduledTime: scheduledTime || null,
+        status: 'requested', paymentStatus: 'paid', distance,
+        seats: seatCount, seatNumbers: seatNumbers || [], customerPhone: customerPhone || '',
         fare: {
             base: isFixedPrice ? total : (fare?.baseFare || vehicle.baseFare || 0) * seatCount,
-            distance: isFixedPrice ? 0 : (fare?.pricePerKm || vehicle.pricePerKm) * distance * seatCount,
+            distance: isFixedPrice ? 0 : (fare?.pricePerKm || vehicle.pricePerKm) * (distance || 5) * seatCount,
             time: 0,
             total,
             currency: 'KES',
@@ -155,18 +176,14 @@ const createRideFromPayment = async (customerId, data, paymentId) => {
     if (['van', 'bus'].includes(vehicle.type)) {
         vehicle.availableSeats = Math.max(0, vehicle.availableSeats - seatCount);
         vehicle.activeRides.push(ride._id);
-        if (vehicle.availableSeats === 0) {
-            vehicle.status = 'on_trip';
-        }
+        if (vehicle.availableSeats === 0) vehicle.status = 'on_trip';
     } else {
         vehicle.status = 'on_trip';
     }
     vehicle.dispatchStatus = 'dispatched';
     await vehicle.save();
 
-    if (paymentId) {
-        await Payment.findByIdAndUpdate(paymentId, { 'metadata.rideId': ride._id });
-    }
+    if (paymentId) await Payment.findByIdAndUpdate(paymentId, { 'metadata.rideId': ride._id });
 
     const customer = await Customer.findById(customerId);
     const customerName = customer ? customer.firstName + ' ' + customer.lastName : 'Guest';
@@ -176,15 +193,36 @@ const createRideFromPayment = async (customerId, data, paymentId) => {
     if (partner) {
         partnerEmails.sendNewRide(partner, {
             id: ride._id, customerName, vehicleName, rideType: rideType || 'immediate',
-            pickup: pickup.address, dropoff: dropoff.address, distance, total,
+            pickup: ride.pickup.address, dropoff: ride.dropoff.address,
+            distance: hasLegs ? null : distance, total,
             phone: customerPhone || '', scheduledTime, seats: seatCount,
         }).catch(e => logger.error('Partner email failed: ' + e.message));
 
         createNotification({
             partnerId: partner._id.toString(),
             type: 'transport', title: 'New Ride Request',
-            message: customerName + ' requested a ride. ' + pickup.address + ' to ' + dropoff.address + '.',
+            message: customerName + ' requested a ride. ' + ride.pickup.address + ' to ' + ride.dropoff.address + '.',
         }).catch(e => logger.error('Notification failed: ' + e.message));
+    }
+
+    if (customer) {
+        const reference = 'DS-' + Date.now();
+        customerEmails.sendPaymentReceived(customer, {
+            amount: total, method: 'Wallet', reference,
+            type: 'ride',
+            details: {
+                vehicle: vehicleName,
+                pickup: ride.pickup.address,
+                dropoff: ride.dropoff.address,
+                seats: seatCount, total,
+            },
+        }).catch(e => logger.error('Customer email failed: ' + e.message));
+
+        createNotification({
+            customerId: customer._id.toString(),
+            type: 'transport', title: 'Ride Booked',
+            message: `Your ride from ${ride.pickup.address} to ${ride.dropoff.address} has been booked.`,
+        }).catch(e => logger.error('Customer notification failed: ' + e.message));
     }
 
     return ride;
@@ -195,21 +233,15 @@ const processPayment = async (req, res, next) => {
         const { method, amount, bookingData, orderData, rideData, phone } = req.body;
         const enabledMethods = await getEnabledMethods();
 
-        if (!enabledMethods.includes(method)) {
-            return res.status(400).json({ success: false, message: method + ' is not available.' });
-        }
-        if (!amount || amount <= 0) {
-            return res.status(400).json({ success: false, message: 'Valid amount required.' });
-        }
+        if (!enabledMethods.includes(method)) return res.status(400).json({ success: false, message: method + ' is not available.' });
+        if (!amount || amount <= 0) return res.status(400).json({ success: false, message: 'Valid amount required.' });
 
         const reference = 'DS-' + Date.now();
 
         if (method === 'wallet') {
             const customerId = req.user._id.toString();
             const wallet = await Wallet.findOne({ customer: customerId });
-            if (!wallet || wallet.balance < amount) {
-                return res.status(400).json({ success: false, message: 'Insufficient wallet balance.' });
-            }
+            if (!wallet || wallet.balance < amount) return res.status(400).json({ success: false, message: 'Insufficient wallet balance.' });
 
             wallet.balance -= amount;
             wallet.transactions.push({ type: 'debit', amount, description: 'Payment #' + reference, reference, createdAt: new Date() });
@@ -222,47 +254,25 @@ const processPayment = async (req, res, next) => {
             });
 
             let createdItem = null;
-            if (bookingData) {
-                createdItem = await createBookingFromPayment(req.user._id, bookingData, payment._id);
-            } else if (orderData) {
-                createdItem = await createOrderFromPayment(req.user._id, orderData, payment._id);
-            } else if (rideData) {
-                createdItem = await createRideFromPayment(req.user._id, rideData, payment._id);
-            }
+            if (bookingData) createdItem = await createBookingFromPayment(req.user._id, bookingData, payment._id);
+            else if (orderData) createdItem = await createOrderFromPayment(req.user._id, orderData, payment._id);
+            else if (rideData) createdItem = await createRideFromPayment(req.user._id, rideData, payment._id);
 
-            customerEmails.sendPaymentReceived(req.user, { amount, method: 'Wallet', reference })
-                .catch(e => logger.error('Email failed: ' + e.message));
+            customerEmails.sendPaymentReceived(req.user, { amount, method: 'Wallet', reference }).catch(e => logger.error('Email failed: ' + e.message));
 
             return res.json({ success: true, payment, createdItem, message: 'Payment successful via wallet.' });
         }
 
         if (method === 'mpesa') {
             if (!phone) return res.status(400).json({ success: false, message: 'Phone required for M-Pesa.' });
-
-            const { checkoutRequestId } = await mpesaService.stkPush({
-                phone, amount, reference, description: 'Digital Safaris Payment',
-            });
-
-            await Payment.create({
-                customer: req.user._id, amount, method: 'mpesa', type: 'payment',
-                status: 'pending', reference, transactionId: checkoutRequestId,
-                metadata: { bookingData, orderData, rideData },
-            });
-
+            const { checkoutRequestId } = await mpesaService.stkPush({ phone, amount, reference, description: 'Digital Safaris Payment' });
+            await Payment.create({ customer: req.user._id, amount, method: 'mpesa', type: 'payment', status: 'pending', reference, transactionId: checkoutRequestId, metadata: { bookingData, orderData, rideData } });
             return res.json({ success: true, checkoutRequestId, reference, message: 'M-Pesa STK push sent. Enter PIN.' });
         }
 
         if (method === 'stripe') {
-            const { clientSecret, paymentIntentId } = await stripeService.createPaymentIntent({
-                amount, currency: 'kes', metadata: { customerId: req.user._id.toString() },
-            });
-
-            await Payment.create({
-                customer: req.user._id, amount, method: 'stripe', type: 'payment',
-                status: 'pending', reference, transactionId: paymentIntentId,
-                metadata: { bookingData, orderData, rideData },
-            });
-
+            const { clientSecret, paymentIntentId } = await stripeService.createPaymentIntent({ amount, currency: 'kes', metadata: { customerId: req.user._id.toString() } });
+            await Payment.create({ customer: req.user._id, amount, method: 'stripe', type: 'payment', status: 'pending', reference, transactionId: paymentIntentId, metadata: { bookingData, orderData, rideData } });
             return res.json({ success: true, clientSecret, paymentIntentId, reference, message: 'Stripe payment initiated.' });
         }
 
@@ -321,11 +331,9 @@ const mpesaCallback = async (req, res, next) => {
 
             const customer = await Customer.findById(payment.customer);
             if (customer) {
-                customerEmails.sendPaymentReceived(customer, { amount: payment.amount, method: 'M-Pesa', reference: payment.reference })
-                    .catch(e => logger.error('Email failed: ' + e.message));
+                customerEmails.sendPaymentReceived(customer, { amount: payment.amount, method: 'M-Pesa', reference: payment.reference }).catch(e => logger.error('Email failed: ' + e.message));
             }
         }
-
         res.json({ success: true });
     } catch (error) { next(error); }
 };
@@ -333,8 +341,7 @@ const mpesaCallback = async (req, res, next) => {
 const getPaymentHistory = async (req, res, next) => {
     try {
         const { page = 1, limit = 10 } = req.query;
-        const payments = await Payment.find({ customer: req.user._id })
-            .sort({ createdAt: -1 }).skip((page - 1) * limit).limit(parseInt(limit));
+        const payments = await Payment.find({ customer: req.user._id }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(parseInt(limit));
         const total = await Payment.countDocuments({ customer: req.user._id });
         res.json({ success: true, payments, total, page: parseInt(page), pages: Math.ceil(total / limit) });
     } catch (error) { next(error); }

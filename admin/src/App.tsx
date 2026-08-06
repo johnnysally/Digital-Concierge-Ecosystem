@@ -14,6 +14,7 @@ import PartnersListPage from './pages/PartnersListPage';
 import PartnerDetailsPage from './pages/PartnerDetailsPage';
 import CustomersListPage from './pages/CustomersListPage';
 import CustomerDetailsPage from './pages/CustomerDetailsPage';
+import LocationsPage from './pages/LocationsPage';
 import TransactionsPage from './pages/TransactionsPage';
 import DisputesPage from './pages/DisputesPage';
 import ReportsPage from './pages/ReportsPage';
@@ -70,6 +71,7 @@ const App = () => {
                                 <Route path="partners/:id" element={<PartnerDetailsPage />} />
                                 <Route path="customers" element={<CustomersListPage />} />
                                 <Route path="customers/:id" element={<CustomerDetailsPage />} />
+                                <Route path="locations" element={<LocationsPage />} />
                                 <Route path="transactions" element={<TransactionsPage />} />
                                 <Route path="disputes" element={<DisputesPage />} />
                                 <Route path="reports" element={<ReportsPage />} />

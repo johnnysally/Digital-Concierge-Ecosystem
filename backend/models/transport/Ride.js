@@ -5,12 +5,15 @@ const rideSchema = new mongoose.Schema({
     vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', required: true },
     driver: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver' },
     customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
+    customerPhone: { type: String },
     pickup: {
         address: { type: String, required: true },
+        note: { type: String, default: '' },
         coordinates: { type: [Number], default: [0, 0] },
     },
     dropoff: {
         address: { type: String, required: true },
+        note: { type: String, default: '' },
         coordinates: { type: [Number], default: [0, 0] },
     },
     status: { type: String, enum: ['requested', 'accepted', 'arrived', 'in_progress', 'completed', 'cancelled'], default: 'requested' },
@@ -20,8 +23,11 @@ const rideSchema = new mongoose.Schema({
     completedAt: { type: Date },
     distance: { type: Number },
     duration: { type: Number },
-    seats: { type: Number, default: 1 },
+
+    isLongDistance: { type: Boolean, default: false },
+    seats: { type: Number, default: null },
     seatNumbers: [{ type: Number }],
+
     fare: {
         base: { type: Number, default: 0 },
         distance: { type: Number, default: 0 },
@@ -34,7 +40,8 @@ const rideSchema = new mongoose.Schema({
     feedback: { type: String },
 }, { timestamps: true });
 
-rideSchema.index({ partner: 1, status: 1 });
+rideSchema.index({ partner: 1, status: 1, isLongDistance: 1 });
 rideSchema.index({ customer: 1, createdAt: -1 });
+rideSchema.index({ vehicle: 1, status: 1 });
 
 module.exports = mongoose.model('Ride', rideSchema);

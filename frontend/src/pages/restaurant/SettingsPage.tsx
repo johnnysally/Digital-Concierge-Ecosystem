@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { changePassword, getProfile, updateProfile } from '../../api/restaurant/authApi';
+import { getTowns } from '../../api/customer/locationApi';
 import { getStoredRestaurantTheme, setStoredRestaurantTheme } from '../../components/restaurant/layout/theme';
 
 type RestaurantSettingsState = {
@@ -10,15 +11,8 @@ type RestaurantSettingsState = {
     deliveryEnabled: boolean;
     deliveryFee: number;
     minOrder: number;
-    openingHours: {
-        open: string;
-        close: string;
-    };
-    notifications: {
-        email: boolean;
-        sms: boolean;
-        push: boolean;
-    };
+    openingHours: { open: string; close: string };
+    notifications: { email: boolean; sms: boolean; push: boolean };
     password: string;
     confirmPassword: string;
 };
@@ -39,11 +33,17 @@ const defaultSettingsState = (): RestaurantSettingsState => ({
 
 const SettingsPage = () => {
     const [form, setForm] = useState<RestaurantSettingsState>(defaultSettingsState());
+    const [towns, setTowns] = useState<any[]>([]);
+    const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
     const [theme, setTheme] = useState<'light' | 'dark'>(getStoredRestaurantTheme());
     const isLight = theme === 'light';
+
+    useEffect(() => {
+        getTowns().then((res) => setTowns(res.towns || [])).catch(() => {});
+    }, []);
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -62,6 +62,7 @@ const SettingsPage = () => {
                     password: '',
                     confirmPassword: '',
                 });
+                setSelectedTowns(profile?.towns?.map((t: any) => t._id || t) || []);
             } catch (err: any) {
                 setMessage(err?.response?.data?.message || 'Unable to load settings.');
             } finally {
@@ -94,6 +95,7 @@ const SettingsPage = () => {
                 minOrder: form.minOrder,
                 openingHours: form.openingHours,
                 preferences: { notifications: form.notifications },
+                towns: selectedTowns,
             });
             setMessage('Settings updated successfully.');
         } catch (err: any) {
@@ -105,14 +107,8 @@ const SettingsPage = () => {
 
     const handlePasswordChange = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (form.password.length < 6) {
-            setMessage('Password must be at least 6 characters.');
-            return;
-        }
-        if (form.password !== form.confirmPassword) {
-            setMessage('Passwords do not match.');
-            return;
-        }
+        if (form.password.length < 6) { setMessage('Password must be at least 6 characters.'); return; }
+        if (form.password !== form.confirmPassword) { setMessage('Passwords do not match.'); return; }
 
         try {
             await changePassword({ currentPassword: form.password, newPassword: form.password });
@@ -165,12 +161,12 @@ const SettingsPage = () => {
                     <div className="mt-5 space-y-4">
                         <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                             <span className="mb-2 block">Business name</span>
-                            <input value={form.businessName} onChange={(event) => updateField('businessName', event.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
+                            <input value={form.businessName} onChange={(e) => updateField('businessName', e.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
                         </label>
                         <div className="grid gap-4 md:grid-cols-2">
                             <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                                 <span className="mb-2 block">Cuisine</span>
-                                <select value={form.cuisine} onChange={(event) => updateField('cuisine', event.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`}>
+                                <select value={form.cuisine} onChange={(e) => updateField('cuisine', e.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`}>
                                     <option value="african">African</option>
                                     <option value="italian">Italian</option>
                                     <option value="chinese">Chinese</option>
@@ -182,42 +178,36 @@ const SettingsPage = () => {
                             </label>
                             <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                                 <span className="mb-2 block">Phone</span>
-                                <input value={form.phone} onChange={(event) => updateField('phone', event.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
+                                <input value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
                             </label>
                         </div>
-                        <label className={`flex items-center justify-between rounded-2xl border px-4 py-4 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
-                            <div>
-                                <p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Open for business</p>
-                                <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Let guests see that your kitchen is accepting orders.</p>
+                        <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
+                            <span className="mb-2 block">Towns you serve</span>
+                            <div className={`flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 rounded-2xl border ${isLight ? 'border-slate-200 bg-white' : 'border-slate-700 bg-slate-900'}`}>
+                                {towns.length === 0 && <p className="text-xs text-slate-500 p-2">No towns available.</p>}
+                                {towns.map((t) => (
+                                    <button key={t._id} type="button" onClick={() => setSelectedTowns((prev) => prev.includes(t._id) ? prev.filter((id) => id !== t._id) : [...prev, t._id])}
+                                        className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${selectedTowns.includes(t._id) ? 'bg-amber-500 text-white' : isLight ? 'bg-slate-200 text-slate-600 hover:bg-slate-300' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>
+                                        {t.name}
+                                    </button>
+                                ))}
                             </div>
-                            <input type="checkbox" checked={form.isOpen} onChange={(event) => updateField('isOpen', event.target.checked)} className="h-5 w-5 rounded accent-amber-500" />
                         </label>
                         <label className={`flex items-center justify-between rounded-2xl border px-4 py-4 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
-                            <div>
-                                <p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Delivery enabled</p>
-                                <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Allow delivery orders to be routed to your kitchen.</p>
-                            </div>
-                            <input type="checkbox" checked={form.deliveryEnabled} onChange={(event) => updateField('deliveryEnabled', event.target.checked)} className="h-5 w-5 rounded accent-amber-500" />
+                            <div><p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Open for business</p><p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Let guests see that your kitchen is accepting orders.</p></div>
+                            <input type="checkbox" checked={form.isOpen} onChange={(e) => updateField('isOpen', e.target.checked)} className="h-5 w-5 rounded accent-amber-500" />
+                        </label>
+                        <label className={`flex items-center justify-between rounded-2xl border px-4 py-4 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
+                            <div><p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Delivery enabled</p><p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Allow delivery orders to be routed to your kitchen.</p></div>
+                            <input type="checkbox" checked={form.deliveryEnabled} onChange={(e) => updateField('deliveryEnabled', e.target.checked)} className="h-5 w-5 rounded accent-amber-500" />
                         </label>
                         <div className="grid gap-4 md:grid-cols-2">
-                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                                <span className="mb-2 block">Delivery fee</span>
-                                <input type="number" value={form.deliveryFee} onChange={(event) => updateField('deliveryFee', Number(event.target.value))} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
-                            </label>
-                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                                <span className="mb-2 block">Minimum order</span>
-                                <input type="number" value={form.minOrder} onChange={(event) => updateField('minOrder', Number(event.target.value))} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
-                            </label>
+                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}><span className="mb-2 block">Delivery fee</span><input type="number" value={form.deliveryFee} onChange={(e) => updateField('deliveryFee', Number(e.target.value))} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} /></label>
+                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}><span className="mb-2 block">Minimum order</span><input type="number" value={form.minOrder} onChange={(e) => updateField('minOrder', Number(e.target.value))} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} /></label>
                         </div>
                         <div className="grid gap-4 md:grid-cols-2">
-                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                                <span className="mb-2 block">Opening time</span>
-                                <input type="time" value={form.openingHours.open} onChange={(event) => updateField('openingHours', { ...form.openingHours, open: event.target.value })} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
-                            </label>
-                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                                <span className="mb-2 block">Closing time</span>
-                                <input type="time" value={form.openingHours.close} onChange={(event) => updateField('openingHours', { ...form.openingHours, close: event.target.value })} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
-                            </label>
+                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}><span className="mb-2 block">Opening time</span><input type="time" value={form.openingHours.open} onChange={(e) => updateField('openingHours', { ...form.openingHours, open: e.target.value })} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} /></label>
+                            <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}><span className="mb-2 block">Closing time</span><input type="time" value={form.openingHours.close} onChange={(e) => updateField('openingHours', { ...form.openingHours, close: e.target.value })} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} /></label>
                         </div>
                     </div>
 
@@ -231,25 +221,16 @@ const SettingsPage = () => {
                         <h2 className={`text-lg font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Notifications</h2>
                         <div className="mt-5 space-y-4">
                             <label className={`flex items-center justify-between rounded-2xl border px-4 py-4 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
-                                <div>
-                                    <p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Email alerts</p>
-                                    <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Receive order confirmations and updates by email.</p>
-                                </div>
-                                <input type="checkbox" checked={form.notifications.email} onChange={(event) => updateField('notifications', { ...form.notifications, email: event.target.checked })} className="h-5 w-5 rounded accent-amber-500" />
+                                <div><p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Email alerts</p><p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Receive order confirmations and updates by email.</p></div>
+                                <input type="checkbox" checked={form.notifications.email} onChange={(e) => updateField('notifications', { ...form.notifications, email: e.target.checked })} className="h-5 w-5 rounded accent-amber-500" />
                             </label>
                             <label className={`flex items-center justify-between rounded-2xl border px-4 py-4 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
-                                <div>
-                                    <p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>SMS alerts</p>
-                                    <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Get urgent kitchen updates on your phone.</p>
-                                </div>
-                                <input type="checkbox" checked={form.notifications.sms} onChange={(event) => updateField('notifications', { ...form.notifications, sms: event.target.checked })} className="h-5 w-5 rounded accent-amber-500" />
+                                <div><p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>SMS alerts</p><p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Get urgent kitchen updates on your phone.</p></div>
+                                <input type="checkbox" checked={form.notifications.sms} onChange={(e) => updateField('notifications', { ...form.notifications, sms: e.target.checked })} className="h-5 w-5 rounded accent-amber-500" />
                             </label>
                             <label className={`flex items-center justify-between rounded-2xl border px-4 py-4 ${isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800 bg-slate-950/70'}`}>
-                                <div>
-                                    <p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Push notifications</p>
-                                    <p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Show browser notifications when orders change status.</p>
-                                </div>
-                                <input type="checkbox" checked={form.notifications.push} onChange={(event) => updateField('notifications', { ...form.notifications, push: event.target.checked })} className="h-5 w-5 rounded accent-amber-500" />
+                                <div><p className={`text-sm font-medium ${isLight ? 'text-slate-900' : 'text-white'}`}>Push notifications</p><p className={`mt-1 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Show browser notifications when orders change status.</p></div>
+                                <input type="checkbox" checked={form.notifications.push} onChange={(e) => updateField('notifications', { ...form.notifications, push: e.target.checked })} className="h-5 w-5 rounded accent-amber-500" />
                             </label>
                         </div>
                     </div>
@@ -258,15 +239,13 @@ const SettingsPage = () => {
                         <h2 className={`text-lg font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Security</h2>
                         <form className="mt-5 space-y-4" onSubmit={handlePasswordChange}>
                             <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
-                                <input type="password" value={form.password} onChange={(event) => updateField('password', event.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
+                                <input type="password" value={form.password} onChange={(e) => updateField('password', e.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
                             </label>
                             <label className={`block text-sm ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                                 <span className="mb-2 block">Confirm password</span>
-                                <input type="password" value={form.confirmPassword} onChange={(event) => updateField('confirmPassword', event.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
+                                <input type="password" value={form.confirmPassword} onChange={(e) => updateField('confirmPassword', e.target.value)} className={`w-full rounded-2xl border px-3 py-3 ${isLight ? 'border-slate-200 bg-white text-slate-900' : 'border-slate-700 bg-slate-900 text-white'}`} />
                             </label>
-                            <button type="submit" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-600 transition hover:bg-amber-500/20">
-                                Update password
-                            </button>
+                            <button type="submit" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-600 transition hover:bg-amber-500/20">Update password</button>
                         </form>
                     </div>
                 </div>

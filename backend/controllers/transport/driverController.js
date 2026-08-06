@@ -1,5 +1,7 @@
 const Driver = require('../../models/transport/Driver');
 const Vehicle = require('../../models/transport/Vehicle');
+const { partner: partnerEmails } = require('../../services/emailService');
+const logger = require('../../utils/logger');
 
 const createDriver = async (req, res, next) => {
     try {
@@ -8,6 +10,9 @@ const createDriver = async (req, res, next) => {
             await Vehicle.findByIdAndUpdate(req.body.assignedVehicle, { driver: driver._id });
             driver.status = 'available';
             await driver.save();
+        }
+        if (req.body.sendInvite) {
+            partnerEmails.sendStaffInvite(driver, `${process.env.PARTNER_URL}/driver/join/${driver._id}`, 'driver').catch(e => logger.error(`Driver invite email failed: ${e.message}`));
         }
         res.status(201).json({ success: true, driver });
     } catch (error) { next(error); }
@@ -19,7 +24,7 @@ const getDrivers = async (req, res, next) => {
         const query = { partner: req.user._id };
         if (status) query.status = status;
         if (active !== undefined) query.active = active === 'true';
-        const drivers = await Driver.find(query).populate('assignedVehicle', 'make model plateNumber').sort({ createdAt: -1 });
+        const drivers = await Driver.find(query).populate('assignedVehicle', 'make model plateNumber type').sort({ createdAt: -1 });
         res.json({ success: true, drivers });
     } catch (error) { next(error); }
 };
@@ -63,7 +68,7 @@ const toggleStatus = async (req, res, next) => {
                 availability: driver.status === 'available' ? 'online' : 'offline',
             });
         }
-        res.json({ success: true, driver, message: `Driver ${driver.status === 'available' ? 'available' : 'offline'}` });
+        res.json({ success: true, driver });
     } catch (error) { next(error); }
 };
 

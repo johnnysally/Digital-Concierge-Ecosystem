@@ -1,11 +1,11 @@
 const router = require('express').Router();
-const { getRides, getRide, updateRideStatus, deleteRide } = require('../../controllers/transport/rideController');
+const ctrl = require('../../controllers/transport/rideController');
 const transportAuth = require('../../middleware/transport/transportAuth');
 
 router.use(transportAuth);
-router.get('/', getRides);
-router.get('/:id', getRide);
-router.put('/:id/status', updateRideStatus);
-router.delete('/:id', deleteRide);
+router.get('/', ctrl.getRides);
+router.get('/:id', ctrl.getRide);
+router.put('/:id/status', ctrl.updateRideStatus);
+router.delete('/:id', ctrl.deleteRide);
 
 module.exports = router;

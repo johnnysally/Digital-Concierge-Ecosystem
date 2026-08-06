@@ -14,5 +14,6 @@ router.use('/backups', require('./admin/backupRoutes'));
 router.use('/legal', require('./admin/legalRoutes'));
 router.use('/support', require('./admin/supportRoutes'));
 router.use('/payments', require('./admin/paymentRoutes'));
+router.use('/locations', require('./admin/townRoutes'));
 
 module.exports = router;

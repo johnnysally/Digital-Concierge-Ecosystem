@@ -1,13 +1,13 @@
 const router = require('express').Router();
-const { createDriver, getDrivers, getDriver, updateDriver, deleteDriver } = require('../../controllers/transport/driverController');
+const ctrl = require('../../controllers/transport/driverController');
 const transportAuth = require('../../middleware/transport/transportAuth');
-const { driverRules } = require('../../middleware/transport/transportValidate');
 
 router.use(transportAuth);
-router.post('/', driverRules, createDriver);
-router.get('/', getDrivers);
-router.get('/:id', getDriver);
-router.put('/:id', updateDriver);
-router.delete('/:id', deleteDriver);
+router.post('/', ctrl.createDriver);
+router.get('/', ctrl.getDrivers);
+router.get('/:id', ctrl.getDriver);
+router.put('/:id', ctrl.updateDriver);
+router.delete('/:id', ctrl.deleteDriver);
+router.put('/:id/toggle-status', ctrl.toggleStatus);
 
 module.exports = router;

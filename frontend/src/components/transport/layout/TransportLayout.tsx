@@ -4,9 +4,20 @@ import TransportNavbar from './TransportNavbar';
 import TransportSidebar from './TransportSidebar';
 import { useTransportTheme } from '../../../context/transport/ThemeContext';
 
+const getStoredTransportSession = () => {
+    try {
+        const stored = localStorage.getItem('digitalsafaris_transport');
+        return stored ? JSON.parse(stored) : null;
+    } catch {
+        return null;
+    }
+};
+
 const TransportLayout = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { isDark } = useTransportTheme();
+    const session = getStoredTransportSession();
+    const isShuttle = ['shuttle', 'bus'].includes(session?.user?.businessType || '');
 
     return (
         <div className={`h-screen overflow-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
@@ -44,8 +55,12 @@ const TransportLayout = () => {
                 <div className={`absolute left-0 top-0 h-full w-[86vw] max-w-xs transform overflow-y-auto border-r border-slate-800 bg-slate-950/95 p-4 shadow-2xl transition-transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="flex items-center justify-between pb-4">
                         <div>
-                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Transport portal</p>
-                            <p className="text-lg font-semibold text-white">Fleet control</p>
+                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+                                {isShuttle ? 'Bus/Shuttle portal' : 'Transport portal'}
+                            </p>
+                            <p className="text-lg font-semibold text-white">
+                                {isShuttle ? 'Route control' : 'Fleet control'}
+                            </p>
                         </div>
                         <button
                             type="button"

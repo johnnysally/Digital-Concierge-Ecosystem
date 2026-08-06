@@ -16,10 +16,11 @@ const createVehicle = async (req, res, next) => {
 
 const getVehicles = async (req, res, next) => {
     try {
-        const { status, availability } = req.query;
+        const { status, availability, isLongDistance } = req.query;
         const query = { partner: req.user._id };
         if (status) query.status = status;
         if (availability) query.availability = availability;
+        if (isLongDistance !== undefined) query.isLongDistance = isLongDistance === 'true';
         const vehicles = await Vehicle.find(query).populate('driver', 'firstName lastName phone').sort({ createdAt: -1 });
         res.json({ success: true, vehicles });
     } catch (error) { next(error); }
@@ -71,7 +72,25 @@ const toggleAvailability = async (req, res, next) => {
             await Driver.findByIdAndUpdate(vehicle.driver, { status: 'available' });
         }
         await vehicle.save();
-        res.json({ success: true, vehicle, message: `Vehicle ${vehicle.availability === 'online' ? 'online' : 'offline'}` });
+        res.json({ success: true, vehicle });
+    } catch (error) { next(error); }
+};
+
+const updateDispatchStatus = async (req, res, next) => {
+    try {
+        const { dispatchStatus } = req.body;
+        const update = { dispatchStatus };
+        if (dispatchStatus === 'in_service') update.status = 'on_trip';
+        if (dispatchStatus === 'completed') {
+            update.status = 'idle';
+            update.dispatchStatus = 'available';
+        }
+        const vehicle = await Vehicle.findOneAndUpdate({ _id: req.params.id, partner: req.user._id }, update, { new: true });
+        if (!vehicle) return res.status(404).json({ success: false, message: 'Vehicle not found' });
+        if (vehicle.driver && dispatchStatus === 'completed') {
+            await Driver.findByIdAndUpdate(vehicle.driver, { status: 'available', $inc: { totalTrips: 1 } });
+        }
+        res.json({ success: true, vehicle });
     } catch (error) { next(error); }
 };
 
@@ -101,21 +120,6 @@ const getMaintenanceHistory = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-const updateDispatchStatus = async (req, res, next) => {
-    try {
-        const { dispatchStatus } = req.body;
-        const update = { dispatchStatus };
-        if (dispatchStatus === 'in_service') { update.status = 'on_trip'; }
-        if (dispatchStatus === 'completed') { update.status = 'idle'; update.currentTrip = null; update.dispatchStatus = 'available'; }
-        const vehicle = await Vehicle.findOneAndUpdate({ _id: req.params.id, partner: req.user._id }, update, { new: true });
-        if (!vehicle) return res.status(404).json({ success: false, message: 'Vehicle not found' });
-        if (vehicle.driver && dispatchStatus === 'completed') {
-            await Driver.findByIdAndUpdate(vehicle.driver, { status: 'available', totalTrips: (await Driver.findById(vehicle.driver)).totalTrips + 1 });
-        }
-        res.json({ success: true, vehicle });
-    } catch (error) { next(error); }
-};
-
 const uploadVehicleImages = async (req, res, next) => {
     try {
         if (!req.files || req.files.length === 0) return res.status(400).json({ success: false, message: 'No images uploaded' });
@@ -130,4 +134,4 @@ const uploadVehicleImages = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-module.exports = { createVehicle, getVehicles, getVehicle, updateVehicle, deleteVehicle, toggleAvailability, addMaintenanceRecord, getMaintenanceHistory, updateDispatchStatus, uploadVehicleImages };
+module.exports = { createVehicle, getVehicles, getVehicle, updateVehicle, deleteVehicle, toggleAvailability, updateDispatchStatus, addMaintenanceRecord, getMaintenanceHistory, uploadVehicleImages };

@@ -1,132 +1,90 @@
-﻿import { useEffect, useState } from 'react';
-import { getProfile, updateProfile } from '../../api/transport/authApi';
-import PayoutMethodsForm from '../../components/partner/PayoutMethodsForm';
+import { useEffect, useState } from 'react';
+import { getProfile, updateProfile, changePassword } from '../../api/transport/authApi';
 
 const ProfilePage = () => {
-    const [profile, setProfile] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', businessName: '' });
-    const [message, setMessage] = useState('');
+    const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' });
+    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
-    const loadProfile = async () => {
-        try {
-            const data = await getProfile();
-            setProfile(data);
-            setForm({
-                firstName: data.firstName || '',
-                lastName: data.lastName || '',
-                phone: data.phone || '',
-                businessName: data.businessName || '',
-            });
-        } catch {
-            setProfile(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        getProfile()
+            .then((res) => {
+                const u = res.user;
+                setForm({ firstName: u.firstName || '', lastName: u.lastName || '', phone: u.phone || '', businessName: u.businessName || '' });
+            })
+            .catch(() => setError('Failed to load profile'))
+            .finally(() => setLoading(false));
+    }, []);
 
-    useEffect(() => { loadProfile(); }, []);
-
-    const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSaveProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
         setSaving(true);
         setMessage('');
+        setError('');
         try {
-            await updateProfile({
-                firstName: form.firstName,
-                lastName: form.lastName,
-                phone: form.phone,
-                businessName: form.businessName,
-            });
-            await loadProfile();
-            setMessage('Profile updated.');
-            setEditMode(false);
+            await updateProfile(form);
+            setMessage('Profile updated');
         } catch {
-            setMessage('Unable to update profile.');
+            setError('Failed to update profile');
         } finally {
             setSaving(false);
         }
     };
 
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        setMessage('');
+        setError('');
+        try {
+            await changePassword(passwordForm);
+            setMessage('Password changed');
+            setPasswordForm({ currentPassword: '', newPassword: '' });
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Failed to change password');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) return <div className="text-slate-400 py-12 text-center">Loading...</div>;
+
     return (
-        <div className="space-y-6">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/10">
-                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Profile</p>
-                <h2 className="mt-2 text-3xl font-semibold text-white">Your transport account</h2>
-                <p className="mt-2 text-sm text-slate-400">Review and manage the details connected to your transport profile.</p>
+        <div className="space-y-6 max-w-2xl">
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Account</p>
+                <h2 className="mt-2 text-3xl font-semibold text-white">Profile</h2>
             </div>
 
-            {message && (
-                <div className={`rounded-2xl px-4 py-3 text-sm ${message.includes('Unable') ? 'bg-rose-500/10 border border-rose-500/20 text-rose-200' : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-200'}`}>{message}</div>
-            )}
+            {message && <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-4 text-sm text-emerald-400">{message}</div>}
+            {error && <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 text-sm text-red-400">{error}</div>}
 
-            {loading ? (
-                <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 text-slate-400">Loading profile...</div>
-            ) : !profile ? (
-                <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 text-slate-400">Unable to load profile.</div>
-            ) : (
-                <div className="grid gap-6 lg:grid-cols-3">
-                    <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Account</p>
-                                <h3 className="mt-2 text-xl font-semibold text-white">Transport partner details</h3>
-                            </div>
-                            <button type="button" onClick={() => setEditMode(!editMode)} className="rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800">{editMode ? 'Cancel' : 'Edit'}</button>
-                        </div>
-                        {editMode ? (
-                            <form onSubmit={handleSave} className="mt-6 space-y-4">
-                                <label className="block text-sm text-slate-400">First name
-                                    <input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500" />
-                                </label>
-                                <label className="block text-sm text-slate-400">Last name
-                                    <input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500" />
-                                </label>
-                                <label className="block text-sm text-slate-400">Phone
-                                    <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500" />
-                                </label>
-                                <label className="block text-sm text-slate-400">Business name
-                                    <input value={form.businessName} onChange={(e) => setForm({ ...form, businessName: e.target.value })} required className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none focus:border-emerald-500" />
-                                </label>
-                                <button type="submit" disabled={saving} className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50">{saving ? 'Saving...' : 'Save changes'}</button>
-                            </form>
-                        ) : (
-                            <div className="mt-6 space-y-4 text-sm text-slate-300">
-                                <div><p className="text-slate-500">Name</p><p className="mt-1 text-white">{profile.firstName} {profile.lastName}</p></div>
-                                <div><p className="text-slate-500">Email</p><p className="mt-1 text-white">{profile.email}</p></div>
-                                <div><p className="text-slate-500">Phone</p><p className="mt-1 text-white">{profile.phone || 'Not set'}</p></div>
-                                <div><p className="text-slate-500">Business</p><p className="mt-1 text-white">{profile.businessName}</p></div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
-                        <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Notifications</p>
-                        <h3 className="mt-2 text-xl font-semibold text-white">Alert preferences</h3>
-                        <div className="mt-5 space-y-4 text-sm text-slate-300">
-                            <div><p className="text-slate-500">Email alerts</p><p className="mt-1">{profile.preferences?.notifications?.email ? 'Enabled' : 'Disabled'}</p></div>
-                            <div><p className="text-slate-500">SMS alerts</p><p className="mt-1">{profile.preferences?.notifications?.sms ? 'Enabled' : 'Disabled'}</p></div>
-                            <div><p className="text-slate-500">Push alerts</p><p className="mt-1">{profile.preferences?.notifications?.push ? 'Enabled' : 'Disabled'}</p></div>
-                        </div>
-                    </div>
-                    <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
-                        <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Account activity</p>
-                        <h3 className="mt-2 text-xl font-semibold text-white">Recent login</h3>
-                        <p className="mt-4 text-sm text-slate-300">{profile.lastLogin ? new Date(profile.lastLogin).toLocaleString() : 'Not available'}</p>
-                    </div>
+            <form onSubmit={handleSaveProfile} className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 space-y-4">
+                <h3 className="text-lg font-semibold text-white">Personal Info</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="First name" className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
+                    <input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Last name" className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
+                    <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="Phone" className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
+                    <input value={form.businessName} onChange={(e) => setForm({ ...form, businessName: e.target.value })} placeholder="Business name" className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
                 </div>
-            )}
+                <button type="submit" disabled={saving} className="rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-500 disabled:opacity-50">
+                    {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+            </form>
 
-            <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
-                <PayoutMethodsForm
-                    methods={profile?.payoutMethods || []}
-                    onSave={async (methods) => {
-                        await updateProfile({ payoutMethods: methods });
-                        await loadProfile();
-                    }}
-                />
-            </div>
+            <form onSubmit={handleChangePassword} className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 space-y-4">
+                <h3 className="text-lg font-semibold text-white">Change Password</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <input value={passwordForm.currentPassword} onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })} type="password" placeholder="Current password" className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
+                    <input value={passwordForm.newPassword} onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} type="password" placeholder="New password" className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
+                </div>
+                <button type="submit" disabled={saving} className="rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-500 disabled:opacity-50">
+                    {saving ? 'Changing...' : 'Change Password'}
+                </button>
+            </form>
         </div>
     );
 };

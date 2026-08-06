@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import CustomerSidebar from './CustomerSidebar';
 import { useTheme } from '../../../context/customer/ThemeContext';
+import { getNotifications } from '../../../api/customer/notificationApi';
 
 const CustomerLayout = () => {
     const { isDark, toggleTheme } = useTheme();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        getNotifications()
+            .then((res) => {
+                const count = (res.notifications || []).filter((n: any) => !n.isRead).length;
+                setUnreadCount(count);
+            })
+            .catch(() => {});
+    }, []);
 
     return (
         <div className={`h-screen overflow-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
@@ -72,10 +83,28 @@ const CustomerLayout = () => {
                                         </Link>
                                         <Link
                                             to="/notifications"
-                                            className={`relative rounded-full border px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? 'border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
+                                            className={`relative rounded-full border px-3.5 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md overflow-visible ${isDark ? 'border-slate-700 bg-slate-800/90 text-slate-100 hover:bg-slate-700' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
                                         >
                                             🔔
-                                            <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-rose-500" />
+                                            {unreadCount > 0 && (
+                                                <span style={{
+                                                    position: 'absolute',
+                                                    top: '-6px',
+                                                    right: '-6px',
+                                                    backgroundColor: '#ef4444',
+                                                    color: 'white',
+                                                    borderRadius: '999px',
+                                                    padding: '1px 6px',
+                                                    fontSize: '11px',
+                                                    fontWeight: 700,
+                                                    lineHeight: '18px',
+                                                    minWidth: '20px',
+                                                    textAlign: 'center',
+                                                    zIndex: 10,
+                                                }}>
+                                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                                </span>
+                                            )}
                                         </Link>
                                         <button
                                             type="button"

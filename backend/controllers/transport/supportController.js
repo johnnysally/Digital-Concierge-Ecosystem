@@ -3,11 +3,11 @@ const TransportSettings = require('../../models/transport/TransportSettings');
 const PlatformSettings = require('../../models/admin/PlatformSettings');
 const { createNotification } = require('../../services/notificationService');
 const logger = require('../../utils/logger');
+const mongoose = require('mongoose');
 
 const getSupportInfo = async (req, res, next) => {
     try {
         const settings = await TransportSettings.findOne({ partner: req.user._id });
-
         const [supportEmail, supportPhone, supportHours, emergencyContact, adminEmail] = await Promise.all([
             PlatformSettings.findOne({ key: 'support_email' }),
             PlatformSettings.findOne({ key: 'support_phone' }),
@@ -15,14 +15,10 @@ const getSupportInfo = async (req, res, next) => {
             PlatformSettings.findOne({ key: 'emergency_contact' }),
             PlatformSettings.findOne({ key: 'admin_email' }),
         ]);
-
         res.json({
             success: true,
             support: {
-                partner: {
-                    email: settings?.supportEmail || req.user.email,
-                    phone: settings?.supportPhone || req.user.phone || 'Not set',
-                },
+                partner: { email: settings?.supportEmail || req.user.email, phone: settings?.supportPhone || req.user.phone || 'Not set' },
                 platform: {
                     email: supportEmail?.value || 'support@digitalsafaris.com',
                     phone: supportPhone?.value || '+254 700 000000',
@@ -48,7 +44,7 @@ const createTicket = async (req, res, next) => {
             customerId: req.user._id,
             type: 'system',
             title: 'Support Ticket Submitted',
-            message: `Your ticket "${subject}" has been received. We'll respond shortly.`,
+            message: `Your ticket "${subject}" has been received.`,
         }).catch(e => logger.error(`Notification failed: ${e.message}`));
         res.status(201).json({ success: true, ticket });
     } catch (error) { next(error); }
@@ -63,6 +59,9 @@ const getMyTickets = async (req, res, next) => {
 
 const getTicket = async (req, res, next) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ticket ID' });
+        }
         const ticket = await SupportTicket.findOne({ _id: req.params.id, customer: req.user._id });
         if (!ticket) return res.status(404).json({ success: false, message: 'Ticket not found' });
         res.json({ success: true, ticket });

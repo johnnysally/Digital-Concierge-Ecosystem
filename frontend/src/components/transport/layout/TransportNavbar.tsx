@@ -3,12 +3,23 @@ import { Link } from 'react-router-dom';
 import { useTransportTheme } from '../../../context/transport/ThemeContext';
 import { getTransportPath } from '../../../utils/transportRoutes';
 
+const getStoredTransportSession = () => {
+    try {
+        const stored = localStorage.getItem('digitalsafaris_transport');
+        return stored ? JSON.parse(stored) : null;
+    } catch {
+        return null;
+    }
+};
+
 type TransportNavbarProps = {
     onMenuToggle: () => void;
 };
 
 const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
     const { isDark, toggleTheme } = useTransportTheme();
+    const session = getStoredTransportSession();
+    const isShuttle = ['shuttle', 'bus'].includes(session?.user?.businessType || '');
 
     return (
         <header className={`sticky top-0 z-40 ${isDark ? 'border-slate-800 bg-slate-950/90' : 'border-gray-200 bg-white'}`}>
@@ -27,22 +38,18 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
                         </div>
                         <div>
                             <p className={`text-base sm:text-lg font-semibold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>DigitalSafaris</p>
-                            <p className={`text-[11px] sm:text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Transport portal</p>
+                            <p className={`text-[11px] sm:text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                {isShuttle ? 'Bus/Shuttle portal' : 'Transport portal'}
+                            </p>
                         </div>
                     </Link>
                 </div>
 
                 <div className={`flex flex-wrap items-center gap-2 rounded-full border px-2 py-2 text-xs sm:text-sm ${isDark ? 'border-slate-800 bg-slate-900/80 text-slate-300' : 'border-gray-100 bg-white text-slate-700'}`}>
-                    <Link
-                        to={getTransportPath('')}
-                        className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}
-                    >
+                    <Link to={getTransportPath('')} className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}>
                         Home
                     </Link>
-                    <Link
-                        to={getTransportPath('/settings')}
-                        className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}
-                    >
+                    <Link to={getTransportPath('/settings')} className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}>
                         Settings
                     </Link>
                     <button
@@ -52,10 +59,7 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
                     >
                         {isDark ? 'Light' : 'Dark'}
                     </button>
-                    <Link
-                        to={getTransportPath('/support')}
-                        className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}
-                    >
+                    <Link to={getTransportPath('/support')} className={`rounded-full px-3 py-2 transition ${isDark ? 'hover:bg-slate-800 hover:text-white' : 'hover:bg-gray-50 hover:text-slate-900'}`}>
                         Support
                     </Link>
                     <Link to={getTransportPath('/profile')} className="rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 px-3 py-2 text-sm font-semibold text-white transition">

@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const { getSettings, updateSettings } = require('../../controllers/transport/settingsController');
+const ctrl = require('../../controllers/transport/settingsController');
 const transportAuth = require('../../middleware/transport/transportAuth');
 
 router.use(transportAuth);
-router.get('/', getSettings);
-router.put('/', updateSettings);
+router.get('/', ctrl.getSettings);
+router.put('/', ctrl.updateSettings);
 
 module.exports = router;

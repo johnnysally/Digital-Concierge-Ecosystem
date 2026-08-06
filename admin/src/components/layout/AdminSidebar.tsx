@@ -14,15 +14,17 @@ const navGroups = [
             { to: '/reports', label: 'Reports', icon: '📈' },
         ],
     },
-    {
-        title: 'Management',
-        items: [
-            { to: '/partners', label: 'Partners', icon: '🏨' },
-            { to: '/customers', label: 'Customers', icon: '👥' },
-            { to: '/payments', label: 'Payments', icon: '💳' },
-            { to: '/disputes', label: 'Disputes', icon: '⚖️' },
-            { to: '/backups', label: 'Backups', icon: '💾' },
-        ],
+ {
+    title: 'Management',
+    items: [
+        { to: '/partners', label: 'Partners', icon: '🏨' },
+        { to: '/customers', label: 'Customers', icon: '👥' },
+        { to: '/locations', label: 'Locations', icon: '📍' },
+        { to: '/payments', label: 'Payments', icon: '💳' },
+        { to: '/disputes', label: 'Disputes', icon: '⚖️' },
+        { to: '/backups', label: 'Backups', icon: '💾' },
+    ],
+
     },
     {
         title: 'Configuration',

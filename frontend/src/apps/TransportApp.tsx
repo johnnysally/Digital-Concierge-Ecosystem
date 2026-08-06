@@ -8,25 +8,22 @@ import LoginPage from '../pages/transport/LoginPage';
 import RegisterPage from '../pages/transport/RegisterPage';
 import ForgotPasswordPage from '../pages/transport/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/transport/ResetPasswordPage';
-import DriversListPage from '../pages/transport/DriversListPage';
-import DriverFormPage from '../pages/transport/DriverFormPage';
-import VehiclesListPage from '../pages/transport/VehiclesListPage';
-import VehicleFormPage from '../pages/transport/VehicleFormPage';
-import RidesListPage from '../pages/transport/RidesListPage';
-import RideDetailsPage from '../pages/transport/RideDetailsPage';
-import RideRequestsPage from '../pages/transport/RideRequestsPage';
+import DriversPage from '../pages/transport/DriversPage';
+import ShortVehiclesPage from '../pages/transport/ShortVehiclesPage';
+import LongVehiclesPage from '../pages/transport/LongVehiclesPage';
+import ShortRidesPage from '../pages/transport/ShortRidesPage';
+import LongRidesPage from '../pages/transport/LongRidesPage';
+import ShortPricingPage from '../pages/transport/ShortPricingPage';
+import LongPricingPage from '../pages/transport/LongPricingPage';
 import PromotionsPage from '../pages/transport/PromotionsPage';
-import PromotionFormPage from '../pages/transport/PromotionFormPage';
 import WalletPage from '../pages/transport/WalletPage';
 import NotificationsPage from '../pages/transport/NotificationsPage';
 import LiveMapPage from '../pages/transport/LiveMapPage';
-import DispatchPage from '../pages/transport/DispatchPage';
 import MaintenancePage from '../pages/transport/MaintenancePage';
 import TransactionsPage from '../pages/transport/TransactionsPage';
 import SupportPage from '../pages/transport/SupportPage';
 import ProfilePage from '../pages/transport/ProfilePage';
 import SettingsPage from '../pages/transport/SettingsPage';
-import DestinationPricesPage from '../pages/transport/DestinationPricesPage';
 
 const getStoredTransportSession = () => {
     try {
@@ -38,6 +35,15 @@ const getStoredTransportSession = () => {
 };
 
 const isAuthenticated = () => Boolean(getStoredTransportSession()?.token);
+
+const isShuttle = () => {
+    const session = getStoredTransportSession();
+    return ['shuttle', 'bus'].includes(session?.user?.businessType || '');
+};
+
+const VehiclesPage = () => isShuttle() ? <LongVehiclesPage /> : <ShortVehiclesPage />;
+const RidesPage = () => isShuttle() ? <LongRidesPage /> : <ShortRidesPage />;
+const PricingPage = () => isShuttle() ? <LongPricingPage /> : <ShortPricingPage />;
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return isAuthenticated() ? children : <Navigate to="login" replace />;
@@ -55,38 +61,25 @@ const TransportApp = () => (
             <Route path="500" element={<StatusErrorPage statusCode={500} />} />
             <Route path="error/:statusCode" element={<StatusErrorPage />} />
 
-            <Route
-                path=""
-                element={
-                    <ProtectedRoute>
-                        <TransportLayout />
-                    </ProtectedRoute>
-                }
-            >
-            <Route index element={<DashboardPage />} />
-            <Route path="drivers" element={<DriversListPage />} />
-            <Route path="drivers/new" element={<DriverFormPage />} />
-            <Route path="drivers/:id/edit" element={<DriverFormPage />} />
-            <Route path="vehicles" element={<VehiclesListPage />} />
-            <Route path="vehicles/new" element={<VehicleFormPage />} />
-            <Route path="vehicles/:id/edit" element={<VehicleFormPage />} />
-            <Route path="ride-requests" element={<RideRequestsPage />} />
-            <Route path="rides" element={<RidesListPage />} />
-            <Route path="rides/:id" element={<RideDetailsPage />} />
-            <Route path="promotions" element={<PromotionsPage />} />
-            <Route path="promotions/new" element={<PromotionFormPage />} />
-            <Route path="promotions/:id/edit" element={<PromotionFormPage />} />
-            <Route path="wallet" element={<WalletPage />} />
-            <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="live" element={<LiveMapPage />} />
-            <Route path="dispatch" element={<DispatchPage />} />
-            <Route path="maintenance" element={<MaintenancePage />} />
-            <Route path="transactions" element={<TransactionsPage />} />
-            <Route path="support" element={<SupportPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="destination-prices" element={<DestinationPricesPage />} />
-        </Route>
+            <Route path="" element={<ProtectedRoute><TransportLayout /></ProtectedRoute>}>
+                <Route index element={<DashboardPage />} />
+                <Route path="drivers" element={<DriversPage />} />
+                <Route path="vehicles" element={<VehiclesPage />} />
+                <Route path="vehicles/new" element={<VehiclesPage />} />
+                <Route path="vehicles/:id/edit" element={<VehiclesPage />} />
+                <Route path="rides" element={<RidesPage />} />
+                <Route path="rides/:id" element={<RidesPage />} />
+                <Route path="pricing" element={<PricingPage />} />
+                <Route path="promotions" element={<PromotionsPage />} />
+                <Route path="wallet" element={<WalletPage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="live" element={<LiveMapPage />} />
+                <Route path="maintenance" element={<MaintenancePage />} />
+                <Route path="transactions" element={<TransactionsPage />} />
+                <Route path="support" element={<SupportPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="settings" element={<SettingsPage />} />
+            </Route>
 
             <Route path="*" element={<StatusErrorPage statusCode={404} />} />
         </Routes>

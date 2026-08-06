@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getProfile } from '../../api/accommodation/authApi';
+import { getProfile, updateProfile } from '../../api/accommodation/authApi';
 import { getAccommodationSettings, updateAccommodationSettings } from '../../api/accommodation/settingsApi';
+import { getTowns } from '../../api/customer/locationApi';
 import { useAccommodationTheme } from '../../context/accommodation/ThemeContext';
 
 type SettingsState = {
@@ -36,6 +37,7 @@ type SettingsState = {
     maintenanceMode: boolean;
     themeMode: 'light' | 'dark' | 'system';
     themePreset: 'professional' | 'emerald' | 'ocean' | 'midnight';
+    towns: string[];
 };
 
 const defaultSettings: SettingsState = {
@@ -71,16 +73,22 @@ const defaultSettings: SettingsState = {
     maintenanceMode: false,
     themeMode: 'dark',
     themePreset: 'professional',
+    towns: [],
 };
 
 const SettingsPage = () => {
     const { toggleTheme } = useAccommodationTheme();
     const [profile, setProfile] = useState<any>(null);
     const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+    const [towns, setTowns] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    useEffect(() => {
+        getTowns().then((res) => setTowns(res.towns || [])).catch(() => {});
+    }, []);
 
     useEffect(() => {
         let isMounted = true;
@@ -101,26 +109,28 @@ const SettingsPage = () => {
                     businessName: profileResponse?.businessName || remoteSettings?.businessName || current.businessName,
                     contactEmail: profileResponse?.email || remoteSettings?.contactEmail || current.contactEmail,
                     supportEmail: profileResponse?.email || remoteSettings?.supportEmail || current.supportEmail,
+                    towns: profileResponse?.towns?.map((t: any) => t._id || t) || profileResponse?.user?.towns?.map((t: any) => t._id || t) || current.towns,
                 }));
             } catch (err: any) {
                 if (!isMounted) return;
                 setError(err?.response?.data?.message || 'Unable to load account settings');
             } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
+                if (isMounted) setLoading(false);
             }
         };
 
         loadSettings();
-
-        return () => {
-            isMounted = false;
-        };
+        return () => { isMounted = false; };
     }, []);
 
-    const handleChange = (field: keyof SettingsState, value: string | boolean) => {
+    const handleChange = (field: keyof SettingsState, value: string | boolean | string[]) => {
         setSettings((current) => ({ ...current, [field]: value }));
+    };
+
+    const toggleTown = (id: string) => {
+        const current = settings.towns || [];
+        const updated = current.includes(id) ? current.filter((t) => t !== id) : [...current, id];
+        handleChange('towns', updated);
     };
 
     const syncThemePreferences = (nextSettings: SettingsState) => {
@@ -128,7 +138,6 @@ const SettingsPage = () => {
         const resolvedTheme = nextSettings.themeMode === 'system'
             ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
             : nextSettings.themeMode;
-
         localStorage.setItem('accommodation-dashboard-theme', resolvedTheme);
         localStorage.setItem('accommodation-dashboard-theme-mode', nextSettings.themeMode);
         localStorage.setItem('accommodation-dashboard-theme-preset', nextSettings.themePreset);
@@ -144,6 +153,7 @@ const SettingsPage = () => {
 
         try {
             const nextSettings = await updateAccommodationSettings(settings);
+            await updateProfile({ towns: settings.towns });
             setSettings(nextSettings);
             syncThemePreferences(nextSettings);
             setSuccess('Portal settings saved successfully.');
@@ -190,21 +200,8 @@ const SettingsPage = () => {
                     <p className="mt-2 text-sm text-slate-400">Control the core business, guest experience, operations, and communication settings for your Digital Safaris workspace.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button
-                        type="button"
-                        onClick={resetDefaults}
-                        className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:text-white"
-                    >
-                        Reset
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
-                    >
-                        {saving ? 'Saving...' : 'Save settings'}
-                    </button>
+                    <button type="button" onClick={resetDefaults} className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:text-white">Reset</button>
+                    <button type="button" onClick={handleSave} disabled={saving} className="rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60">{saving ? 'Saving...' : 'Save settings'}</button>
                 </div>
             </div>
 
@@ -263,6 +260,18 @@ const SettingsPage = () => {
                                 <span>Support email</span>
                                 <input type="email" value={settings.supportEmail} onChange={(e) => handleChange('supportEmail', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
                             </label>
+                            <label className="space-y-2 text-sm text-slate-300 lg:col-span-2">
+                                <span>Towns you serve</span>
+                                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 rounded-2xl border border-slate-700 bg-slate-950">
+                                    {towns.length === 0 && <p className="text-xs text-slate-500 p-2">No towns available.</p>}
+                                    {towns.map((t) => (
+                                        <button key={t._id} type="button" onClick={() => toggleTown(t._id)}
+                                            className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${(settings.towns || []).includes(t._id) ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>
+                                            {t.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </label>
                         </>
                     ))}
 
@@ -297,13 +306,8 @@ const SettingsPage = () => {
                                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Preview</p>
                                 <div className="mt-4 rounded-3xl border border-slate-800 p-4" style={{ background: `linear-gradient(135deg, ${settings.secondaryColor}16 0%, ${settings.accentColor}10 100%)` }}>
                                     <div className="flex items-center justify-between gap-3">
-                                        <div>
-                                            <p className="text-sm font-semibold text-white">Digital Safaris Workspace</p>
-                                            <p className="text-sm text-slate-400">A premium partner experience with consistent visual identity.</p>
-                                        </div>
-                                        <div className="rounded-2xl px-3 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-white" style={{ backgroundColor: settings.accentColor }}>
-                                            {settings.themePreset}
-                                        </div>
+                                        <div><p className="text-sm font-semibold text-white">Digital Safaris Workspace</p><p className="text-sm text-slate-400">A premium partner experience with consistent visual identity.</p></div>
+                                        <div className="rounded-2xl px-3 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-white" style={{ backgroundColor: settings.accentColor }}>{settings.themePreset}</div>
                                     </div>
                                 </div>
                             </div>
@@ -312,117 +316,41 @@ const SettingsPage = () => {
 
                     {renderSection('Portal branding and experience', 'Adjust the visible portal identity and default workspace behavior.', (
                         <>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Portal name</span>
-                                <input value={settings.portalName} onChange={(e) => handleChange('portalName', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Portal tagline</span>
-                                <input value={settings.portalTagline} onChange={(e) => handleChange('portalTagline', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Primary accent color</span>
-                                <input type="color" value={settings.accentColor} onChange={(e) => handleChange('accentColor', e.target.value)} className="h-12 w-full rounded-2xl border border-slate-700 bg-slate-950 p-1" />
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Secondary color</span>
-                                <input type="color" value={settings.secondaryColor} onChange={(e) => handleChange('secondaryColor', e.target.value)} className="h-12 w-full rounded-2xl border border-slate-700 bg-slate-950 p-1" />
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Default landing view</span>
-                                <select value={settings.defaultView} onChange={(e) => handleChange('defaultView', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white">
-                                    <option value="dashboard">Dashboard</option>
-                                    <option value="reservations">Reservations</option>
-                                    <option value="analytics">Analytics</option>
-                                </select>
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Support phone</span>
-                                <input value={settings.supportPhone} onChange={(e) => handleChange('supportPhone', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
-                            </label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Portal name</span><input value={settings.portalName} onChange={(e) => handleChange('portalName', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" /></label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Portal tagline</span><input value={settings.portalTagline} onChange={(e) => handleChange('portalTagline', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" /></label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Default landing view</span><select value={settings.defaultView} onChange={(e) => handleChange('defaultView', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"><option value="dashboard">Dashboard</option><option value="reservations">Reservations</option><option value="analytics">Analytics</option></select></label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Support phone</span><input value={settings.supportPhone} onChange={(e) => handleChange('supportPhone', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" /></label>
                         </>
                     ))}
 
                     {renderSection('Reservations and operations', 'Fine-tune booking flow, reminders, and operational safeguards.', (
                         <>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Allow instant booking</span>
-                                <input type="checkbox" checked={settings.allowInstantBooking} onChange={(e) => handleChange('allowInstantBooking', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Require approval for new reservations</span>
-                                <input type="checkbox" checked={settings.requireApproval} onChange={(e) => handleChange('requireApproval', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Auto-confirm reservations</span>
-                                <input type="checkbox" checked={settings.autoConfirmReservations} onChange={(e) => handleChange('autoConfirmReservations', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Send arrival reminders</span>
-                                <input type="checkbox" checked={settings.sendArrivalReminders} onChange={(e) => handleChange('sendArrivalReminders', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Send checkout reminders</span>
-                                <input type="checkbox" checked={settings.sendCheckoutReminders} onChange={(e) => handleChange('sendCheckoutReminders', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Send housekeeping alerts</span>
-                                <input type="checkbox" checked={settings.sendHousekeepingAlerts} onChange={(e) => handleChange('sendHousekeepingAlerts', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Allow instant booking</span><input type="checkbox" checked={settings.allowInstantBooking} onChange={(e) => handleChange('allowInstantBooking', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Require approval</span><input type="checkbox" checked={settings.requireApproval} onChange={(e) => handleChange('requireApproval', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Auto-confirm</span><input type="checkbox" checked={settings.autoConfirmReservations} onChange={(e) => handleChange('autoConfirmReservations', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Arrival reminders</span><input type="checkbox" checked={settings.sendArrivalReminders} onChange={(e) => handleChange('sendArrivalReminders', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Checkout reminders</span><input type="checkbox" checked={settings.sendCheckoutReminders} onChange={(e) => handleChange('sendCheckoutReminders', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Housekeeping alerts</span><input type="checkbox" checked={settings.sendHousekeepingAlerts} onChange={(e) => handleChange('sendHousekeepingAlerts', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
                         </>
                     ))}
 
                     {renderSection('Communication and guest experience', 'Enable the messaging and notification features guests and staff rely on.', (
                         <>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Email notifications</span>
-                                <input type="checkbox" checked={settings.enableEmailNotifications} onChange={(e) => handleChange('enableEmailNotifications', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>SMS notifications</span>
-                                <input type="checkbox" checked={settings.enableSmsNotifications} onChange={(e) => handleChange('enableSmsNotifications', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Guest messaging</span>
-                                <input type="checkbox" checked={settings.enableGuestMessaging} onChange={(e) => handleChange('enableGuestMessaging', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Review requests</span>
-                                <input type="checkbox" checked={settings.enableReviewRequests} onChange={(e) => handleChange('enableReviewRequests', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Terms URL</span>
-                                <input value={settings.termsUrl} onChange={(e) => handleChange('termsUrl', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
-                            </label>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Privacy URL</span>
-                                <input value={settings.privacyUrl} onChange={(e) => handleChange('privacyUrl', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
-                            </label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Email notifications</span><input type="checkbox" checked={settings.enableEmailNotifications} onChange={(e) => handleChange('enableEmailNotifications', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>SMS notifications</span><input type="checkbox" checked={settings.enableSmsNotifications} onChange={(e) => handleChange('enableSmsNotifications', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Guest messaging</span><input type="checkbox" checked={settings.enableGuestMessaging} onChange={(e) => handleChange('enableGuestMessaging', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Review requests</span><input type="checkbox" checked={settings.enableReviewRequests} onChange={(e) => handleChange('enableReviewRequests', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Terms URL</span><input value={settings.termsUrl} onChange={(e) => handleChange('termsUrl', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" /></label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Privacy URL</span><input value={settings.privacyUrl} onChange={(e) => handleChange('privacyUrl', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" /></label>
                         </>
                     ))}
 
                     {renderSection('Integrations and availability', 'Connect the portal to the tools and services required to keep operations running smoothly.', (
                         <>
-                            <label className="space-y-2 text-sm text-slate-300">
-                                <span>Payment provider</span>
-                                <select value={settings.paymentProvider} onChange={(e) => handleChange('paymentProvider', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white">
-                                    <option value="stripe">Stripe</option>
-                                    <option value="mpesa">M-Pesa</option>
-                                    <option value="wallet">Wallet</option>
-                                </select>
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Calendar sync</span>
-                                <input type="checkbox" checked={settings.calendarSync} onChange={(e) => handleChange('calendarSync', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Cloud storage sync</span>
-                                <input type="checkbox" checked={settings.cloudStorage} onChange={(e) => handleChange('cloudStorage', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
-                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
-                                <span>Maintenance mode</span>
-                                <input type="checkbox" checked={settings.maintenanceMode} onChange={(e) => handleChange('maintenanceMode', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" />
-                            </label>
+                            <label className="space-y-2 text-sm text-slate-300"><span>Payment provider</span><select value={settings.paymentProvider} onChange={(e) => handleChange('paymentProvider', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"><option value="stripe">Stripe</option><option value="mpesa">M-Pesa</option><option value="wallet">Wallet</option></select></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Calendar sync</span><input type="checkbox" checked={settings.calendarSync} onChange={(e) => handleChange('calendarSync', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Cloud storage</span><input type="checkbox" checked={settings.cloudStorage} onChange={(e) => handleChange('cloudStorage', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
+                            <label className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-300"><span>Maintenance mode</span><input type="checkbox" checked={settings.maintenanceMode} onChange={(e) => handleChange('maintenanceMode', e.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-950" /></label>
                         </>
                     ))}
                 </div>

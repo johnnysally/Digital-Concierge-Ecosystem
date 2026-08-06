@@ -1,17 +1,17 @@
 const router = require('express').Router();
-const { register, login, getProfile, updateProfile, changePassword, forgotPassword, resetPassword } = require('../../controllers/transport/transportController');
+const ctrl = require('../../controllers/transport/transportController');
 const transportAuth = require('../../middleware/transport/transportAuth');
-const { registerRules, loginRules } = require('../../middleware/transport/transportValidate');
-const { authLimiter } = require('../../middleware/global/rateLimiter');
 
-router.post('/register', authLimiter, registerRules, register);
-router.post('/login', authLimiter, loginRules, login);
-router.post('/forgot-password', authLimiter, forgotPassword);
-router.post('/reset-password', authLimiter, resetPassword);
+router.post('/register', ctrl.register);
+router.post('/login', ctrl.login);
+router.post('/forgot-password', ctrl.forgotPassword);
+router.post('/reset-password', ctrl.resetPassword);
 
 router.use(transportAuth);
-router.get('/profile', getProfile);
-router.put('/profile', updateProfile);
-router.put('/change-password', changePassword);
+router.get('/profile', ctrl.getProfile);
+router.put('/profile', ctrl.updateProfile);
+router.put('/change-password', ctrl.changePassword);
+router.post('/send-otp', ctrl.sendOTP);
+router.post('/verify-otp', ctrl.verifyOTP);
 
 module.exports = router;

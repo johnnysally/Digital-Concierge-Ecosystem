@@ -1,14 +1,25 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/accommodation/authApi';
+import { getTowns } from '../../api/customer/locationApi';
 import { useAccommodationTheme } from '../../context/accommodation/ThemeContext';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const { isDark } = useAccommodationTheme();
     const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', phone: '', businessName: '' });
+    const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
+    const [towns, setTowns] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        getTowns().then((res) => setTowns(res.towns || [])).catch(() => {});
+    }, []);
+
+    const toggleTown = (id: string) => {
+        setSelectedTowns((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]);
+    };
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -16,7 +27,7 @@ const RegisterPage = () => {
         setError('');
 
         try {
-            const response = await register(form);
+            const response = await register({ ...form, towns: selectedTowns });
             localStorage.setItem('digitalsafaris_accommodation', JSON.stringify({ token: response.token, user: response.user }));
             navigate('/accommodation/login', { replace: true });
         } catch (err: any) {
@@ -66,15 +77,24 @@ const RegisterPage = () => {
                             <input value={form.businessName} onChange={(e) => setForm({ ...form, businessName: e.target.value })} required className={`w-full rounded-2xl border px-4 py-3 text-sm ${isDark ? 'border-slate-700 bg-slate-950/80 text-slate-100' : 'border-slate-300 bg-white text-slate-900'}`} />
                         </div>
                     </div>
+                    <div>
+                        <span className={`mb-2 block text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Towns you serve</span>
+                        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                            {towns.map((t) => (
+                                <button key={t._id} type="button" onClick={() => toggleTown(t._id)}
+                                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${selectedTowns.includes(t._id) ? 'bg-emerald-500 text-white' : isDark ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>
+                                    {t.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     <button type="submit" disabled={loading} className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60">
                         {loading ? 'Creating account...' : 'Create account'}
                     </button>
                 </form>
 
                 <div className={`mt-6 text-center text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    <div>
-                        Already have an account? <Link to="/accommodation/login" className="text-emerald-500 hover:text-emerald-400">Sign in</Link>
-                    </div>
+                    Already have an account? <Link to="/accommodation/login" className="text-emerald-500 hover:text-emerald-400">Sign in</Link>
                 </div>
             </div>
         </div>

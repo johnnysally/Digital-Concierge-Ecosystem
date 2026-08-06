@@ -1,6 +1,7 @@
-﻿import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/transport/authApi';
+import { getTowns } from '../../api/customer/locationApi';
 import { getTransportPath } from '../../utils/transportRoutes';
 
 const RegisterPage = () => {
@@ -12,8 +13,18 @@ const RegisterPage = () => {
     const [phone, setPhone] = useState('');
     const [businessName, setBusinessName] = useState('');
     const [businessType, setBusinessType] = useState('ride_hailing');
+    const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
+    const [towns, setTowns] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        getTowns().then((res) => setTowns(res.towns || [])).catch(() => {});
+    }, []);
+
+    const toggleTown = (id: string) => {
+        setSelectedTowns((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]);
+    };
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -21,7 +32,7 @@ const RegisterPage = () => {
         setError('');
 
         try {
-            await register({ firstName, lastName, email, password, phone, businessName, businessType });
+            await register({ firstName, lastName, email, password, phone, businessName, businessType, towns: selectedTowns });
             navigate(getTransportPath('/login'), { replace: true });
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Unable to register. Please try again later.');
@@ -48,69 +59,34 @@ const RegisterPage = () => {
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div>
                             <label className="mb-2 block text-sm text-slate-400">First name</label>
-                            <input
-                                value={firstName}
-                                onChange={(event) => setFirstName(event.target.value)}
-                                required
-                                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                            />
+                            <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500" />
                         </div>
                         <div>
                             <label className="mb-2 block text-sm text-slate-400">Last name</label>
-                            <input
-                                value={lastName}
-                                onChange={(event) => setLastName(event.target.value)}
-                                required
-                                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                            />
+                            <input value={lastName} onChange={(e) => setLastName(e.target.value)} required className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500" />
                         </div>
                     </div>
                     <div>
                         <label className="mb-2 block text-sm text-slate-400">Email</label>
-                        <input
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            type="email"
-                            required
-                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                        />
+                        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500" />
                     </div>
                     <div>
                         <label className="mb-2 block text-sm text-slate-400">Password</label>
-                        <input
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            type="password"
-                            required
-                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                        />
+                        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500" />
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div>
                             <label className="mb-2 block text-sm text-slate-400">Phone</label>
-                            <input
-                                value={phone}
-                                onChange={(event) => setPhone(event.target.value)}
-                                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                            />
+                            <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500" />
                         </div>
                         <div>
                             <label className="mb-2 block text-sm text-slate-400">Business name</label>
-                            <input
-                                value={businessName}
-                                onChange={(event) => setBusinessName(event.target.value)}
-                                required
-                                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                            />
+                            <input value={businessName} onChange={(e) => setBusinessName(e.target.value)} required className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500" />
                         </div>
                     </div>
                     <div>
                         <label className="mb-2 block text-sm text-slate-400">Business type</label>
-                        <select
-                            value={businessType}
-                            onChange={(event) => setBusinessType(event.target.value)}
-                            className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500"
-                        >
+                        <select value={businessType} onChange={(e) => setBusinessType(e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none ring-0 focus:border-emerald-500">
                             <option value="ride_hailing">Ride hailing</option>
                             <option value="taxi">Taxi</option>
                             <option value="shuttle">Shuttle</option>
@@ -118,11 +94,23 @@ const RegisterPage = () => {
                             <option value="car_rental">Car rental</option>
                         </select>
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-105 disabled:opacity-60"
-                    >
+                    <div>
+                        <label className="mb-2 block text-sm text-slate-400">Towns you serve</label>
+                        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                            {towns.map((t) => (
+                                <button
+                                    key={t._id}
+                                    type="button"
+                                    onClick={() => toggleTown(t._id)}
+                                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${selectedTowns.includes(t._id) ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+                                >
+                                    {t.name}
+                                </button>
+                            ))}
+                        </div>
+                        {towns.length === 0 && <p className="text-xs text-slate-500 mt-1">No towns available yet.</p>}
+                    </div>
+                    <button type="submit" disabled={loading} className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-105 disabled:opacity-60">
                         {loading ? 'Creating account...' : 'Create account'}
                     </button>
                 </form>

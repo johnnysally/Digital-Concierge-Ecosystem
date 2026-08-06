@@ -15,6 +15,7 @@ const parsePayments = (data: any): any[] => {
 const WalletPage = () => {
     const [activeTab, setActiveTab] = useState<'transactions' | 'payouts'>('transactions');
     const [payments, setPayments] = useState<any[]>([]);
+    const [totalRevenue, setTotalRevenue] = useState(0);
     const [payouts, setPayouts] = useState<any[]>([]);
     const [totalPayouts, setTotalPayouts] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -23,23 +24,38 @@ const WalletPage = () => {
     useEffect(() => {
         if (activeTab === 'transactions') {
             setLoading(true);
+            setError('');
             getPayments({ limit: 20 })
-                .then((result) => setPayments(parsePayments(result)))
+                .then((result) => {
+                    setPayments(parsePayments(result));
+                    setTotalRevenue(result.totalRevenue || 0);
+                })
                 .catch(() => { setError('Unable to load payments.'); setPayments([]); })
                 .finally(() => setLoading(false));
         } else {
             setLoading(true);
+            setError('');
             api.get('/transport/wallet/payouts')
                 .then((res) => {
                     setPayouts(res.data.payouts || []);
                     setTotalPayouts(res.data.totalAmount || 0);
                 })
-                .catch(() => {})
+                .catch(() => { setError('Unable to load payouts.'); setPayouts([]); })
                 .finally(() => setLoading(false));
         }
     }, [activeTab]);
 
-    const totalAmount = payments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+    const statusBadge = (status: string) => {
+        const colors: Record<string, string> = {
+            completed: 'bg-emerald-500/15 text-emerald-400',
+            cancelled: 'bg-red-500/15 text-red-400',
+            requested: 'bg-amber-500/15 text-amber-400',
+            accepted: 'bg-sky-500/15 text-sky-400',
+            arrived: 'bg-violet-500/15 text-violet-400',
+            in_progress: 'bg-blue-500/15 text-blue-400',
+        };
+        return colors[status] || 'bg-slate-500/15 text-slate-400';
+    };
 
     return (
         <div className="space-y-6">
@@ -71,8 +87,8 @@ const WalletPage = () => {
                 <>
                     <div className="grid gap-4 sm:grid-cols-3">
                         <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-5">
-                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Total Volume</p>
-                            <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : formatCurrency(totalAmount, 'KES')}</p>
+                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Total Revenue</p>
+                            <p className="mt-3 text-3xl font-semibold text-white">{loading ? '—' : formatCurrency(totalRevenue)}</p>
                         </div>
                         <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-5">
                             <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Transactions</p>
@@ -80,7 +96,7 @@ const WalletPage = () => {
                         </div>
                         <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-5">
                             <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Latest Status</p>
-                            <p className="mt-3 text-lg font-semibold text-white">{payments[0]?.status || 'N/A'}</p>
+                            <p className="mt-3 text-lg font-semibold text-white capitalize">{payments[0]?.status || 'N/A'}</p>
                         </div>
                     </div>
                     <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
@@ -92,15 +108,16 @@ const WalletPage = () => {
                                     <div className="flex justify-between items-start">
                                         <div className="flex-1">
                                             <p className="text-white font-medium">{payment.reference || 'Payment #' + (i + 1)}</p>
-                                            <p className="text-xs text-slate-400 mt-0.5 capitalize">{payment.method} · {payment.type}</p>
+                                            {payment.customerName && <p className="text-xs text-slate-400 mt-0.5">{payment.customerName}</p>}
+                                            <p className="text-xs text-slate-500 mt-0.5 capitalize">{payment.method?.replace(/_/g, ' ')} · {payment.type}</p>
                                         </div>
                                         <div className="text-right flex-shrink-0 ml-4">
-                                            <p className="text-emerald-400 font-semibold text-base">{formatCurrency(payment.amount, 'KES')}</p>
-                                            <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${payment.status === 'completed' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}`}>{payment.status}</span>
+                                            <p className="text-emerald-400 font-semibold text-base">{formatCurrency(payment.amount)}</p>
+                                            <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block capitalize ${statusBadge(payment.status)}`}>{payment.status}</span>
                                         </div>
                                     </div>
                                     <div className="flex gap-4 mt-3 text-xs text-slate-500">
-                                        <span>🕐 {payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'} · {payment.createdAt ? new Date(payment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                                        <span>🕐 {payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() + ' · ' + new Date(payment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                                     </div>
                                 </div>
                             ))}
@@ -114,7 +131,7 @@ const WalletPage = () => {
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-5">
                             <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Total Payouts</p>
-                            <p className="mt-3 text-3xl font-semibold text-emerald-300">{formatCurrency(totalPayouts, 'KES')}</p>
+                            <p className="mt-3 text-3xl font-semibold text-emerald-300">{formatCurrency(totalPayouts)}</p>
                         </div>
                         <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-5">
                             <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Payout Count</p>
@@ -132,8 +149,8 @@ const WalletPage = () => {
                                         <p className="text-xs text-slate-500 mt-1">{new Date(p.createdAt).toLocaleDateString()} · {new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-emerald-400 font-semibold text-base">{formatCurrency(p.amount, 'KES')}</p>
-                                        <span className="text-xs text-slate-400 capitalize mt-1 inline-block">{p.method?.replace('_', ' ')}</span>
+                                        <p className="text-emerald-400 font-semibold text-base">{formatCurrency(p.amount)}</p>
+                                        <span className="text-xs text-slate-400 capitalize mt-1 inline-block">{p.method?.replace(/_/g, ' ')}</span>
                                     </div>
                                 </div>
                             ))}

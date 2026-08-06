@@ -1,18 +1,20 @@
 const router = require('express').Router();
-const { createVehicle, getVehicles, getVehicle, updateVehicle, deleteVehicle, toggleAvailability, addMaintenanceRecord, getMaintenanceHistory, updateDispatchStatus, uploadVehicleImages } = require('../../controllers/transport/vehicleController');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+const ctrl = require('../../controllers/transport/vehicleController');
 const transportAuth = require('../../middleware/transport/transportAuth');
 const { vehicleRules } = require('../../middleware/transport/transportValidate');
 
 router.use(transportAuth);
-router.post('/', vehicleRules, createVehicle);
-router.get('/', getVehicles);
-router.get('/:id', getVehicle);
-router.put('/:id', updateVehicle);
-router.delete('/:id', deleteVehicle);
-router.put('/:id/toggle-availability', toggleAvailability);
-router.put('/:id/dispatch', updateDispatchStatus);
-router.post('/:id/maintenance', addMaintenanceRecord);
-router.get('/:id/maintenance', getMaintenanceHistory);
-router.post('/upload-images', uploadVehicleImages);
+router.post('/', vehicleRules, ctrl.createVehicle);
+router.get('/', ctrl.getVehicles);
+router.get('/:id', ctrl.getVehicle);
+router.put('/:id', ctrl.updateVehicle);
+router.delete('/:id', ctrl.deleteVehicle);
+router.put('/:id/toggle-availability', ctrl.toggleAvailability);
+router.put('/:id/dispatch', ctrl.updateDispatchStatus);
+router.post('/:id/maintenance', ctrl.addMaintenanceRecord);
+router.get('/:id/maintenance', ctrl.getMaintenanceHistory);
+router.post('/upload-images', upload.array('images', 5), ctrl.uploadVehicleImages);
 
 module.exports = router;

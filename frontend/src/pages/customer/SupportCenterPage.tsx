@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SectionHeader from '../../components/customer/ui/SectionHeader';
-import { api } from '../../api/axios';
+import { getTickets, createTicket } from '../../api/customer/supportApi';
+import { getPublicConfig } from '../../api/customer/publicApi';
 import { useTheme } from '../../context/customer/ThemeContext';
 
 const SupportCenterPage = () => {
@@ -13,22 +14,23 @@ const SupportCenterPage = () => {
     const [config, setConfig] = useState({ support_email: '', support_phone: '', support_hours: '' });
 
     useEffect(() => {
-        api.get('/public/config')
-            .then((res) => setConfig(res.data.config || config))
+        getPublicConfig()
+            .then((res) => setConfig(res.config || config))
             .catch(() => {});
-        api.get('/customer/support/tickets')
-            .then((res) => setTickets(res.data.tickets || []))
+        getTickets()
+            .then((res) => setTickets(res.tickets || []))
             .catch(() => {});
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await api.post('/customer/support', { subject, description });
+            await createTicket({ subject, description });
             setSent(true);
             setSubject('');
             setDescription('');
-            setTickets([{ _id: Date.now(), subject, status: 'open', createdAt: new Date().toISOString() }, ...tickets]);
+            const updated = await getTickets();
+            setTickets(updated.tickets || []);
             setTimeout(() => setSent(false), 3000);
         } catch {}
     };
@@ -113,7 +115,7 @@ const SupportCenterPage = () => {
                             </button>
                         </div>
                         <div className={cardClass}>
-                            <h3 className={`text-lg font-semibold ${titleClass}`}>❓ FAQs</h3>
+                            <h3 className={`text-lg font-semibold ${titleClass}`}>❔ FAQs</h3>
                             <div className="mt-4 space-y-3 text-sm">
                                 <div>
                                     <p className={`font-medium ${textClass}`}>How do I cancel a booking?</p>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import SectionHeader from '../../components/customer/ui/SectionHeader';
 import { getVehicles } from '../../api/customer/vehicleApi';
-import { calculateFare } from '../../api/transport/destinationPriceApi';
+import { calculateFare } from '../../api/customer/pricingApi';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { useAuth } from '../../context/customer/AuthContext';
 import PaymentModal from '../../components/customer/ui/PaymentModal';
@@ -14,7 +15,9 @@ const methodLabels: Record<string, string> = {
 
 const vehicleTypes = ['', 'van', 'bus'];
 
-const ShuttleTransportTab = () => {
+type Props = { onBack: () => void };
+
+const ShuttleTransportTab = ({ onBack }: Props) => {
     const { user } = useAuth();
     const [vehicles, setVehicles] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -38,8 +41,8 @@ const ShuttleTransportTab = () => {
     const [fareError, setFareError] = useState('');
 
     useEffect(() => {
-        getVehicles(vehicleType ? { type: vehicleType } : {})
-            .then((res) => setVehicles((res.vehicles || []).filter((v: any) => ['van', 'bus'].includes(v.type))))
+        getVehicles({ isLongDistance: true, ...(vehicleType ? { type: vehicleType } : {}) })
+            .then((res) => setVehicles(res.vehicles || []))
             .catch(() => setVehicles([]))
             .finally(() => setLoading(false));
     }, [vehicleType]);
@@ -50,11 +53,8 @@ const ShuttleTransportTab = () => {
             setCalculatingFare(true);
             setFareError('');
             calculateFare({
-                from: pickup, to: dropoff,
-                vehicleType: vehicleType || undefined,
-                seats,
-                pickupCoords: pickupCoords || undefined,
-                dropoffCoords: dropoffCoords || undefined,
+                from: pickup, to: dropoff, vehicleType: vehicleType || undefined, seats,
+                pickupCoords: pickupCoords || undefined, dropoffCoords: dropoffCoords || undefined,
                 manualDistance: manualDistance ? Number(manualDistance) : undefined,
             })
                 .then((res) => { if (res.success) { setFareData(res.fare); setFareError(''); } else { setFareData(null); setFareError(res.message || 'Fare unavailable'); } })
@@ -101,6 +101,9 @@ const ShuttleTransportTab = () => {
 
     return (
         <div className="space-y-6">
+            <button onClick={onBack} className="text-sm text-slate-400 hover:text-white mb-2">← Back</button>
+            <SectionHeader title="Long Distance" subtitle="Intercity travel — bus or shuttle with seat selection and scheduled departures." />
+
             <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                     <input value={pickup} onChange={(e) => setPickup(e.target.value)} placeholder="Pickup address *" className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white" />
@@ -151,14 +154,14 @@ const ShuttleTransportTab = () => {
             )}
 
             {fareError && !calculatingFare && pickup && dropoff && (
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-4 text-sm text-amber-300">{fareError}. Try adding coordinates or manual distance in Advanced settings.</div>
+                <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-4 text-sm text-amber-300">{fareError}</div>
             )}
 
             {rideError && <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">{rideError}</div>}
 
             <div className="flex gap-2 flex-wrap">
                 {vehicleTypes.map((t) => (
-                    <button key={t} onClick={() => { setVehicleType(t); setSelectedSeatNumbers([]); }} className={`rounded-xl px-4 py-2 text-sm font-medium capitalize transition ${vehicleType === t ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>{t || 'All'}</button>
+                    <button key={t} onClick={() => { setVehicleType(t); setSelectedSeatNumbers([]); }} className={`rounded-xl px-4 py-2 text-sm font-medium capitalize transition ${vehicleType === t ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400'}`}>{t || 'All'}</button>
                 ))}
             </div>
 
@@ -183,7 +186,7 @@ const ShuttleTransportTab = () => {
                                     <div className="grid grid-cols-7 gap-2 max-w-xs">
                                         {Array.from({ length: v.totalSeats }, (_, i) => i + 1).map((seatNum) => (
                                             <button key={seatNum} onClick={() => handleSeatToggle(seatNum)}
-                                                disabled={seatNum > (v.availableSeats + selectedSeatNumbers.filter(s => s > v.availableSeats).length) && !selectedSeatNumbers.includes(seatNum)}
+                                                disabled={seatNum > v.totalSeats}
                                                 className={`w-10 h-10 rounded-lg text-xs font-medium border transition ${getSeatColor(seatNum, v.totalSeats)}`}>
                                                 {seatNum}
                                             </button>
@@ -193,7 +196,7 @@ const ShuttleTransportTab = () => {
                             )}
 
                             <button onClick={() => handlePayNow(v)} disabled={!pickup || !dropoff || calculatingFare || v.availableSeats < 1 || selectedSeatNumbers.length !== seats}
-                                className="mt-4 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                                className="mt-4 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50 transition">
                                 {!pickup || !dropoff ? 'Enter pickup & dropoff' : v.availableSeats < 1 ? 'Fully booked' : calculatingFare ? 'Calculating...' : selectedSeatNumbers.length !== seats ? `Select ${seats} seat(s)` : fareData ? `Book seats ${selectedSeatNumbers.join(', ')} - ${formatCurrency(fareData.estimatedTotal || fareData.price)}` : 'Fare unavailable'}
                             </button>
                         </div>

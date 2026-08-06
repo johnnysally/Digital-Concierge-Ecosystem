@@ -1,14 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/restaurant/authApi';
+import { getTowns } from '../../api/customer/locationApi';
 import { getStoredRestaurantTheme } from '../../components/restaurant/layout/theme';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', phone: '', businessName: '', cuisine: '' });
+    const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
+    const [towns, setTowns] = useState<any[]>([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const isLight = getStoredRestaurantTheme() === 'light';
+
+    useEffect(() => {
+        getTowns().then((res) => setTowns(res.towns || [])).catch(() => {});
+    }, []);
+
+    const toggleTown = (id: string) => {
+        setSelectedTowns((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]);
+    };
 
     const onSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -16,7 +27,7 @@ const RegisterPage = () => {
         setError('');
 
         try {
-            const response = await register(form);
+            const response = await register({ ...form, towns: selectedTowns });
             localStorage.setItem('digitalsafaris_restaurant', JSON.stringify({ token: response.token, user: response.user }));
             navigate('/restaurant-admin/login', { replace: true });
         } catch (err: any) {
@@ -73,6 +84,17 @@ const RegisterPage = () => {
                             <option value="other">Other</option>
                         </select>
                     </label>
+                    <div className="md:col-span-2">
+                        <span className={`mb-2 block text-sm ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Towns you serve</span>
+                        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                            {towns.map((t) => (
+                                <button key={t._id} type="button" onClick={() => toggleTown(t._id)}
+                                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${selectedTowns.includes(t._id) ? 'bg-amber-500 text-white' : isLight ? 'bg-slate-200 text-slate-600 hover:bg-slate-300' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>
+                                    {t.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     <button type="submit" disabled={loading} className="md:col-span-2 w-full rounded-2xl bg-amber-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-amber-400 disabled:opacity-70">
                         {loading ? 'Creating account...' : 'Create account'}
                     </button>

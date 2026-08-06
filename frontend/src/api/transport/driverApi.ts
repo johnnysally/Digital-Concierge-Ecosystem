@@ -2,8 +2,7 @@ import { api } from '../axios';
 
 export const getDrivers = async (params?: any) => {
     const res = await api.get('/transport/drivers', { params });
-    const data = res.data;
-    return data.drivers ?? data.items ?? data;
+    return res.data;
 };
 
 export const getDriver = async (id: string) => {
@@ -26,7 +25,7 @@ export const deleteDriver = async (id: string) => {
     return res.data;
 };
 
-export const toggleStatus = async (id: string) => {
+export const toggleDriverStatus = async (id: string) => {
     const res = await api.put(`/transport/drivers/${id}/toggle-status`);
     return res.data;
 };
