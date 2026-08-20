@@ -63,8 +63,20 @@ const updateCommission = async (req, res, next) => {
 
 const getPublicSettings = async (req, res, next) => {
     try {
-        const publicKeys = ['site_name', 'site_tagline', 'site_description', 'site_logo', 'primary_color', 'secondary_color',
-            'support_email', 'support_phone', 'support_hours', 'default_currency', 'default_language'];
+        const publicKeys = [
+            'site_name', 'site_tagline', 'site_description', 'site_logo',
+            'primary_color', 'secondary_color',
+            'support_email', 'support_phone', 'support_hours',
+            'default_currency', 'default_language',
+            'customer_app_url',
+            'transport_partner_url',
+            'restaurant_partner_url',
+            'accommodation_partner_url',
+            'social_instagram', 'social_tiktok', 'social_facebook',
+            'social_linkedin', 'social_x', 'social_youtube',
+            'whatsapp_number',
+            'ai_chat_enabled', 'ai_chat_name', 'ai_chat_greeting', 'ai_chat_color',
+        ];
         const settings = await PlatformSettings.find({ key: { $in: publicKeys } });
         const result = {};
         settings.forEach(s => { result[s.key] = s.value; });

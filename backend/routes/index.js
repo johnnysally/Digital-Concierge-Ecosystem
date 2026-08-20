@@ -6,5 +6,6 @@ router.use('/accommodation', require('./accommodation'));
 router.use('/restaurant', require('./restaurant'));
 router.use('/transport', require('./transport'));
 router.use('/admin', require('./admin'));
+router.use('/web', require('./web/webRoutes'));
 
 module.exports = router;

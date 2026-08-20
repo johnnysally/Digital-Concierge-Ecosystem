@@ -18,7 +18,7 @@ const toggleFields = [
     'ai_enabled', 'ai_suggestions_enabled', 'welcome_email_enabled', 'booking_confirmation_enabled',
     'two_factor_required', 'maintenance_mode', 'backup_auto_enabled', 'backup_email_enabled',
     'push_enabled', 'sms_enabled', 'email_notifications_enabled', 'order_updates_enabled', 'booking_reminders_enabled',
-    'cloudinary_enabled',
+    'cloudinary_enabled', 'ai_chat_enabled',
 ];
 
 const checkboxFields = ['payment_methods', 'available_currencies', 'available_languages'];
@@ -33,6 +33,9 @@ const categories = [
     { key: 'ai', label: 'AI', icon: '🤖' },
     { key: 'notifications', label: 'Notifications', icon: '🔔' },
     { key: 'integrations', label: 'Integrations', icon: '🔗' },
+    { key: 'app_links', label: 'App Links', icon: '🔗' },
+    { key: 'social_links', label: 'Social Links', icon: '📱' },
+    { key: 'website', label: 'Website', icon: '🌐' },
     { key: 'legal', label: 'Legal', icon: '⚖️' },
 ];
 
@@ -56,6 +59,8 @@ const PlatformSettingsPage = () => {
     };
 
     useEffect(() => { fetchData(); }, []);
+
+    const isObjectValue = (value: any) => value && typeof value === 'object' && !Array.isArray(value);
 
     const handleSave = async (key: string) => {
         try {
@@ -95,6 +100,27 @@ const PlatformSettingsPage = () => {
     };
 
     const renderEditField = (setting: any) => {
+        if (isObjectValue(setting.value)) {
+            return (
+                <div className="flex gap-2 items-center">
+                    <input
+                        type="text"
+                        value={editValue?.url || ''}
+                        onChange={(e) => setEditValue({ ...editValue, url: e.target.value })}
+                        className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs w-64 focus:ring-2 focus:ring-primary-500/20 outline-none"
+                    />
+                    <select
+                        value={String(editValue?.enabled ?? true)}
+                        onChange={(e) => setEditValue({ ...editValue, enabled: e.target.value === 'true' })}
+                        className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-medium"
+                    >
+                        <option value="true">Enabled</option>
+                        <option value="false">Disabled</option>
+                    </select>
+                </div>
+            );
+        }
+
         if (checkboxFields.includes(setting.key)) {
             const optionsMap: Record<string, string[]> = {
                 payment_methods: ['stripe', 'mpesa', 'wallet', 'airtel'],
@@ -111,11 +137,8 @@ const PlatformSettingsPage = () => {
                                 checked={Array.isArray(editValue) && editValue.includes(opt)}
                                 onChange={(e) => {
                                     const current = Array.isArray(editValue) ? [...editValue] : [];
-                                    if (e.target.checked) {
-                                        setEditValue([...current, opt]);
-                                    } else {
-                                        setEditValue(current.filter((v: string) => v !== opt));
-                                    }
+                                    if (e.target.checked) setEditValue([...current, opt]);
+                                    else setEditValue(current.filter((v: string) => v !== opt));
                                 }}
                                 className="rounded accent-primary-500"
                             />
@@ -160,6 +183,19 @@ const PlatformSettingsPage = () => {
     };
 
     const renderValue = (setting: any) => {
+        if (isObjectValue(setting.value)) {
+            return (
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-slate-600 dark:text-slate-300 truncate max-w-[200px]">
+                        {setting.value.url || setting.value}
+                    </span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${setting.value.enabled ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500'}`}>
+                        {setting.value.enabled ? 'On' : 'Off'}
+                    </span>
+                </div>
+            );
+        }
+
         if (toggleFields.includes(setting.key)) {
             return (
                 <span className={`text-xs font-mono px-2 py-1 rounded-lg ${setting.value ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500'}`}>
