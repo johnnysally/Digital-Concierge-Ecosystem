@@ -29,12 +29,13 @@ const getSiteConfig = async (req, res, next) => {
             support_phone: filterEnabledLink('support_phone'),
             whatsapp_number: filterEnabledLink('whatsapp_number'),
 
-            app_links: {
-                customer: filterEnabledLink('customer_app_url'),
-                transport_partner: filterEnabledLink('transport_partner_url'),
-                restaurant_partner: filterEnabledLink('restaurant_partner_url'),
-                accommodation_partner: filterEnabledLink('accommodation_partner_url'),
-            },
+           app_links: {
+    customer: filterEnabledLink('customer_app_url'),
+    partner_landing: filterEnabledLink('partner_landing_url'),
+    transport_partner: filterEnabledLink('transport_partner_url'),
+    restaurant_partner: filterEnabledLink('restaurant_partner_url'),
+    accommodation_partner: filterEnabledLink('accommodation_partner_url'),
+},
 
             social_links: {
                 instagram: filterEnabledLink('social_instagram'),
