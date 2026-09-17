@@ -14,6 +14,7 @@ export interface RegisterPayload {
     businessName: string;
     businessType?: string;
     towns?: string[];
+    town?: string[];
 }
 
 export const login = async (payload: LoginPayload) => {
