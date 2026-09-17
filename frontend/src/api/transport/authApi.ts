@@ -25,8 +25,8 @@ export const changePassword = async (data: { currentPassword: string; newPasswor
     return res.data;
 };
 
-export const forgotPassword = async (email: string) => {
-    const res = await api.post('/transport/auth/forgot-password', { email });
+export const forgotPassword = async (data: { email: string }) => {
+    const res = await api.post('/transport/auth/forgot-password', data);
     return res.data;
 };
 

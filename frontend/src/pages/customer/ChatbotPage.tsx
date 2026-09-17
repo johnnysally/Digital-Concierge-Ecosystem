@@ -65,40 +65,46 @@ const ChatbotPage = () => {
                         </div>
                     )}
 
-                    {messages.map((msg) => (
-                        <div key={msg._id} className={`flex gap-3 ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'}`}>
-                            {msg.sender === 'ai' && (
-                                <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-violet-500 flex items-center justify-center text-sm font-bold text-white shadow-lg">
-                                    AI
-                                </div>
-                            )}
+                    {messages.map((msg) => {
+                        const messageId = msg._id ?? msg.id ?? '';
+                        const messageText = msg.message ?? msg.body ?? '';
+                        const createdAt = msg.createdAt ?? msg.timestamp ?? '';
 
-                            <div className={`group relative max-w-[75%] rounded-2xl px-5 py-3.5 text-sm leading-relaxed ${
-                                msg.sender === 'customer'
-                                    ? 'bg-sky-600 text-white rounded-br-md'
-                                    : isDark ? 'bg-slate-800 text-slate-200 rounded-bl-md' : 'bg-slate-100 text-slate-700 rounded-bl-md'
-                            }`}>
-                                <p className="whitespace-pre-wrap">{msg.message}</p>
-                                <div className="mt-2 flex items-center justify-between gap-4">
-                                    <span className={`text-xs ${msg.sender === 'customer' ? 'text-sky-200' : isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-                                        {msg.sender === 'customer' ? 'You' : 'AI Concierge'} · {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
-                                    </span>
-                                    <button
-                                        onClick={() => handleDelete(msg._id)}
-                                        className="text-xs text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-300"
-                                    >
-                                        Delete
-                                    </button>
+                        return (
+                            <div key={messageId} className={`flex gap-3 ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'}`}>
+                                {msg.sender === 'ai' && (
+                                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-violet-500 flex items-center justify-center text-sm font-bold text-white shadow-lg">
+                                        AI
+                                    </div>
+                                )}
+
+                                <div className={`group relative max-w-[75%] rounded-2xl px-5 py-3.5 text-sm leading-relaxed ${
+                                    msg.sender === 'customer'
+                                        ? 'bg-sky-600 text-white rounded-br-md'
+                                        : isDark ? 'bg-slate-800 text-slate-200 rounded-bl-md' : 'bg-slate-100 text-slate-700 rounded-bl-md'
+                                }`}>
+                                    <p className="whitespace-pre-wrap">{messageText}</p>
+                                    <div className="mt-2 flex items-center justify-between gap-4">
+                                        <span className={`text-xs ${msg.sender === 'customer' ? 'text-sky-200' : isDark ? 'text-slate-500' : 'text-slate-500'}`}>
+                                            {msg.sender === 'customer' ? 'You' : 'AI Concierge'} · {createdAt ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
+                                        </span>
+                                        <button
+                                            onClick={() => handleDelete(messageId)}
+                                            className="text-xs text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-300"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
+
+                                {msg.sender === 'customer' && (
+                                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-sm font-bold text-white shadow-lg">
+                                        {user?.firstName?.[0]?.toUpperCase() || 'U'}
+                                    </div>
+                                )}
                             </div>
-
-                            {msg.sender === 'customer' && (
-                                <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-sm font-bold text-white shadow-lg">
-                                    {user?.firstName?.[0]?.toUpperCase() || 'U'}
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     {isTyping && (
                         <div className="flex gap-3 justify-start">

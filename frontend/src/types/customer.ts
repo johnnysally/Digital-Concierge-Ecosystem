@@ -12,6 +12,7 @@ export interface User {
   loyaltyPoints?: number;
   currency?: string;
   language?: string;
+  town?: { _id?: string; name?: string } | string | null;
   savedAddresses?: Array<{ label?: string; street?: string; city?: string }>;
   preferences?: {
     notifications?: {
@@ -36,10 +37,13 @@ export interface Booking {
 }
 
 export interface Message {
-  id: string;
+  id?: string;
+  _id?: string;
   sender: "customer" | "concierge" | "provider" | "ai";
-  body: string;
-  timestamp: string;
+  body?: string;
+  message?: string;
+  timestamp?: string;
+  createdAt?: string;
 }
 
 export interface Payment {

@@ -41,7 +41,7 @@ const RegularTransportTab = ({ onBack }: Props) => {
         getTowns().then((res) => {
             const t = res.towns || [];
             setTowns(t);
-            const customerTown = user?.town?._id || user?.town;
+            const customerTown = typeof user?.town === 'string' ? user.town : user?.town?._id || '';
             if (customerTown) setSelectedTown(customerTown);
         }).catch(() => {});
     }, []);

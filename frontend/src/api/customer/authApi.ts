@@ -11,6 +11,7 @@ export interface RegisterPayload {
     email: string;
     password: string;
     phone?: string;
+    town?: string;
 }
 
 export const login = async (payload: LoginPayload) => {

@@ -13,6 +13,7 @@ export interface RegisterPayload {
     phone?: string;
     businessName: string;
     businessType?: string;
+    towns?: string[];
 }
 
 export const login = async (payload: LoginPayload) => {

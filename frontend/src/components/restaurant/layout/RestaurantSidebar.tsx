@@ -60,18 +60,9 @@ const RestaurantSidebar = ({ onNavigate, theme, onToggleTheme }: RestaurantSideb
     return (
         <aside className={`flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border p-4 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] transition-colors duration-200 lg:w-72 ${isLight ? 'border-slate-200 bg-white/95 text-slate-800' : 'border-slate-800 bg-slate-900/95 text-slate-100'}`}>
             <div className={`mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 ${isLight ? 'bg-amber-50' : 'bg-amber-500/10'}`}>
-<<<<<<< HEAD
-                    <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-sm">
-                        <img src="/digital-safaris-logo.svg" alt="Digital Safaris" className="h-full w-full object-contain" />
-                    </div>
-                    <div>
-                        <p className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Digital Safaris</p>
-=======
                 <div>
                     <BrandLogo className={isLight ? 'text-slate-900' : 'text-white'} />
                     <div className="ml-14">
->>>>>>> c28d579eff5d661c4ae1a307c517047cd8d864ea
                         <p className={`text-xs ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Restaurant Suite</p>
                     </div>
                 </div>

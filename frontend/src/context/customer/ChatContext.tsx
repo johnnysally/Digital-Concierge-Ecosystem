@@ -23,9 +23,12 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const sendMessage = async (message: string) => {
         const userMessage: Message = {
             id: `${Date.now()}`,
+            _id: `${Date.now()}`,
             sender: 'customer',
             body: message,
+            message,
             timestamp: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
         };
 
         setMessages((current) => [...current, userMessage]);
@@ -34,9 +37,12 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             const response = await sendChatMessage({ message });
             const aiMessage: Message = {
                 id: `${Date.now()}-ai`,
+                _id: `${Date.now()}-ai`,
                 sender: 'ai',
                 body: response.reply,
+                message: response.reply,
                 timestamp: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
             };
             setMessages((current) => [...current, aiMessage]);
         } catch {

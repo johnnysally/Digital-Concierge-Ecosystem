@@ -47,16 +47,20 @@ export interface AccommodationSettings {
     maintenanceMode: boolean;
     themeMode: 'light' | 'dark' | 'system';
     themePreset: 'professional' | 'emerald' | 'ocean' | 'midnight';
+    towns: string[];
 }
 
 export const getAccommodationSettings = async () => {
     if (!hasAccommodationSession()) {
-        return {} as AccommodationSettings;
+        return { towns: [] } as unknown as AccommodationSettings;
     }
 
     if (!accommodationSettingsRequest) {
         accommodationSettingsRequest = api.get('/accommodation/settings')
-            .then((res) => res.data.settings as AccommodationSettings)
+            .then((res) => ({
+                towns: [],
+                ...(res.data.settings || {}),
+            }) as AccommodationSettings)
             .finally(() => {
                 accommodationSettingsRequest = null;
             });
@@ -67,5 +71,8 @@ export const getAccommodationSettings = async () => {
 
 export const updateAccommodationSettings = async (payload: Partial<AccommodationSettings>) => {
     const res = await api.put('/accommodation/settings', payload);
-    return res.data.settings as AccommodationSettings;
+    return {
+        towns: [],
+        ...(res.data.settings || {}),
+    } as AccommodationSettings;
 };

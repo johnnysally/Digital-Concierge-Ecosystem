@@ -8,7 +8,7 @@ interface AuthContextState {
     isAuthenticated: boolean;
     loading: boolean;
     login: (payload: { email: string; password: string }) => Promise<void>;
-    register: (payload: { firstName: string; lastName: string; email: string; password: string }) => Promise<void>;
+    register: (payload: { firstName: string; lastName: string; email: string; password: string; town?: string }) => Promise<void>;
     logout: () => void;
     refreshSession: () => Promise<void>;
 }
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         persistSession(response.user, response.token);
     };
 
-    const register = async (payload: { firstName: string; lastName: string; email: string; password: string }) => {
+    const register = async (payload: { firstName: string; lastName: string; email: string; password: string; town?: string }) => {
         const response = await registerApi(payload);
         persistSession(response.user, response.token);
     };
