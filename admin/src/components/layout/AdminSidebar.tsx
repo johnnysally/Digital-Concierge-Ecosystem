@@ -30,6 +30,7 @@ const navGroups = [
         title: 'Configuration',
         items: [
             { to: '/settings', label: 'Settings', icon: '⚙️' },
+            { to: '/branding', label: 'Branding', icon: '🖼️' },
             { to: '/legal', label: 'Legal', icon: '📜' },
         ],
     },

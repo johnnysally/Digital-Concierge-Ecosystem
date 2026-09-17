@@ -8,6 +8,7 @@ import { getGuests } from '../../../api/accommodation/guestApi';
 import { getRooms } from '../../../api/accommodation/roomApi';
 import { getStaff } from '../../../api/accommodation/staffApi';
 import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsApi';
+import BrandLogo from '../../ui/BrandLogo';
 
     const navGroups = [
         {
@@ -261,12 +262,9 @@ const AccommodationLayout = () => {
                             <aside className="h-full w-full">
                                 <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-slate-200 bg-white'}`}>
                                     <div className={`border-b p-6 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                                    <div className="mb-4 flex items-center gap-3">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 text-sm font-semibold text-white shadow-sm">
-                                            DS
-                                        </div>
-                                        <div>
-                                            <p className={`text-sm font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>DigitalSafaris</p>
+                                    <div className="mb-4">
+                                        <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
+                                        <div className="ml-14">
                                             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Accommodation command center</p>
                                         </div>
                                     </div>
@@ -344,8 +342,8 @@ const AccommodationLayout = () => {
                                     >
                                         ☰
                                     </button>
-                                    <div>
-                                        <p className="text-sm font-semibold tracking-wide">DigitalSafaris</p>
+                                    <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
+                                    <div className="ml-14">
                                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Accommodation workspace</p>
                                     </div>
                                 </div>

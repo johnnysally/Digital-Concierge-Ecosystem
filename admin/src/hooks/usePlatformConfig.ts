@@ -8,6 +8,15 @@ interface PlatformConfig {
     [key: string]: any;
 }
 
+export const getPlatformAssetUrl = (value: unknown) => {
+    if (typeof value === 'string') return value;
+    if (value && typeof value === 'object') {
+        const asset = value as { url?: unknown; enabled?: unknown };
+        if (typeof asset.url === 'string' && asset.enabled !== false) return asset.url;
+    }
+    return '';
+};
+
 const usePlatformConfig = () => {
     const [config, setConfig] = useState<PlatformConfig>({ default_currency: 'USD', site_name: 'Digital Concierge', primary_color: '#3b82f6' });
     const [loading, setLoading] = useState(true);

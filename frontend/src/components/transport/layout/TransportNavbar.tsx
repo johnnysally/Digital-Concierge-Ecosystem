@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { useTransportTheme } from '../../../context/transport/ThemeContext';
 import { getTransportPath } from '../../../utils/transportRoutes';
+import BrandLogo from '../../ui/BrandLogo';
 
 const getStoredTransportSession = () => {
     try {
@@ -33,11 +34,8 @@ const TransportNavbar = ({ onMenuToggle }: TransportNavbarProps) => {
                         ☰
                     </button>
                     <Link to={getTransportPath('')} className="flex items-center gap-3 whitespace-nowrap">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-violet-600 text-sm font-semibold text-white shadow-sm">
-                            DS
-                        </div>
-                        <div>
-                            <p className={`text-base sm:text-lg font-semibold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>DigitalSafaris</p>
+                        <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
+                        <div className="ml-14">
                             <p className={`text-[11px] sm:text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                 {isShuttle ? 'Bus/Shuttle portal' : 'Transport portal'}
                             </p>

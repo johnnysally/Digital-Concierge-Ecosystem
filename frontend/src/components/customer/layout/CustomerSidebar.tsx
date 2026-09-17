@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../../context/customer/ThemeContext';
 import { useAuth } from '../../../context/customer/AuthContext';
+import BrandLogo from '../../ui/BrandLogo';
 
 const groups = [
     {
@@ -59,12 +60,18 @@ const CustomerSidebar = ({ onNavigate, className = '' }: CustomerSidebarProps) =
         <aside className={`w-full lg:w-72 lg:shrink-0 ${className}`}>
             <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
                 <div className={`shrink-0 border-b p-6 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+<<<<<<< HEAD
                     <div className="mb-4 flex items-center gap-3">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-sm">
                             <img src="/digital-safaris-logo.svg" alt="Digital Safaris" className="h-full w-full object-contain" />
                         </div>
                         <div>
                             <p className={`text-sm font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>DigitalSafaris</p>
+=======
+                    <div className="mb-4">
+                        <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
+                        <div className="ml-14">
+>>>>>>> c28d579eff5d661c4ae1a307c517047cd8d864ea
                             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Your concierge, reimagined</p>
                         </div>
                     </div>

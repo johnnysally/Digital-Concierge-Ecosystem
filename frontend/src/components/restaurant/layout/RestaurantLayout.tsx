@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import RestaurantSidebar from './RestaurantSidebar';
 import { getStoredRestaurantTheme, RestaurantTheme, setStoredRestaurantTheme } from './theme';
+import BrandLogo from '../../ui/BrandLogo';
 
 const RestaurantLayout = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -49,7 +50,7 @@ const RestaurantLayout = () => {
                         <header className={`sticky top-2 z-20 mb-3 rounded-[24px] border border-amber-500/20 px-3 py-3 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] backdrop-blur-xl transition-colors duration-200 sm:top-3 sm:px-5 sm:py-4 ${isLight ? 'bg-white/85' : 'bg-slate-900/85'}`}>
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="min-w-0">
-                                    <p className="text-[11px] uppercase tracking-[0.35em] text-amber-400">Digital Safaris</p>
+                                    <BrandLogo className={isLight ? 'text-slate-900' : 'text-white'} />
                                     <h1 className={`truncate text-base font-semibold sm:text-lg ${isLight ? 'text-slate-900' : 'text-white'}`}>Restaurant Portal</h1>
                                 </div>
                                 <div className="flex items-center gap-2">

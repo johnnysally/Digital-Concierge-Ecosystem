@@ -6,23 +6,26 @@ import TransportApp from './apps/TransportApp';
 import Error304Page from './pages/Error304Page';
 import StatusErrorPage from './pages/StatusErrorPage';
 import PartnerLandingPage from './pages/PartnerLandingPage';
+import { BrandingProvider } from './context/BrandingContext';
 
 const App = () => (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Routes>
-            <Route path="/accommodation/*" element={<AccommodationApp />} />
-            <Route path="/accommodation-admin/*" element={<AccommodationApp />} />
-            <Route path="/restaurant-admin/*" element={<RestaurantApp />} />
-            <Route path="/transport-admin/*" element={<TransportApp />} />
-            <Route path="/partner" element={<PartnerLandingPage />} />
-            <Route path="/404" element={<StatusErrorPage statusCode={404} />} />
-            <Route path="/304" element={<Error304Page />} />
-            <Route path="/500" element={<StatusErrorPage statusCode={500} />} />
-            <Route path="/error/:statusCode" element={<StatusErrorPage />} />
-            <Route path="/error-304" element={<Error304Page />} />
-            <Route path="*" element={<CustomerApp />} />
-        </Routes>
-    </BrowserRouter>
+    <BrandingProvider>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Routes>
+                <Route path="/accommodation/*" element={<AccommodationApp />} />
+                <Route path="/accommodation-admin/*" element={<AccommodationApp />} />
+                <Route path="/restaurant-admin/*" element={<RestaurantApp />} />
+                <Route path="/transport-admin/*" element={<TransportApp />} />
+                <Route path="/partner" element={<PartnerLandingPage />} />
+                <Route path="/404" element={<StatusErrorPage statusCode={404} />} />
+                <Route path="/304" element={<Error304Page />} />
+                <Route path="/500" element={<StatusErrorPage statusCode={500} />} />
+                <Route path="/error/:statusCode" element={<StatusErrorPage />} />
+                <Route path="/error-304" element={<Error304Page />} />
+                <Route path="*" element={<CustomerApp />} />
+            </Routes>
+        </BrowserRouter>
+    </BrandingProvider>
 );
 
 export default App;

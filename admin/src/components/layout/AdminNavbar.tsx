@@ -1,6 +1,7 @@
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
 import { formatCompact } from '../../utils/formatCurrency';
+import usePlatformConfig, { getPlatformAssetUrl } from '../../hooks/usePlatformConfig';
 
 interface AdminNavbarProps {
     onToggleSidebar?: () => void;
@@ -9,6 +10,8 @@ interface AdminNavbarProps {
 const AdminNavbar = ({ onToggleSidebar }: AdminNavbarProps) => {
     const { user, logout } = useAuth();
     const { stats } = useDashboard();
+    const { config } = usePlatformConfig();
+    const logoUrl = getPlatformAssetUrl(config.site_logo);
 
     return (
         <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur">
@@ -22,8 +25,13 @@ const AdminNavbar = ({ onToggleSidebar }: AdminNavbarProps) => {
                         >
                             ☰
                         </button>
+                        {logoUrl ? (
+                            <img src={logoUrl} alt={`${config.site_name || 'Digital Safaris'} logo`} className="h-10 w-10 rounded-xl object-contain" />
+                        ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-sm font-bold text-white">DS</div>
+                        )}
                         <div>
-                            <p className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Digital Safaris</p>
+                            <p className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{config.site_name || 'Digital Safaris'}</p>
                             <p className="text-xs text-slate-500 dark:text-slate-400">Admin console</p>
                         </div>
                     </div>

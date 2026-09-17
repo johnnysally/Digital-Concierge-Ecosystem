@@ -3,6 +3,7 @@ import { Outlet, Link } from 'react-router-dom';
 import CustomerSidebar from './CustomerSidebar';
 import { useTheme } from '../../../context/customer/ThemeContext';
 import { getNotifications } from '../../../api/customer/notificationApi';
+import BrandLogo from '../../ui/BrandLogo';
 
 const CustomerLayout = () => {
     const { isDark, toggleTheme } = useTheme();
@@ -39,8 +40,8 @@ const CustomerLayout = () => {
                                     >
                                         ☰
                                     </button>
-                                    <div>
-                                        <p className="text-sm font-semibold tracking-wide">DigitalSafaris</p>
+                                    <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
+                                    <div className="ml-14">
                                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Concierge command center</p>
                                     </div>
                                 </div>
