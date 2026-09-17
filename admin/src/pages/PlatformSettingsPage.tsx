@@ -183,14 +183,28 @@ const PlatformSettingsPage = () => {
     };
 
     const renderValue = (setting: any) => {
+        if (setting.key === 'site_logo' && typeof setting.value === 'string') {
+            return (
+                <div className="flex items-center gap-3">
+                    {setting.value ? <img src={setting.value} alt="Site logo preview" className="h-8 w-8 rounded-lg object-contain" /> : null}
+                    <span className="max-w-[200px] truncate text-xs font-mono text-slate-600 dark:text-slate-300">{setting.value || 'Not configured'}</span>
+                </div>
+            );
+        }
+
         if (isObjectValue(setting.value)) {
+            const objectValue = setting.value as { url?: unknown; enabled?: unknown };
+            const displayValue = typeof objectValue.url === 'string' && objectValue.url
+                ? objectValue.url
+                : 'No URL configured';
+
             return (
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-slate-600 dark:text-slate-300 truncate max-w-[200px]">
-                        {setting.value.url || setting.value}
+                        {displayValue}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${setting.value.enabled ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500'}`}>
-                        {setting.value.enabled ? 'On' : 'Off'}
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${objectValue.enabled ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500'}`}>
+                        {objectValue.enabled ? 'On' : 'Off'}
                     </span>
                 </div>
             );
