@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import TransportNavbar from './TransportNavbar';
 import TransportSidebar from './TransportSidebar';
@@ -15,21 +15,30 @@ const getStoredTransportSession = () => {
 
 const TransportLayout = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('transport_sidebar_collapsed') === 'true');
     const { isDark } = useTransportTheme();
     const session = getStoredTransportSession();
     const isShuttle = ['shuttle', 'bus'].includes(session?.user?.businessType || '');
+
+    const toggleSidebar = () => {
+        setSidebarCollapsed((current) => {
+            const next = !current;
+            localStorage.setItem('transport_sidebar_collapsed', String(next));
+            return next;
+        });
+    };
 
     return (
         <div className={`h-screen overflow-hidden ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-gradient-to-b from-white to-slate-50 text-slate-900'}`}>
             <div className="h-full w-full px-2 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4">
                 <div className="flex h-full flex-col lg:flex-row lg:gap-0">
                     <div className="hidden lg:block lg:shrink-0">
-                        <div className="fixed left-0 top-0 h-screen w-72">
-                            <TransportSidebar className="h-full w-full" />
+                        <div className={`fixed left-0 top-0 h-screen transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'w-20' : 'w-72'}`}>
+                            <TransportSidebar collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} className="h-full w-full" />
                         </div>
                     </div>
 
-                    <div className="flex min-w-0 flex-1 flex-col overflow-hidden lg:pl-72">
+                    <div className={`flex min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
                         <div className={`sticky top-0 z-20 mb-3 rounded-[28px] border px-3 py-3 shadow-[0_18px_45px_-20px_rgba(15,23,42,0.55)] backdrop-blur-xl sm:px-5 sm:py-3.5 ${isDark ? 'border-slate-800 bg-slate-900/85' : 'border-slate-200/80 bg-white/85'}`}>
                             <TransportNavbar onMenuToggle={() => setMobileMenuOpen(true)} />
                         </div>

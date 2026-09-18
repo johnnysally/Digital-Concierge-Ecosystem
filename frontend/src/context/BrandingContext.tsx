@@ -7,7 +7,11 @@ type BrandingContextValue = {
     siteName: string;
 };
 
-const defaultBranding: BrandingContextValue = { logoUrl: '', faviconUrl: '', siteName: 'DigitalSafaris' };
+const defaultBranding: BrandingContextValue = {
+    logoUrl: '/digital-safaris-logo.svg',
+    faviconUrl: '/digital-safaris-logo.svg',
+    siteName: 'DigitalSafaris',
+};
 const BrandingContext = createContext<BrandingContextValue>(defaultBranding);
 
 const getAssetUrl = (value: unknown) => {
@@ -27,8 +31,8 @@ export const BrandingProvider = ({ children }: { children: ReactNode }) => {
             .then((response) => {
                 const config = response.config || {};
                 setBranding({
-                    logoUrl: getAssetUrl(config.site_logo),
-                    faviconUrl: getAssetUrl(config.site_favicon),
+                    logoUrl: getAssetUrl(config.site_logo) || defaultBranding.logoUrl,
+                    faviconUrl: getAssetUrl(config.site_favicon) || defaultBranding.faviconUrl,
                     siteName: config.site_name || 'DigitalSafaris',
                 });
             })

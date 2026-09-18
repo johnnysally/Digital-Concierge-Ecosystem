@@ -9,40 +9,60 @@ import { getRooms } from '../../../api/accommodation/roomApi';
 import { getStaff } from '../../../api/accommodation/staffApi';
 import { getAccommodationAnalytics } from '../../../api/accommodation/analyticsApi';
 import BrandLogo from '../../ui/BrandLogo';
+import {
+    HomeIcon,
+    ReportsIcon,
+    NotificationsIcon,
+    PartnersIcon,
+    RoomsIcon,
+    BookingsIcon,
+    CustomersIcon,
+    ReviewsIcon,
+    PromotionsIcon,
+    DocumentsIcon,
+    WalletIcon,
+    SupportIcon,
+    ProfileIcon,
+    SettingsIcon,
+    SunIcon,
+    MoonIcon,
+    ChevronLeftIcon,
+    LogoutIcon,
+} from '../../ui/Icons';
 
     const navGroups = [
         {
             title: 'Core',
             items: [
-                { to: '/accommodation/dashboard', label: 'Dashboard', description: 'Command center', icon: '🏠' },
-                { to: '/accommodation/analytics', label: 'Analytics', description: 'Performance insights', icon: '📈' },
-                { to: '/accommodation/notifications', label: 'Notifications', description: 'Alerts & updates', icon: '🔔' },
+                { to: '/accommodation/dashboard', label: 'Dashboard', description: 'Command center', icon: <HomeIcon size={18} /> },
+                { to: '/accommodation/analytics', label: 'Analytics', description: 'Performance insights', icon: <ReportsIcon size={18} /> },
+                { to: '/accommodation/notifications', label: 'Notifications', description: 'Alerts & updates', icon: <NotificationsIcon size={18} /> },
             ],
         },
         {
             title: 'Property management',
             items: [
-                { to: '/accommodation/properties', label: 'Properties', description: 'Manage sites', icon: '🏘️' },
-                { to: '/accommodation/rooms', label: 'Rooms', description: 'Availability & setup', icon: '🛏️' },
+                { to: '/accommodation/properties', label: 'Properties', description: 'Manage sites', icon: <PartnersIcon size={18} /> },
+                { to: '/accommodation/rooms', label: 'Rooms', description: 'Availability & setup', icon: <RoomsIcon size={18} /> },
             ],
         },
         {
             title: 'Guest operations',
             items: [
-                { to: '/accommodation/reservations', label: 'Reservations', description: 'Bookings & arrivals', icon: '🗓️' },
-                { to: '/accommodation/guests', label: 'Guests', description: 'Guest records', icon: '🧳' },
-                { to: '/accommodation/reviews', label: 'Reviews', description: 'Guest feedback', icon: '⭐' },
+                { to: '/accommodation/reservations', label: 'Reservations', description: 'Bookings & arrivals', icon: <BookingsIcon size={18} /> },
+                { to: '/accommodation/guests', label: 'Guests', description: 'Guest records', icon: <CustomersIcon size={18} /> },
+                { to: '/accommodation/reviews', label: 'Reviews', description: 'Guest feedback', icon: <ReviewsIcon size={18} /> },
             ],
         },
         {
             title: 'Business tools',
             items: [
-                { to: '/accommodation/promotions', label: 'Promotions', description: 'Offers & campaigns', icon: '🎁' },
-                { to: '/accommodation/documents', label: 'Documents', description: 'Files & policies', icon: '📄' },
-                { to: '/accommodation/wallet', label: 'Wallet', description: 'Revenue & transactions', icon: '👛' },
-                { to: '/accommodation/support', label: 'Support', description: 'Help & tickets', icon: '🛟' },
-                { to: '/accommodation/profile', label: 'Profile', description: 'Account details', icon: '👤' },
-                { to: '/accommodation/settings', label: 'Settings', description: 'Portal preferences', icon: '⚙️' },
+                { to: '/accommodation/promotions', label: 'Promotions', description: 'Offers & campaigns', icon: <PromotionsIcon size={18} /> },
+                { to: '/accommodation/documents', label: 'Documents', description: 'Files & policies', icon: <DocumentsIcon size={18} /> },
+                { to: '/accommodation/wallet', label: 'Wallet', description: 'Revenue & transactions', icon: <WalletIcon size={18} /> },
+                { to: '/accommodation/support', label: 'Support', description: 'Help & tickets', icon: <SupportIcon size={18} /> },
+                { to: '/accommodation/profile', label: 'Profile', description: 'Account details', icon: <ProfileIcon size={18} /> },
+                { to: '/accommodation/settings', label: 'Settings', description: 'Portal preferences', icon: <SettingsIcon size={18} /> },
             ],
         },
     ];
@@ -79,6 +99,15 @@ const AccommodationLayout = () => {
     const location = useLocation();
     const { isDark, toggleTheme, accentColor, secondaryColor, themePreset } = useAccommodationTheme();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('accommodation_sidebar_collapsed') === 'true');
+
+    const toggleSidebar = () => {
+        setSidebarCollapsed((current) => {
+            const next = !current;
+            localStorage.setItem('accommodation_sidebar_collapsed', String(next));
+            return next;
+        });
+    };
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(false);
     const [notificationError, setNotificationError] = useState<string | null>(null);
@@ -258,80 +287,116 @@ const AccommodationLayout = () => {
             <div className="h-screen w-full overflow-hidden px-2 sm:px-3 lg:px-4">
                 <div className="relative flex h-full flex-col lg:flex-row lg:gap-0">
                     <div className="hidden lg:block lg:shrink-0">
-                        <div className="fixed left-0 top-0 h-screen w-72">
+                        <div className={`fixed left-0 top-0 h-screen transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'w-20' : 'w-72'}`}>
                             <aside className="h-full w-full">
-                                <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-slate-200 bg-white'}`}>
-                                    <div className={`border-b p-6 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                                    <div className="mb-4">
-                                        <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
-                                        <div className="ml-14">
-                                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Accommodation command center</p>
+                                <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] transition-colors duration-300 ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-slate-200 bg-white'}`}>
+                                    <div className={`border-b transition-all duration-300 ${sidebarCollapsed ? 'p-3' : 'p-6'} ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                                        <div className="flex items-center justify-between gap-2">
+                                            {!sidebarCollapsed ? (
+                                                <div className="flex-1 min-w-0">
+                                                    <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
+                                                    <div className="ml-14">
+                                                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Accommodation command center</p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="flex w-full items-center justify-center py-1">
+                                                    <PartnersIcon size={22} className="text-emerald-500" />
+                                                </div>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={toggleSidebar}
+                                                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                                                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                                                className={`hidden lg:flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-xs font-semibold transition-all duration-300 hover:scale-105 active:scale-95 ${
+                                                    isDark
+                                                        ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                                                        : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                                }`}
+                                            >
+                                                <ChevronLeftIcon size={16} className={`transition-transform duration-300 transform ${sidebarCollapsed ? 'rotate-180' : 'rotate-0'}`} />
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div className={`rounded-2xl border p-3 text-sm ${isDark ? 'border-slate-800 bg-slate-800/70 text-slate-300' : 'border-slate-100 bg-slate-50 text-slate-700'}`}>
-                                        Manage stays, reservations, and guest operations from one refined workspace.
-                                    </div>
-                                </div>
-
-                                <nav className="flex-1 space-y-4 overflow-y-auto p-4">
-                                    <button
-                                        type="button"
-                                        onClick={toggleTheme}
-                                        className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${isDark ? 'border-slate-700 bg-slate-800/90 text-slate-100 shadow-sm hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
-                                    >
-                                        <span>{isDark ? '☀️ Light mode' : '🌙 Dark mode'}</span>
-                                        <span className="text-xs uppercase tracking-[0.2em] opacity-70">Theme</span>
-                                    </button>
-
-                                    {navGroups.map((group) => (
-                                        <div key={group.title} className="space-y-2">
-                                            <h4 className={`px-2 text-xs font-semibold uppercase ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{group.title}</h4>
-                                            <div className="space-y-1">
-                                                {group.items.map((item: any) => (
-                                                    <NavLink
-                                                        key={item.to}
-                                                        to={item.to}
-                                                        className={({ isActive }) =>
-                                                            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-                                                                isActive
-                                                                    ? isDark
-                                                                        ? 'bg-emerald-500/15 text-emerald-200 shadow'
-                                                                        : 'bg-emerald-50 text-emerald-800 shadow'
-                                                                    : isDark
-                                                                    ? 'text-slate-200 hover:bg-slate-800 hover:text-white'
-                                                                    : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                                                            }`
-                                                        }
-                                                    >
-                                                        <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm shadow-sm ${isDark ? 'bg-slate-800 text-slate-200' : 'bg-white text-slate-700'}`}>
-                                                            {item.icon}
-                                                        </span>
-                                                        <span>{item.label}</span>
-                                                    </NavLink>
-                                                ))}
+                                        {!sidebarCollapsed && (
+                                            <div className={`mt-4 rounded-2xl border p-3 text-sm transition-all duration-300 ${isDark ? 'border-slate-800 bg-slate-800/70 text-slate-300' : 'border-slate-100 bg-slate-50 text-slate-700'}`}>
+                                                Manage stays, reservations, and guest operations from one refined workspace.
                                             </div>
-                                        </div>
-                                    ))}
-                                </nav>
+                                        )}
+                                    </div>
 
-                                <div className={`border-t p-4 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                                    <button
-                                        onClick={handleLogout}
-                                        className={`w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
-                                            isDark
-                                                ? 'border-slate-700 bg-slate-800 text-slate-100 hover:border-rose-400 hover:text-rose-300'
-                                                : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-rose-400 hover:text-rose-600'
-                                        }`}
-                                    >
-                                        Logout
-                                    </button>
+                                    <nav className="flex-1 space-y-4 overflow-y-auto p-3 sm:p-4">
+                                        <button
+                                            type="button"
+                                            onClick={toggleTheme}
+                                            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                                            className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                                                sidebarCollapsed ? 'justify-center px-2 py-2.5' : ''
+                                            } ${isDark ? 'border-slate-700 bg-slate-800/90 text-slate-100 shadow-sm hover:bg-slate-800' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'}`}
+                                        >
+                                            <span>{isDark ? <SunIcon size={16} /> : <MoonIcon size={16} />}</span>
+                                            {!sidebarCollapsed && <span>{isDark ? 'Light mode' : 'Dark mode'}</span>}
+                                            {!sidebarCollapsed && <span className="text-xs uppercase tracking-[0.2em] opacity-70">Theme</span>}
+                                        </button>
+
+                                        {navGroups.map((group) => (
+                                            <div key={group.title} className="space-y-2">
+                                                {!sidebarCollapsed && (
+                                                    <h4 className={`px-2 text-xs font-semibold uppercase ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{group.title}</h4>
+                                                )}
+                                                <div className="space-y-1">
+                                                    {group.items.map((item: any) => (
+                                                        <NavLink
+                                                            key={item.to}
+                                                            to={item.to}
+                                                            title={sidebarCollapsed ? item.label : undefined}
+                                                            className={({ isActive }) =>
+                                                                `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                                                                    sidebarCollapsed ? 'justify-center px-2 py-2.5' : ''
+                                                                } ${
+                                                                    isActive
+                                                                        ? isDark
+                                                                            ? 'bg-emerald-500/15 text-emerald-200 shadow'
+                                                                            : 'bg-emerald-50 text-emerald-800 shadow'
+                                                                        : isDark
+                                                                        ? 'text-slate-200 hover:bg-slate-800 hover:text-white'
+                                                                        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                                                                }`
+                                                            }
+                                                        >
+                                                            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm shadow-sm ${isDark ? 'bg-slate-800 text-slate-200' : 'bg-white text-slate-700'}`}>
+                                                                {item.icon}
+                                                            </span>
+                                                            {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+                                                        </NavLink>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </nav>
+
+                                    <div className={`border-t p-4 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                                        <button
+                                            onClick={handleLogout}
+                                            title={sidebarCollapsed ? 'Logout' : undefined}
+                                            className={`w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
+                                                sidebarCollapsed ? 'flex justify-center px-2 py-2.5 text-center' : ''
+                                            } ${
+                                                isDark
+                                                    ? 'border-slate-700 bg-slate-800 text-slate-100 hover:border-rose-400 hover:text-rose-300'
+                                                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-rose-400 hover:text-rose-600'
+                                            }`}
+                                        >
+                                            <LogoutIcon size={18} />
+                                            {!sidebarCollapsed && <span className="ml-2">Logout</span>}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </aside>
-                    </div>
+                            </aside>
+                        </div>
                     </div>
 
-                    <div className="flex min-w-0 flex-1 flex-col overflow-hidden lg:pl-72">
+                    <div className={`flex min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
                         <header className={`sticky top-0 z-20 mb-4 mt-2 rounded-[28px] border px-4 py-3.5 shadow-[0_18px_45px_-20px_rgba(15,23,42,0.55)] backdrop-blur-xl sm:px-5 lg:mt-3 ${isDark ? 'border-slate-800 bg-slate-900/85' : 'border-slate-200/80 bg-white/85'}`}>
                             <div className="flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-3">

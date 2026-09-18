@@ -7,6 +7,15 @@ import BrandLogo from '../../ui/BrandLogo';
 const RestaurantLayout = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [theme, setTheme] = useState<RestaurantTheme>(() => getStoredRestaurantTheme());
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('restaurant_sidebar_collapsed') === 'true');
+
+    const toggleSidebar = () => {
+        setSidebarCollapsed((current) => {
+            const next = !current;
+            localStorage.setItem('restaurant_sidebar_collapsed', String(next));
+            return next;
+        });
+    };
 
     useEffect(() => {
         const syncThemeFromStorage = () => setTheme(getStoredRestaurantTheme());
@@ -40,13 +49,13 @@ const RestaurantLayout = () => {
         <div className={`min-h-screen restaurant-theme-${theme} transition-colors duration-200 ${shellClasses}`}>
             <div className="mx-auto w-full max-w-8xl px-2 py-2 sm:px-4 lg:px-6 lg:py-4">
                 <div className="relative flex min-h-screen flex-col lg:flex-row lg:gap-6">
-                    <aside className="hidden lg:block lg:w-72 lg:flex-none">
-                        <div className="lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
-                            <RestaurantSidebar theme={theme} onToggleTheme={toggleTheme} />
+                    <aside className={`hidden lg:block lg:flex-none transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}`}>
+                        <div className="lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] transition-all duration-300">
+                            <RestaurantSidebar theme={theme} onToggleTheme={toggleTheme} collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
                         </div>
                     </aside>
 
-                    <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex min-w-0 flex-1 flex-col transition-all duration-300 ease-in-out">
                         <header className={`sticky top-2 z-20 mb-3 rounded-[24px] border border-amber-500/20 px-3 py-3 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] backdrop-blur-xl transition-colors duration-200 sm:top-3 sm:px-5 sm:py-4 ${isLight ? 'bg-white/85' : 'bg-slate-900/85'}`}>
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="min-w-0">

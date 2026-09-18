@@ -5,19 +5,28 @@ import AdminNavbar from './AdminNavbar';
 
 const AdminLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('admin_sidebar_collapsed') === 'true');
+
+    const toggleSidebarCollapse = () => {
+        setSidebarCollapsed((current) => {
+            const next = !current;
+            localStorage.setItem('admin_sidebar_collapsed', String(next));
+            return next;
+        });
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors">
             <AdminNavbar onToggleSidebar={() => setSidebarOpen(true)} />
 
             <div className="flex h-[calc(100vh-65px)] min-h-[calc(100vh-65px)] flex-col overflow-hidden lg:flex-row">
-                <aside className="hidden lg:block lg:w-72 lg:shrink-0">
-                    <div className="sticky top-[65px] h-[calc(100vh-65px)] border-r border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
-                        <AdminSidebar />
+                <aside className={`hidden lg:block lg:shrink-0 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}`}>
+                    <div className="sticky top-[65px] h-[calc(100vh-65px)] border-r border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 transition-all duration-300">
+                        <AdminSidebar collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebarCollapse} />
                     </div>
                 </aside>
 
-                <main className="flex-1 min-w-0 h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
+                <main className="flex-1 min-w-0 h-full overflow-y-auto p-4 sm:p-6 lg:p-8 transition-all duration-300">
                     <Outlet />
                 </main>
             </div>
