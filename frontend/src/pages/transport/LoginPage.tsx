@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../../api/transport/authApi';
+import AuthLogo from '../../components/ui/AuthLogo';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -18,19 +19,7 @@ const LoginPage = () => {
             localStorage.setItem('digitalsafaris_transport', JSON.stringify({ user: response.user, token: response.token }));
             navigate('/transport-admin');
         } catch (err: any) {
-            const namePart = email.split('@')[0] || 'Partner';
-            const demoUser = {
-                id: 'partner-' + Date.now(),
-                firstName: namePart.charAt(0).toUpperCase() + namePart.slice(1),
-                lastName: 'Partner',
-                email: email,
-                businessName: 'Safari Rides Express',
-                businessType: 'ride_hailing',
-                isVerified: true,
-                isActive: true,
-            };
-            localStorage.setItem('digitalsafaris_transport', JSON.stringify({ user: demoUser, token: 'demo-token-transport' }));
-            navigate('/transport-admin');
+            setError(err?.response?.data?.message || 'Unable to sign in.');
         } finally {
             setLoading(false);
         }
@@ -40,7 +29,9 @@ const LoginPage = () => {
         <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8 flex items-center justify-center">
             <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-10 shadow-2xl">
                 <div className="text-center mb-8">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 to-blue-500 text-white font-bold mx-auto">T</div>
+                    <div className="flex justify-center">
+                        <AuthLogo size="lg" textClassName="text-white" />
+                    </div>
                     <h1 className="mt-4 text-2xl font-bold text-white">Transport Partner</h1>
                     <p className="mt-2 text-sm text-slate-400">Sign in to manage your fleet</p>
                 </div>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/restaurant/authApi';
 import { getTowns } from '../../api/customer/locationApi';
 import { getStoredRestaurantTheme } from '../../components/restaurant/layout/theme';
+import AuthLogo from '../../components/ui/AuthLogo';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -40,7 +41,9 @@ const RegisterPage = () => {
     return (
         <div className={`restaurant-theme-${isLight ? 'light' : 'dark'} flex min-h-screen items-center justify-center px-4 py-10 ${isLight ? 'bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_28%),linear-gradient(135deg,_#f8fafc,_#e2e8f0)] text-slate-800' : 'bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_28%),linear-gradient(135deg,_#020617,_#111827)] text-slate-100'}`}>
             <div className={`w-full max-w-2xl rounded-[28px] border p-8 shadow-2xl ${isLight ? 'border-slate-200 bg-white/95' : 'border-slate-800 bg-slate-900/90'}`}>
-                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-amber-400">Digital Safaris</p>
+                <div className="mb-4">
+                    <AuthLogo size="lg" textClassName={isLight ? 'text-slate-900' : 'text-white'} />
+                </div>
                 <h1 className={`mt-3 text-3xl font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Set up your restaurant account</h1>
                 <p className={`mt-3 text-sm ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Register with the same business profile used by the backend partner APIs.</p>
 

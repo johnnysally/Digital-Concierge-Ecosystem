@@ -12,6 +12,16 @@ const CustomerLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('customer_sidebar_collapsed') === 'true');
 
     useEffect(() => {
+        let session = null;
+        try {
+            const stored = localStorage.getItem('digitalsafaris_customer');
+            session = stored ? JSON.parse(stored) : null;
+        } catch {
+            session = null;
+        }
+
+        if (!session?.token) return;
+
         getNotifications()
             .then((res) => {
                 const count = (res.notifications || []).filter((n: any) => !n.isRead).length;

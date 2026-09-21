@@ -2,12 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../../context/customer/ThemeContext';
 import { getNotifications } from '../../../api/customer/notificationApi';
+import { useBranding } from '../../../context/BrandingContext';
 
 const CustomerNavbar = () => {
     const { isDark } = useTheme();
+    const { logoUrl, siteName } = useBranding();
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
+        // Only fetch notifications if logged in
+        let session = null;
+        try {
+            const stored = localStorage.getItem('digitalsafaris_customer');
+            session = stored ? JSON.parse(stored) : null;
+        } catch {
+            session = null;
+        }
+
+        if (!session?.token) return;
+
         getNotifications()
             .then((res) => {
                 const count = (res.notifications || []).filter((n: any) => !n.isRead).length;
@@ -20,11 +33,15 @@ const CustomerNavbar = () => {
         <header className={`sticky top-0 z-40 border-b ${isDark ? 'border-slate-800 bg-slate-950/90' : 'border-gray-200 bg-white'}`}>
             <div className="mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-4 lg:px-8 max-w-[1400px]">
                 <Link to="/" className="flex items-center gap-3 whitespace-nowrap">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-violet-600 text-sm font-semibold text-white shadow-sm">
-                        DS
-                    </div>
+                    {logoUrl ? (
+                        <img src={logoUrl} alt={`${siteName} logo`} className="h-10 w-10 rounded-2xl object-contain" />
+                    ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-violet-600 text-sm font-semibold text-white shadow-sm">
+                            DS
+                        </div>
+                    )}
                     <div>
-                        <p className={`text-base sm:text-lg font-semibold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>DigitalSafaris</p>
+                        <p className={`text-base sm:text-lg font-semibold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{siteName}</p>
                         <p className={`text-[11px] sm:text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Premium guest experience</p>
                     </div>
                 </Link>

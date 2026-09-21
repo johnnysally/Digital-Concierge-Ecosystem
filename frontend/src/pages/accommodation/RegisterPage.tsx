@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/accommodation/authApi';
 import { getTowns } from '../../api/customer/locationApi';
 import { useAccommodationTheme } from '../../context/accommodation/ThemeContext';
+import AuthLogo from '../../components/ui/AuthLogo';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -41,7 +42,9 @@ const RegisterPage = () => {
         <div className={`flex min-h-screen items-center justify-center px-4 py-10 ${isDark ? 'bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.16),_transparent_60%),linear-gradient(135deg,_#020617,_#0f172a)] text-slate-100' : 'bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.2),_transparent_55%),linear-gradient(135deg,_#f8fafc,_#eef2ff)] text-slate-700'}`}>
             <div className={`w-full max-w-lg rounded-3xl border p-8 shadow-2xl ${isDark ? 'border-slate-800 bg-slate-900/95 shadow-slate-950/60' : 'border-slate-200 bg-white/95 shadow-slate-200/80'}`}>
                 <div className="mb-6">
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-500">Digital Safaris</p>
+                    <div className="mb-4">
+                        <AuthLogo size="lg" textClassName={isDark ? 'text-white' : 'text-slate-900'} />
+                    </div>
                     <h1 className={`mt-2 text-3xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Create your partner account</h1>
                     <p className={`mt-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Register your property business and start managing reservations.</p>
                 </div>

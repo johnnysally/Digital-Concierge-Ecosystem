@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/customer/AuthContext';
 import { getTowns } from '../../api/customer/locationApi';
+import AuthLogo from '../../components/ui/AuthLogo';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -62,9 +63,8 @@ const RegisterPage = () => {
                     </div>
 
                     <div>
-                        <div className="inline-flex items-center gap-3 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-medium text-slate-700">
-                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 via-orange-400 to-rose-400 text-sm font-semibold text-white">DS</span>
-                            Digital Safaris
+                        <div className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5">
+                            <AuthLogo size="sm" textClassName="text-slate-700" />
                         </div>
                         <h1 className="mt-6 text-2xl font-semibold tracking-tight text-slate-900 sm:mt-8 sm:text-4xl">Create your premium travel account</h1>
                         <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 sm:mt-4 sm:text-base sm:leading-7">Join a unified platform for booking stays, ordering dining, arranging transport, and managing rewards effortlessly.</p>

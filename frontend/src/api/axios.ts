@@ -50,13 +50,17 @@ axiosClient.interceptors.response.use(
         if (error.response?.status === 401) {
             const requestUrl = error.config?.url || '';
             const hasAuthHeader = Boolean(error.config?.headers?.Authorization);
-            const isAuthRoute =
-                requestUrl.includes('/accommodation/auth/') ||
-                requestUrl.includes('/customer/auth/') ||
-                requestUrl.includes('/transport/auth/') ||
-                requestUrl.includes('/restaurant/auth/');
 
-            if (!hasAuthHeader || isAuthRoute) {
+            const isAuthRoute =
+                requestUrl.includes('/auth/login') ||
+                requestUrl.includes('/auth/register') ||
+                requestUrl.includes('/auth/forgot-password') ||
+                requestUrl.includes('/auth/reset-password') ||
+                requestUrl.includes('/auth/verify-otp') ||
+                requestUrl.includes('/auth/send-otp');
+
+            // Don't redirect if it's an auth route or there's no token
+            if (isAuthRoute || !hasAuthHeader) {
                 return Promise.reject(error);
             }
 

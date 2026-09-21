@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../api/transport/authApi';
 import { getTowns } from '../../api/customer/locationApi';
 import { getTransportPath } from '../../utils/transportRoutes';
+import AuthLogo from '../../components/ui/AuthLogo';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -45,10 +46,9 @@ const RegisterPage = () => {
         <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.2),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.18),_transparent_28%),#020617] px-4 py-10 text-slate-100">
             <div className="w-full max-w-lg rounded-[32px] border border-slate-800/80 bg-slate-900/70 p-8 shadow-[0_25px_70px_-20px_rgba(2,6,23,0.85)] backdrop-blur-xl">
                 <div className="mb-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-500 to-violet-600 text-lg font-semibold text-white shadow-lg">
-                        DS
+                    <div className="mb-4">
+                        <AuthLogo size="lg" textClassName="text-white" />
                     </div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Digital Safaris</p>
                     <h1 className="mt-2 text-3xl font-semibold text-white">Create your transport workspace</h1>
                     <p className="mt-2 text-sm text-slate-400">Register and start managing transport operations in the portal.</p>
                 </div>
