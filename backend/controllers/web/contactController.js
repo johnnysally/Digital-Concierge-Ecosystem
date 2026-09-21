@@ -1,5 +1,5 @@
 const PlatformSettings = require('../../models/admin/PlatformSettings');
-const { customer: customerEmails } = require('../../services/emailService');
+const emailService = require('../../services/emailService');
 const logger = require('../../utils/logger');
 
 const submitContact = async (req, res, next) => {
@@ -13,7 +13,7 @@ const submitContact = async (req, res, next) => {
         const adminEmailSetting = await PlatformSettings.findOne({ key: 'admin_email' });
         const adminEmail = adminEmailSetting?.value || 'admin@digitalsafaris.com';
 
-        await customerEmails.send({
+        await emailService.send({
             to: adminEmail,
             subject: `[Website] ${subject || 'New Contact Message'} from ${name}`,
             htmlBody: `
