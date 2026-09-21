@@ -52,21 +52,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 lastName: 'Account',
                 email: payload.email,
                 phone: '+254712345678',
-                isVerified: true,
-                isActive: true,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                role: 'customer',
             };
             persistSession(demoUser, 'demo-token-customer');
         }
     };
 
-<<<<<<< HEAD
     const register = async (payload: { firstName: string; lastName: string; email: string; password: string; town?: string }) => {
-        const response = await registerApi(payload);
-        persistSession(response.user, response.token);
-=======
-    const register = async (payload: { firstName: string; lastName: string; email: string; password: string }) => {
         try {
             const response = await registerApi(payload);
             persistSession(response.user, response.token);
@@ -77,14 +69,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 lastName: payload.lastName || 'User',
                 email: payload.email,
                 phone: '+254712345678',
-                isVerified: true,
-                isActive: true,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                role: 'customer',
             };
             persistSession(demoUser, 'demo-token-customer');
         }
->>>>>>> 6274906 (Update dashboards, layouts, authentication and branding)
     };
 
     const logout = () => {

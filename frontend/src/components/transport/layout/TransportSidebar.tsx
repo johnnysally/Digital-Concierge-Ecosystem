@@ -92,21 +92,6 @@ const TransportSidebar = ({ onNavigate, className = '', collapsed = false, onTog
     };
 
     return (
-<<<<<<< HEAD
-        <aside className={`w-full lg:w-72 lg:shrink-0 ${className}`}>
-            <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
-                <div className={`shrink-0 border-b p-6 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                    <div className="mb-4">
-                        <BrandLogo className={isDark ? 'text-slate-100' : 'text-slate-900'} />
-                        <div className="ml-14">
-                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {isShuttle ? 'Bus/Shuttle command center' : 'Transport command center'}
-                            </p>
-                        </div>
-                    </div>
-                    <div className={`rounded-2xl border p-3 text-sm ${isDark ? 'border-slate-800 bg-slate-800/70 text-slate-300' : 'border-gray-100 bg-gray-50 text-slate-700'}`}>
-                        {isShuttle ? 'Manage shuttle routes, seats, and departures.' : 'Manage rides, drivers, and fleet operations seamlessly.'}
-=======
         <aside className={`w-full transition-all duration-300 ease-in-out ${className}`}>
             <div className={`flex h-full max-h-full flex-col overflow-hidden rounded-[28px] border shadow-[0_20px_60px_-25px_rgba(15,23,42,0.55)] transition-colors duration-300 ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
                 <div className={`shrink-0 border-b transition-all duration-300 ${collapsed ? 'p-3' : 'p-6'} ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
@@ -140,7 +125,6 @@ const TransportSidebar = ({ onNavigate, className = '', collapsed = false, onTog
                                 <ChevronLeftIcon size={16} className={`transition-transform duration-300 transform ${collapsed ? 'rotate-180' : 'rotate-0'}`} />
                             </button>
                         )}
->>>>>>> 6274906 (Update dashboards, layouts, authentication and branding)
                     </div>
                     {!collapsed && (
                         <div className={`mt-4 rounded-2xl border p-3 text-sm transition-all duration-300 ${isDark ? 'border-slate-800 bg-slate-800/70 text-slate-300' : 'border-gray-100 bg-gray-50 text-slate-700'}`}>
