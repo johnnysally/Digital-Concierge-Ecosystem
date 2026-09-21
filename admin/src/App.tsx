@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -46,6 +46,8 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 }
 
 const App = () => {
+    const [currencyLoaded, setCurrencyLoaded] = useState(false);
+
     useEffect(() => {
         getPublicSettings()
             .then((res) => {
@@ -54,7 +56,8 @@ const App = () => {
                     setPlatformCurrency(config.default_currency);
                 }
             })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => setCurrencyLoaded(true));
     }, []);
 
     return (
@@ -62,7 +65,7 @@ const App = () => {
             <AuthProvider>
                 <DashboardProvider>
                     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                        <Routes>
+                        <Routes key={String(currencyLoaded)}>
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />

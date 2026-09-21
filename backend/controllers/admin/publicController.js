@@ -1,5 +1,14 @@
 const PlatformSettings = require('../../models/admin/PlatformSettings');
 
+const filterEnabledLink = (val) => {
+    if (val && typeof val === 'object' && !Array.isArray(val) && 'enabled' in val) {
+        if (!val.enabled) return null;
+        const url = val.url || val.value || '';
+        return url && String(url).trim() ? url : null;
+    }
+    return val;
+};
+
 const getPublicConfig = async (req, res, next) => {
     try {
         const keys = [
@@ -13,7 +22,7 @@ const getPublicConfig = async (req, res, next) => {
         ];
         const settings = await PlatformSettings.find({ key: { $in: keys } });
         const config = {};
-        settings.forEach(s => { config[s.key] = s.value; });
+        settings.forEach(s => { config[s.key] = filterEnabledLink(s.value); });
         res.json({ success: true, config });
     } catch (error) { next(error); }
 };
